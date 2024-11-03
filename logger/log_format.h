@@ -149,6 +149,7 @@ namespace logger
         ~LoggerFormat() = default;
         void parserPattern();
         void format(std::ostream &os, const logger::LogEvent &log_msg);
+        void setPattern(const std::string &pattern);
 
     public:
         std::string m_pattern;

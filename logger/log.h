@@ -31,7 +31,7 @@ namespace logger
         int size = snprintf(nullptr, 0, str, args...);
         if (size <= 0)
             return "";
-#ifndef FMT_FOUND
+#ifdef FMT_FOUND
         std::string result = fmt::sprintf(str, std::forward<Args>(args)...);
         flag = (result.length() > MAX_SIZE);
 #else

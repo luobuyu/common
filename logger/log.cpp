@@ -49,6 +49,7 @@ namespace logger
 
     void Logger::registerCoredumpHandler()
     {
+#if defined(__linux__) || defined(__APPLE__)
         signal(SIGSEGV, coredumpHandler);
         signal(SIGABRT, coredumpHandler);
         signal(SIGTERM, coredumpHandler);
@@ -58,6 +59,7 @@ namespace logger
         signal(SIGHUP, coredumpHandler);
         // ignore SIGPIPE
         signal(SIGPIPE, SIG_IGN);
+#endif
     }
 
     void Logger::init(const logger::LogLevel &log_level, const std::string &module_name, const logger::LogSink::LogSinkPtr &log_sink, const logger::LoggerFormat::LoggerFormatPtr& log_format)

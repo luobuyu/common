@@ -77,6 +77,12 @@ namespace logger
             fmt->format(os, log_msg);
         }
     }
+    void LoggerFormat::setPattern(const std::string &pattern)
+    {
+        m_format_items.clear();
+        m_pattern = pattern;
+        parserPattern();
+    }
     logger::DateFormatItem::DateFormatItem(const std::string &time_fmt) : m_time_fmt(time_fmt)
     {
     }
