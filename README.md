@@ -11,6 +11,7 @@ common库，里面包含
 支持配置
 
 ``` ini
+[logger]
 log_path = ../log
 file_sink = 1
 std_sink = 1
@@ -26,3 +27,8 @@ log_level = 4
 # 日期 [level] [进程ID，线程ID，协程ID] [模块名] [文件名:函数名:行号] 日志行 换行
 log_format = %d{%Y-%m-%d %H:%M:%S}%T%m%n
 ```
+
+## dry库
+
+提供公共对外接口
+提供一些基础操作
