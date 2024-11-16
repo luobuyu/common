@@ -143,4 +143,9 @@ Config::Section Config::getSectionKVs(const std::string &section)
         return m_sections[section];
     }
 }
+void Config::setValue(const std::string &section, const std::string &key, const std::string &val)
+{
+    m_sections[section][key] = val;
+}
+
 };

@@ -28,6 +28,7 @@ public:
     std::unordered_map<std::string, Section> getSections();
     std::vector<std::string> getSectionNames();
     Section getSectionKVs(const std::string& section);
+    void setValue(const std::string &section, const std::string &key, const std::string &val);
 
 private:
     std::unordered_map<std::string, Section> m_sections;
