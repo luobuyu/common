@@ -15,3 +15,8 @@ if(UNIX AND NOT APPLE)
     target_link_libraries(log Threads::Threads)
 endif()
 target_compile_options(log PUBLIC -Wno-format-security)
+
+# 仅当使用GCC且版本小于9时需要链接stdc++fs
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
+    target_link_libraries(log stdc++fs)
+endif()
