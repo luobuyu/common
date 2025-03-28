@@ -41,6 +41,12 @@ namespace dry
         {
             return std::discrete_distribution<>(weights.begin(), weights.end())(gen);
         }
+        // 传入迭代器 [begin, end) 
+        template<typename Iterator>
+        static int rand(const Iterator& begin, const Iterator& end, std::default_random_engine &gen = getRandomEngine())
+        {
+            return std::discrete_distribution<>(begin, end)(gen);
+        }
     };
 };
 
