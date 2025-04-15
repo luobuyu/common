@@ -2,7 +2,6 @@
 #define LOGGER_SINK_H
 #include <string>
 #include <fstream>
-#include <iostream>
 #include <memory>
 #include "../dry/dry_time.h"
 #include "log_event.h"

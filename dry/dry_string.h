@@ -1,9 +1,7 @@
 #ifndef DRY_STRING_H
 #define DRY_STRING_H
 #include <string>
-#include <iostream>
 #include <vector>
-#include <sstream>
 namespace dry
 {
 

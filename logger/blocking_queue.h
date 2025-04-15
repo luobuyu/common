@@ -1,9 +1,9 @@
 #ifndef LOG_BLOCKING_QUEUE_H
 #define LOG_BLOCKING_QUEUE_H
-#include <queue>
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
+#include <vector>
 
 namespace logger {
     template <class T>

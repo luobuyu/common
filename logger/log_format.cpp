@@ -1,5 +1,5 @@
 #include "log_format.h"
-
+#include <unordered_set>
 namespace logger
 {
 

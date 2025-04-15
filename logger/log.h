@@ -1,17 +1,10 @@
 #ifndef LOG_LOG_H
 #define LOG_LOG_H
 #include <stdint.h>
-#include <fstream>
 #include <string>
 #include <vector>
-#include <queue>
-#include <mutex>
-#include <condition_variable>
-#include <atomic>
 #include <thread>
 #include <memory>
-#include <chrono>
-#include "../dry/dry_time.h"
 #include "blocking_queue.h"
 #include "sink.h"
 #include "log_format.h"

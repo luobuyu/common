@@ -1,6 +1,4 @@
 #include "log.h"
-#include "../dry/dry_time.h"
-#include <iostream>
 #include <csignal>
 
 namespace logger

@@ -4,7 +4,6 @@
 #include <string>
 #include <memory>
 #include <iostream>
-#include <unordered_set>
 #include "log_event.h"
 namespace logger
 {
