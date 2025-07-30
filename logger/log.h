@@ -16,6 +16,18 @@
 #endif
 
 namespace logger {
+
+// =============================================================================
+// 工具函数
+// =============================================================================
+
+/**
+ * @brief 格式化字符串工具函数
+ * @tparam Args 可变参数类型
+ * @param str 格式化字符串
+ * @param args 参数列表
+ * @return 格式化后的字符串（自动截断超长内容）
+ */
 template <typename... Args>
 std::string formatString(const char *str, Args &&...args) {
   const int MAX_SIZE = 4096;  // 最大长度限制
@@ -43,7 +55,14 @@ std::string formatString(const char *str, Args &&...args) {
   return result;
 }
 
+/**
+ * @brief 核心转储信号处理函数
+ */
 void coredumpHandler(int signal_no);
+
+// =============================================================================
+// 日志宏定义
+// =============================================================================
 
 #define LOG_FMT(level, str, ...)                                         \
   do {                                                                   \
@@ -54,19 +73,16 @@ void coredumpHandler(int signal_no);
     }                                                                    \
   } while (0)
 
-// 宏调用 log，传入 level 之类的
-// 1
+// 日志级别宏定义
 #define LOG_DEBUG(str, ...) LOG_FMT(logger::LogLevel::DEBUG, str, ##__VA_ARGS__)
-// 2
 #define LOG_INFO(str, ...) LOG_FMT(logger::LogLevel::INFO, str, ##__VA_ARGS__)
-// 3
 #define LOG_WARN(str, ...) LOG_FMT(logger::LogLevel::WARN, str, ##__VA_ARGS__)
-// 4
 #define LOG_ERROR(str, ...) LOG_FMT(logger::LogLevel::ERROR, str, ##__VA_ARGS__)
-// 5
 #define LOG_OFF(str, ...) LOG_FMT(logger::LogLevel::OFF, str, ##__VA_ARGS__)
 
-// 父类
+// =============================================================================
+// Logger类定义
+// =============================================================================
 class Logger {
  public:
   static Logger *getInstance();

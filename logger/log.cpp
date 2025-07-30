@@ -44,10 +44,12 @@ void Logger::registerCoredumpHandler() {
   signal(SIGTERM, coredumpHandler);
   signal(SIGKILL, coredumpHandler);
   signal(SIGINT, coredumpHandler);
-  signal(SIGSTKFLT, coredumpHandler);
   signal(SIGHUP, coredumpHandler);
   // ignore SIGPIPE
   signal(SIGPIPE, SIG_IGN);
+#endif
+#if defined(__linux__)
+  signal(SIGSTKFLT, coredumpHandler);
 #endif
 }
 
