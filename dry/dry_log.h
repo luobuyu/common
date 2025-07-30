@@ -73,6 +73,27 @@ static void shutdownLogger() {
 static void openLog(config::Config& conf) {
   initLogger(conf);
 }
-};  // namespace dry
+
+} // namespace dry
+
+// =============================================================================
+// 便捷的日志宏定义（dry库风格）
+// =============================================================================
+
+#define LOG_FMT(level, str, ...)                                         \
+  do {                                                                   \
+    if (logger::Logger::openLog() && logger::Logger::shouldLog(level)) { \
+      logger::Logger::getInstance()->log(logger::LogEvent(               \
+          level, logger::Logger::getModuleName(), __FILE__, __func__,    \
+          __LINE__, logger::formatString(str, ##__VA_ARGS__)));          \
+    }                                                                    \
+  } while (0)
+
+// 日志级别宏定义
+#define LOG_DEBUG(str, ...) LOG_FMT(logger::LogLevel::DEBUG, str, ##__VA_ARGS__)
+#define LOG_INFO(str, ...) LOG_FMT(logger::LogLevel::INFO, str, ##__VA_ARGS__)
+#define LOG_WARN(str, ...) LOG_FMT(logger::LogLevel::WARN, str, ##__VA_ARGS__)
+#define LOG_ERROR(str, ...) LOG_FMT(logger::LogLevel::ERROR, str, ##__VA_ARGS__)
+#define LOG_OFF(str, ...) LOG_FMT(logger::LogLevel::OFF, str, ##__VA_ARGS__)
 
 #endif

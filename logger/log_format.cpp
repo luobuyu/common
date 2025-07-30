@@ -137,11 +137,13 @@ std::string logger::OtherFormatItem::getFmt() { return m_other_fmt; }
 std::shared_ptr<FormatItem> logger::FormatItemFactory::createFormatItem(
     const char &key, const std::string &val) {
   // "%d", "%T", "%L", "%p", "%t", "%c", "%M", "%F", "%f", "%l", "%m", "%n"
-  if (key == 'd')
-    if (val.empty())
+  if (key == 'd') {
+    if (val.empty()) {
       return FormatItem::FormatItemPtr(new DateFormatItem());
-    else
+    } else {
       return FormatItem::FormatItemPtr(new DateFormatItem(val));
+    }
+  }
   if (key == 'T') return FormatItem::FormatItemPtr(new TabFormatItem());
   if (key == 'L') return FormatItem::FormatItemPtr(new LevelFormatItem());
   if (key == 'p') return FormatItem::FormatItemPtr(new ProcessIdFormatItem());

@@ -1,5 +1,5 @@
 # 查找 fmt 库
-find_package(fmt)
+find_package(fmt QUIET)
 
 add_library(log log.cpp sink.cpp log_event.cpp log_format.cpp)
 if(fmt_FOUND)
@@ -8,7 +8,7 @@ if(fmt_FOUND)
     target_compile_definitions(log PUBLIC FMT_FOUND)
     target_link_libraries(log fmt)
 else()
-    message(WARNING "fmt library not found")
+    message(STATUS "fmt library not found")
 endif()
 if(UNIX AND NOT APPLE)
     find_package(Threads REQUIRED)

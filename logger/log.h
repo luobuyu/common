@@ -1,6 +1,5 @@
 #ifndef LOG_LOG_H
 #define LOG_LOG_H
-#include <stdint.h>
 
 #include <memory>
 #include <string>
@@ -55,31 +54,6 @@ std::string formatString(const char *str, Args &&...args) {
   return result;
 }
 
-/**
- * @brief 核心转储信号处理函数
- */
-void coredumpHandler(int signal_no);
-
-// =============================================================================
-// 日志宏定义
-// =============================================================================
-
-#define LOG_FMT(level, str, ...)                                         \
-  do {                                                                   \
-    if (logger::Logger::openLog() && logger::Logger::shouldLog(level)) { \
-      logger::Logger::getInstance()->log(logger::LogEvent(               \
-          level, logger::Logger::getModuleName(), __FILE__, __func__,    \
-          __LINE__, logger::formatString(str, ##__VA_ARGS__)));          \
-    }                                                                    \
-  } while (0)
-
-// 日志级别宏定义
-#define LOG_DEBUG(str, ...) LOG_FMT(logger::LogLevel::DEBUG, str, ##__VA_ARGS__)
-#define LOG_INFO(str, ...) LOG_FMT(logger::LogLevel::INFO, str, ##__VA_ARGS__)
-#define LOG_WARN(str, ...) LOG_FMT(logger::LogLevel::WARN, str, ##__VA_ARGS__)
-#define LOG_ERROR(str, ...) LOG_FMT(logger::LogLevel::ERROR, str, ##__VA_ARGS__)
-#define LOG_OFF(str, ...) LOG_FMT(logger::LogLevel::OFF, str, ##__VA_ARGS__)
-
 // =============================================================================
 // Logger类定义
 // =============================================================================
@@ -102,6 +76,9 @@ class Logger {
                 logger::LoggerFormat::LoggerFormatPtr(new LoggerFormat()));
   std::vector<std::shared_ptr<logger::LogSink>> getLogSinks();
   void registerCoredumpHandler();
+
+  // 静态成员函数 - 信号处理
+  static void coredumpHandler(int signal_no);
 
   // 需要重写，同步写日志和异步写日志方法
   virtual void shutDownNow() = 0;

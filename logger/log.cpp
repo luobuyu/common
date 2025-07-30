@@ -5,12 +5,12 @@
 namespace logger {
 
 /*********************************************************/
-/****************Common*******************************/
+/****************Logger Static Members*******************/
 /*********************************************************/
 
-void coredumpHandler(int signal_no) {
-  LOG_ERROR("progress received invalid signal, will exit");
-  if (Logger::getInstance() != NULL) {
+void Logger::coredumpHandler(int signal_no) {
+  std::cerr << "progress received invalid signal, will exit" << std::endl;
+  if (Logger::getInstance() != nullptr) {
     for (auto &sink : Logger::getInstance()->getLogSinks()) {
       sink->flush();
     }
