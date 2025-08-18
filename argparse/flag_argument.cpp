@@ -1,4 +1,5 @@
 #include "flag_argument.h"
+#include "option_argument.h"
 
 // 使用默认参数的构造函数
 
@@ -20,5 +21,18 @@ void FlagArgument::setFlag(bool value) {
   if (m_target != nullptr) {
     *m_target = value;
   }
+  // 如果设置了回调函数，调用它
+  if(m_callback) {
+    m_callback();
+  }
 }
 
+FlagArgument& FlagArgument::flag(bool value) {
+  setFlag(value);
+  return *this;
+}
+
+FlagArgument& FlagArgument::description(const std::string& description) {
+  setDescription(description);
+  return *this;
+}

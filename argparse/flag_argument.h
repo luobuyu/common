@@ -15,6 +15,10 @@ class FlagArgument : public Argument {
   bool getFlag() const;
   void setFlag(bool value);
 
+  // 链式调用
+  FlagArgument& flag(bool value);
+  FlagArgument& description(const std::string& description);
+
  private:
   bool m_flag;     // 存储标志参数的状态，true表示启用，false表示禁用
   bool* m_target;  // 指向一个bool变量，用于存储标志参数的状态

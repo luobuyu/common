@@ -9,6 +9,22 @@ Argument::Argument(const std::vector<std::string>& names,
     m_parsed{false}, m_callback{callback} {
 }
 
+void Argument::setDescription(const std::string& description) {
+  m_description = description;
+}
+
+void Argument::setRequired(bool required) {
+  m_required = required;
+}
+
+void Argument::setParsed(bool parsed) {
+  m_parsed = parsed;
+}
+
+void Argument::setCallback(std::function<void()> callback) {
+  m_callback = callback;
+}
+
 const std::vector<std::string>& Argument::getNames() const {
   return m_names;
 }

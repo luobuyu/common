@@ -12,6 +12,12 @@ public:
            std::function<void()> callback = nullptr);
   virtual ~Argument() = default;
 
+  // setter
+  void setDescription(const std::string& description);
+  void setRequired(bool required);
+  void setParsed(bool parsed);
+  void setCallback(std::function<void()> callback);
+
   const std::vector<std::string>& getNames() const;
   const std::string& getDescription() const;
   bool isRequired() const;
