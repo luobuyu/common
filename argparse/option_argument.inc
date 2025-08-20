@@ -33,6 +33,11 @@ T OptionArgument<T>::getDefaultValue() const {
 }
 
 template <typename T>
+void OptionArgument<T>::setValidator(std::function<void()> validator) {
+  m_validator = validator;
+}
+
+template <typename T>
 OptionArgument<T>& OptionArgument<T>::value(const T& value) {
   setValue(value);
   return *this;
@@ -54,5 +59,12 @@ template <typename T>
 OptionArgument<T>& OptionArgument<T>::defaultValue(const T& value) {
   setValue(value);
   setDefaultValue(value);
+  return *this;
+}
+
+template <typename T>
+OptionArgument<T>& OptionArgument<T>::validator(
+    std::function<void()> validator) {
+  setValidator(validator);
   return *this;
 }
