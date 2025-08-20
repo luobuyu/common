@@ -33,6 +33,19 @@ T OptionArgument<T>::getDefaultValue() const {
 }
 
 template <typename T>
+void OptionArgument<T>::setValidator(std::function<bool(const T&)> validator) {
+  m_validator = validator;
+}
+
+template <typename T>
+bool OptionArgument<T>::isValid(const T& value) const {
+  if (!m_validator) {
+    return true;  // 没有验证器时默认有效
+  }
+  return m_validator(value);
+}
+
+template <typename T>
 OptionArgument<T>& OptionArgument<T>::value(const T& value) {
   setValue(value);
   return *this;
@@ -54,5 +67,12 @@ template <typename T>
 OptionArgument<T>& OptionArgument<T>::defaultValue(const T& value) {
   setValue(value);
   setDefaultValue(value);
+  return *this;
+}
+
+template <typename T>
+OptionArgument<T>& OptionArgument<T>::validator(
+    std::function<bool(const T&)> validator) {
+  setValidator(validator);
   return *this;
 }
