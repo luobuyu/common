@@ -27,6 +27,18 @@ void FlagArgument::setFlag(bool value) {
   }
 }
 
+void FlagArgument::setDefaultValue(bool value) {
+  m_default_flag = value;
+  // 如果没有显式设置标志值，则使用默认值
+  if (!isParsed()) {
+    setFlag(value);
+  }
+}
+
+bool FlagArgument::getDefaultValue() const {
+  return m_default_flag;
+}
+
 FlagArgument& FlagArgument::flag(bool value) {
   setFlag(value);
   return *this;
@@ -34,5 +46,20 @@ FlagArgument& FlagArgument::flag(bool value) {
 
 FlagArgument& FlagArgument::description(const std::string& description) {
   setDescription(description);
+  return *this;
+}
+
+FlagArgument& FlagArgument::required() {
+  setRequired(true);
+  return *this;
+}
+
+FlagArgument& FlagArgument::defaultValue(bool value) {
+  setDefaultValue(value);
+  return *this;
+}
+
+FlagArgument& FlagArgument::callback(std::function<void()> callback) {
+  setCallback(callback);
   return *this;
 }

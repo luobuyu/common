@@ -76,3 +76,9 @@ OptionArgument<T>& OptionArgument<T>::validator(
   setValidator(validator);
   return *this;
 }
+
+template <typename T>
+OptionArgument<T>& OptionArgument<T>::callback(std::function<void()> callback) {
+  setCallback(callback);
+  return *this;
+}

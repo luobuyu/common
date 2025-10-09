@@ -25,6 +25,7 @@ class OptionArgument : public Argument {
   OptionArgument<T>& required();
   OptionArgument<T>& defaultValue(const T& value);
   OptionArgument<T>& validator(std::function<bool(const T&)> validator);
+  OptionArgument<T>& callback(std::function<void()> callback);
 
  private:
   T m_value;  // 存储选项参数的值
