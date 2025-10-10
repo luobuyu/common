@@ -15,14 +15,10 @@ public:
     AtLeastOne = -2      // nargs='+':  至少1个值
   };
 
-  // 构造函数（与其他 Argument 类保持一致）
+  // 统一构造函数
   PositionalArgument(const std::vector<std::string>& names,
                      const std::string& description,
                      std::vector<T>* target = nullptr,
-                     bool required = false,
-                     std::function<void()> callback = nullptr);
-  PositionalArgument(const std::vector<std::string>& names,
-                     const std::string& description,
                      bool required = false,
                      std::function<void()> callback = nullptr);
 

@@ -17,16 +17,6 @@ PositionalArgument<T>::PositionalArgument(
 {
 }
 
-template <typename T>
-PositionalArgument<T>::PositionalArgument(
-    const std::vector<std::string>& names,
-    const std::string& description,
-    bool required,
-    std::function<void()> callback)
-    : PositionalArgument(names, description, nullptr, required, callback)
-{
-}
-
 // 值操作实现
 template <typename T>
 const std::vector<T>& PositionalArgument<T>::getValues() const {

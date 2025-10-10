@@ -1,20 +1,20 @@
 #pragma once
 #include "argument.h"
+#include <optional>
 
 template <typename T>
 class OptionArgument : public Argument {
  public:
-  // 使用默认参数的构造函数
+  // 统一构造函数
   OptionArgument(const std::vector<std::string>& names,
-                 const std::string& description, T* target = nullptr,
-                 bool required = false, std::function<void()> callback = nullptr);
-  OptionArgument(const std::vector<std::string>& names,
-                 const std::string& description, bool required = false,
+                 const std::string& description,
+                 T* target = nullptr,
+                 bool required = false,
                  std::function<void()> callback = nullptr);
 
   const T& getValue() const;
   void setValue(const T& value);
-  
+
   void setDefaultValue(const T& value);
   const T& getDefaultValue() const;
   bool hasDefaultValue() const;
@@ -31,7 +31,7 @@ class OptionArgument : public Argument {
   OptionArgument<T>& callback(std::function<void()> callback);
 
  private:
-  T m_value;  // 存储选项参数的值
+  T m_value{};  // 存储选项参数的值
   std::optional<T> m_default_value; // 默认值
   T* m_target; // 指向一个变量，用于存储选项参数的值
   std::function<bool(const T&)> m_validator; // 选项参数的值的验证函数

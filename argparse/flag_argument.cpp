@@ -1,22 +1,29 @@
 #include "flag_argument.h"
-#include "option_argument.h"
 
-// 使用默认参数的构造函数
-
+// 统一构造函数
 FlagArgument::FlagArgument(const std::vector<std::string>& names,
-                           const std::string& description, bool* target,
-                           bool required, std::function<void()> callback)
-  : Argument(names, description, required, callback), m_flag(false), m_target(target) {}
-
-FlagArgument::FlagArgument(const std::vector<std::string>& names,
-                           const std::string& description, bool required,
+                           const std::string& description,
+                           bool* target,
+                           bool required,
                            std::function<void()> callback)
-  : Argument(names, description, required, callback), m_flag(false), m_target(nullptr) {}
+  : Argument(names, description, required, callback),
+    m_flag(false),
+    m_default_flag(false),
+    m_target(target) {}
 
-bool FlagArgument::getFlag() const { return m_flag; }
+bool FlagArgument::getFlag() const {
+  // 简化逻辑: 
+  // - 如果被解析过(m_parsed=true)，返回 m_flag
+  // - 否则返回默认值 m_default_flag
+  if (isParsed()) {
+    return m_flag;
+  }
+  return m_default_flag;
+}
 
 void FlagArgument::setFlag(bool value) {
   m_flag = value;
+  setParsed(true);  // 标记为已解析
   // 如果设置了目标变量，同时更新它
   if (m_target != nullptr) {
     *m_target = value;
@@ -29,10 +36,6 @@ void FlagArgument::setFlag(bool value) {
 
 void FlagArgument::setDefaultValue(bool value) {
   m_default_flag = value;
-  // 如果没有显式设置标志值，则使用默认值
-  if (!isParsed()) {
-    setFlag(value);
-  }
 }
 
 bool FlagArgument::getDefaultValue() const {

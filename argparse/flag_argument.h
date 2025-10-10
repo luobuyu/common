@@ -4,12 +4,11 @@
 
 class FlagArgument : public Argument {
  public:
-  // 使用默认参数的构造函数
+  // 统一构造函数
   FlagArgument(const std::vector<std::string>& names,
-               const std::string& description, bool* target = nullptr,
-               bool required = false, std::function<void()> callback = nullptr);
-  FlagArgument(const std::vector<std::string>& names,
-               const std::string& description, bool required = false,
+               const std::string& description,
+               bool* target = nullptr,
+               bool required = false,
                std::function<void()> callback = nullptr);
 
   bool getFlag() const;
