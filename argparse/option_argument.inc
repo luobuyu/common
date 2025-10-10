@@ -28,8 +28,13 @@ void OptionArgument<T>::setDefaultValue(const T& value) {
 }
 
 template <typename T>
-T OptionArgument<T>::getDefaultValue() const {
-  return m_default_value;
+const T& OptionArgument<T>::getDefaultValue() const {
+  return m_default_value.value();
+}
+
+template <typename T>
+bool OptionArgument<T>::hasDefaultValue() const {
+  return m_default_value.has_value();
 }
 
 template <typename T>

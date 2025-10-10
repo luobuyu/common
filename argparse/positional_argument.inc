@@ -1,5 +1,6 @@
 #pragma once
 #include "positional_argument.h"
+#include <iostream>
 
 // 构造函数实现
 template <typename T>
@@ -30,13 +31,13 @@ PositionalArgument<T>::PositionalArgument(
 template <typename T>
 const std::vector<T>& PositionalArgument<T>::getValues() const {
   if (!m_values.empty()) {
-    return m_values;  // 返回已解析的值
+    return m_values;
   }
   if (m_default_values.has_value()) {
-    return m_default_values.value();  // 返回完整默认值（all-or-nothing）
+    return m_default_values.value();
   }
   static const std::vector<T> empty;
-  return empty;  // 返回空vector
+  return empty;
 }
 
 template <typename T>
@@ -59,7 +60,7 @@ size_t PositionalArgument<T>::valueCount() const {
   return m_values.size();
 }
 
-// 默认值设置实现（方案C）
+// 默认值设置实现
 template <typename T>
 PositionalArgument<T>& PositionalArgument<T>::defaultValue(const T& value) {
   m_default_values = std::vector<T>{value};
@@ -102,7 +103,8 @@ PositionalArgument<T>& PositionalArgument<T>::expected(int count) {
     m_expected_min = count;
     m_expected_max = count;
   } else {
-    throw std::invalid_argument("Invalid expected count");
+    std::cerr << "Invalid expected count: " << count << std::endl;
+    return *this;  // 错误时直接返回,保持链式调用
   }
   return *this;
 }
@@ -116,7 +118,8 @@ PositionalArgument<T>& PositionalArgument<T>::expected(ExpectedCount count) {
 template <typename T>
 PositionalArgument<T>& PositionalArgument<T>::expected(int min, int max) {
   if (min < 0 || max < min) {
-    throw std::invalid_argument("Invalid expected range");
+    std::cerr << "Invalid expected range: " << min << ", " << max << std::endl;
+    return *this;  // 错误时直接返回,保持链式调用
   }
   m_expected_min = min;
   m_expected_max = max;
