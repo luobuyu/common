@@ -4,14 +4,17 @@
 #include "positional_argument.h"
 #include "argument.h"
 #include <vector>
+#include <string>
+#include <memory>
+#include <map>
 
 class ArgumentParser {
  public:
-  ArgumentParser(const std::string& program_name);
+  ArgumentParser(const std::string& program_name, const std::string& description = "");
   void parse(int argc, char** argv);
   void parse(const std::vector<std::string>& args);
   void printHelp() const;
-  
+
   void addArgument(std::unique_ptr<Argument> argument);
   FlagArgument& addFlagArgument(const std::vector<std::string>& names, 
                                  const std::string& description = "",
@@ -32,12 +35,16 @@ class ArgumentParser {
   PositionalArgument<T>& addPositionalArgument(const std::string& name, 
                                                 const std::string& description = "",
                                                 std::vector<T>* target = nullptr);
+  
+  // 子命令支持
+  ArgumentParser& addSubcommand(const std::string& name, const std::string& description = "");
 
  private:
   std::string m_program_name;
   std::string m_description;
   std::vector<std::unique_ptr<Argument>> m_args;
   std::vector<std::string> m_positional_args;
+  std::map<std::string, std::unique_ptr<ArgumentParser>> m_subcommands;
 };
 
 // 包含模板函数实现

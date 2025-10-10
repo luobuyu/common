@@ -1,12 +1,12 @@
 #include "argument_parser.h"
 
 
-ArgumentParser::ArgumentParser(const std::string& program_name)
-    : m_program_name(program_name) {}
+ArgumentParser::ArgumentParser(const std::string& program_name, const std::string& description)
+    : m_program_name(program_name), m_description(description) {}
 
 void ArgumentParser::addArgument(std::unique_ptr<Argument> argument) {
   m_args.push_back(std::move(argument));
-} 
+}
 
 FlagArgument& ArgumentParser::addFlagArgument(
     const std::vector<std::string>& names, 
@@ -19,16 +19,12 @@ FlagArgument& ArgumentParser::addFlagArgument(
 }
 
 void ArgumentParser::parse(int argc, char** argv) {
-  std::vector<std::string> args;
-  for (int i = 0; i < argc; ++i) {
-    args.push_back(argv[i]);
-  }
-  parse(args);
+  parse(std::vector<std::string>{argv + 1, argv + argc});
 }
 
 void ArgumentParser::parse(const std::vector<std::string>& args) {
   // 简单的解析逻辑示例
-  for (size_t i = 1; i < args.size(); ++i) { // 跳过程序名
+  for (size_t i = 0; i < args.size(); ++i) {
     const std::string& arg = args[i];
     bool matched = false;
     for (const auto& argument : m_args) {
@@ -90,4 +86,12 @@ void ArgumentParser::printHelp() const {
     }
     std::cout << "\b\b\t" << desc << "\n";
   }
+}
+
+ArgumentParser& ArgumentParser::addSubcommand(const std::string& name, 
+                                               const std::string& description) {
+  auto subcommand = std::make_unique<ArgumentParser>(name, description);
+  ArgumentParser& ref = *subcommand;
+  m_subcommands[name] = std::move(subcommand);
+  return ref;
 }
