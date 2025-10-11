@@ -66,3 +66,19 @@ FlagArgument& FlagArgument::callback(std::function<void()> callback) {
   setCallback(callback);
   return *this;
 }
+
+size_t FlagArgument::parse(const std::vector<std::string>& args, size_t current_index) {
+  (void)args;  // 未使用
+  (void)current_index;  // 未使用
+  setFlag(true);
+  return 0;  // 返回 0 表示不消耗额外参数
+}
+
+bool FlagArgument::matches(const std::string& arg) const {
+  // 检查 arg 是否在名称列表中
+  if(arg.empty() || arg[0] != '-') {
+    return false; // 不是选项参数
+  }
+  const auto& names = getNames();
+  return std::find(names.begin(), names.end(), arg) != names.end();
+}

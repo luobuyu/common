@@ -23,6 +23,12 @@ class FlagArgument : public Argument {
   FlagArgument& defaultValue(bool value);
   FlagArgument& callback(std::function<void()> callback);
 
+  // 重写多态方法
+  // FlagArgument 不需要额外参数，忽略 args 和 current_index
+  size_t parse(const std::vector<std::string>& args, size_t current_index = 0) override;
+  
+  // 判断命令行参数是否匹配此标志参数
+  bool matches(const std::string& arg) const override;
 
  private:
   bool m_flag;     // 存储标志参数的状态，true表示启用，false表示禁用

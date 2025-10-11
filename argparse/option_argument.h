@@ -30,6 +30,13 @@ class OptionArgument : public Argument {
   OptionArgument<T>& validator(std::function<bool(const T&)> validator);
   OptionArgument<T>& callback(std::function<void()> callback);
 
+  // 重写多态方法
+  // OptionArgument 从 args[current_index+1] 获取值
+  size_t parse(const std::vector<std::string>& args, size_t current_index = 0) override;
+  
+  // 判断命令行参数是否匹配此选项参数
+  bool matches(const std::string& arg) const override;
+
  private:
   T m_value{};  // 存储选项参数的值
   std::optional<T> m_default_value; // 默认值

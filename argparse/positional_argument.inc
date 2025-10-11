@@ -1,6 +1,7 @@
 #pragma once
 #include "positional_argument.h"
 #include <iostream>
+#include <sstream>
 
 // 构造函数实现
 template <typename T>
@@ -166,4 +167,54 @@ template <typename T>
 PositionalArgument<T>& PositionalArgument<T>::callback(std::function<void()> callback) {
   setCallback(callback);
   return *this;
+}
+
+template <typename T>
+size_t PositionalArgument<T>::parse(const std::vector<std::string>& args, size_t current_index) {
+  // 位置参数从 current_index 开始，收集连续的非选项参数
+  // 根据 m_expected_min 和 m_expected_max 决定处理多少个
+  
+  size_t consumed = 0;  // 消耗的额外参数数量
+  size_t max_to_consume = static_cast<size_t>(m_expected_max) - m_values.size();
+  
+  // 从 current_index 位置开始解析值
+  for (size_t i = current_index; i < args.size() && consumed < max_to_consume; ++i) {
+    const std::string& arg = args[i];
+    
+    // 位置参数遇到选项参数时停止
+    if (!arg.empty() && arg[0] == '-') {
+      break;
+    }
+    
+    // 解析值
+    std::istringstream iss(arg);
+    T value;
+    if (!(iss >> value) || !iss.eof()) {
+      throw std::runtime_error("Failed to parse value: " + arg);
+    }
+    addValue(value);
+    
+    // current_index 位置算是匹配的参数本身，所以从 i > current_index 开始才计入 consumed
+    if (i > current_index) {
+      ++consumed;
+    }
+  }
+  
+  // 如果设置了外部目标变量，同步更新
+  if (m_vector_target) {
+    *m_vector_target = m_values;
+  }
+  
+  // 触发回调
+  if (m_callback) {
+    m_callback();
+  }
+  
+  return consumed;  // 返回消耗的额外参数数量（不包括 current_index）
+}
+
+template <typename T>
+bool PositionalArgument<T>::matches(const std::string& arg) const {
+  // 位置参数匹配任何不以 '-' 开头的参数
+  return !arg.empty() && arg[0] != '-';
 }

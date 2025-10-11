@@ -23,6 +23,21 @@ public:
   bool isRequired() const;
   bool isParsed() const;
 
+  // 不同子类的实现:
+  //   - FlagArgument/OptionArgument: 检查 arg 以 '-' 开头，是否在 m_names 中（精确匹配）
+  //   - PositionalArgument: 检查 arg 是否不以 '-' 开头（任何非选项都可能是位置参数）
+  virtual bool matches(const std::string& arg) const = 0;
+  
+  // 解析命令行参数
+  // 参数:
+  //   args: 完整的命令行参数列表
+  //   current_index: 当前匹配到的参数位置（对于选项参数，是 --name 的位置）
+  // 返回值: 消耗的额外参数数量（不包括 current_index 本身）
+  //   - FlagArgument: 返回 0（不需要额外参数）
+  //   - OptionArgument: 返回 1（需要 args[current_index+1] 作为值）
+  //   - PositionalArgument: 返回实际消耗的参数数量
+  virtual size_t parse(const std::vector<std::string>& args, size_t current_index) = 0;
+
 protected:
   std::vector<std::string> m_names;  // 存储命令行参数的名称以及别名 --help, -h
   std::string m_description;         // 参数的描述信息

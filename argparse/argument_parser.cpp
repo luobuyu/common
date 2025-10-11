@@ -1,20 +1,101 @@
 #include "argument_parser.h"
 
-
-ArgumentParser::ArgumentParser(const std::string& program_name, const std::string& description)
+ArgumentParser::ArgumentParser(const std::string& program_name,
+                               const std::string& description)
     : m_program_name(program_name), m_description(description) {}
 
-void ArgumentParser::addArgument(std::unique_ptr<Argument> argument) {
-  m_args.push_back(std::move(argument));
+Argument& ArgumentParser::addArgument(std::unique_ptr<Argument> argument) {
+  Argument& ref = *argument;
+  m_args.emplace_back(std::move(argument));
+  return ref;
+}
+
+// 注意：Argument 是抽象类，不能直接实例化
+// 用户应该使用 addFlagArgument、addOptionArgument 或 addPositionalArgument
+Argument& ArgumentParser::addArgument(const std::vector<std::string>& names,
+                                      const std::string& description,
+                                      bool required,
+                                      std::function<void()> callback) {
+  // 无法实例化抽象类，抛出异常提示用户使用具体的方法
+  (void)names;
+  (void)description;
+  (void)required;
+  (void)callback;
+  throw std::logic_error(
+      "Cannot create abstract Argument directly. "
+      "Use addFlagArgument(), addOptionArgument(), or addPositionalArgument() instead.");
 }
 
 FlagArgument& ArgumentParser::addFlagArgument(
-    const std::vector<std::string>& names, 
-    const std::string& description,
-    bool* target) {
-  auto arg = std::make_unique<FlagArgument>(names, description, target);
+    const std::vector<std::string>& names, const std::string& description,
+    bool* target, bool required, std::function<void()> callback) {
+  // 1. 检查名称列表不能为空（严重错误）
+  if (names.empty()) {
+    throw std::invalid_argument("Argument names cannot be empty");
+  }
+
+  // 2. 检查每个名称的格式
+  for (const auto& name : names) {
+    if (name.empty()) {
+      throw std::invalid_argument("Argument name cannot be empty string");
+    }
+    // 选项/标志必须以 - 开头
+    if (name[0] != '-') {
+      throw std::invalid_argument("Option/flag name must start with '-': " + name);
+    }
+  }
+
+  // 3. 检查名称是否已被使用
+  for (const auto& name : names) {
+    // 检查是否与已有参数冲突
+    for (const auto& arg : m_args) {
+      const auto& existing_names = arg->getNames();
+      if (std::find(existing_names.begin(), existing_names.end(), name) !=
+          existing_names.end()) {
+        throw std::invalid_argument("Argument name already exists: " + name);
+      }
+    }
+    // 检查是否与子命令冲突
+    if (m_subcommands.count(name)) {
+      throw std::invalid_argument("Argument name conflicts with subcommand: " + name);
+    }
+  }
+
+  auto arg = std::make_unique<FlagArgument>(names, description, target,
+                                            required, callback);
   FlagArgument& ref = *arg;
   addArgument(std::move(arg));
+  return ref;
+}
+
+ArgumentParser& ArgumentParser::addSubcommand(const std::string& name,
+                                              const std::string& description) {
+  // 1. 检查子命令名称不能为空（严重错误）
+  if (name.empty()) {
+    throw std::invalid_argument("Subcommand name cannot be empty");
+  }
+
+  // 2. 子命令名称不能以 - 开头
+  if (name[0] == '-') {
+    throw std::invalid_argument("Subcommand name cannot start with '-': " + name);
+  }
+
+  // 3. 检查子命令名称是否已存在
+  if (m_subcommands.count(name)) {
+    throw std::invalid_argument("Subcommand already exists: " + name);
+  }
+
+  // 4. 检查是否与已有参数名冲突
+  for (const auto& arg : m_args) {
+    const auto& names = arg->getNames();
+    if (std::find(names.begin(), names.end(), name) != names.end()) {
+      throw std::invalid_argument("Subcommand name conflicts with argument: " + name);
+    }
+  }
+
+  auto subcommand = std::make_unique<ArgumentParser>(name, description);
+  ArgumentParser& ref = *subcommand;
+  m_subcommands[name] = std::move(subcommand);
   return ref;
 }
 
@@ -24,35 +105,39 @@ void ArgumentParser::parse(int argc, char** argv) {
 
 void ArgumentParser::parse(const std::vector<std::string>& args) {
   // 简单的解析逻辑示例
+  // 需要先检查是否是子命令
+  if (!args.empty() && m_subcommands.count(args[0])) {
+    m_subcommands[args[0]]->parse(
+        std::vector<std::string>(args.begin() + 1, args.end()));
+    return;
+  }
+  
+  // 不是子命令,解析当前层命令参数
+  // 遍历命令行参数，依次匹配并解析
   for (size_t i = 0; i < args.size(); ++i) {
     const std::string& arg = args[i];
     bool matched = false;
+    
+    // 遍历所有已注册的参数，查找能匹配的参数对象
     for (const auto& argument : m_args) {
-      const auto& names = argument->getNames();
-      if (std::find(names.begin(), names.end(), arg) != names.end()) {
+      // 调用多态方法检查是否匹配
+      if (argument->matches(arg)) {
+        // 找到匹配的参数，标记为已解析
         argument->setParsed(true);
         matched = true;
-        // 如果是 FlagArgument，设置为 true
-        if (auto flag_arg = dynamic_cast<FlagArgument*>(argument.get())) {
-          flag_arg->setFlag(true);
-        }
-        // 如果是 OptionArgument，读取下一个值
-        else if (auto option_arg = dynamic_cast<OptionArgument<std::string>*>(argument.get())) {
-          if (i + 1 < args.size()) {
-            option_arg->setValue(args[++i]);
-          } else {
-            throw std::runtime_error("Expected value after " + arg);
-          }
-        }
-        // 如果是 PositionalArgument，添加值
-        else if (auto pos_arg = dynamic_cast<PositionalArgument<std::string>*>(argument.get())) {
-          pos_arg->addValue(arg);
-        }
-        break;
+        
+        // 调用子类的多态 parse 方法
+        // 返回值表示消耗了多少个额外的参数（不包括当前索引 i）
+        size_t consumed = argument->parse(args, i);
+        i += consumed;  // 跳过已消耗的参数
+        
+        break;  // 找到匹配后停止遍历
       }
     }
+    
     if (!matched) {
-      m_positional_args.push_back(arg); // 未匹配的参数视为位置参数
+      // 未匹配到任何参数：抛出异常
+      throw std::runtime_error("Unknown or unexpected argument: " + arg);
     }
   }
 
@@ -62,7 +147,8 @@ void ArgumentParser::parse(const std::vector<std::string>& args) {
   // - required=false: 可以不提供，使用默认值
   for (const auto& argument : m_args) {
     if (argument->isRequired() && !argument->isParsed()) {
-      throw std::runtime_error("Required argument missing: " + argument->getNames().front());
+      throw std::runtime_error("Required argument missing: " + 
+                               argument->getNames().front());
     }
   }
 }
@@ -86,12 +172,4 @@ void ArgumentParser::printHelp() const {
     }
     std::cout << "\b\b\t" << desc << "\n";
   }
-}
-
-ArgumentParser& ArgumentParser::addSubcommand(const std::string& name, 
-                                               const std::string& description) {
-  auto subcommand = std::make_unique<ArgumentParser>(name, description);
-  ArgumentParser& ref = *subcommand;
-  m_subcommands[name] = std::move(subcommand);
-  return ref;
 }

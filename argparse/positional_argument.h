@@ -54,6 +54,15 @@ public:
   PositionalArgument<T>& required();
   PositionalArgument<T>& callback(std::function<void()> callback);
 
+  // 重写多态方法
+  // PositionalArgument 接收值列表（二阶段模式），忽略 current_index
+  // args: 专门给这个位置参数的值列表
+  size_t parse(const std::vector<std::string>& args, size_t current_index = 0) override;
+  
+  // 判断命令行参数是否匹配此位置参数
+  // 位置参数匹配任何不以 '-' 开头的参数
+  bool matches(const std::string& arg) const override;
+
 private:
   std::vector<T> m_values;  // 已解析的值（统一存储）
   std::optional<std::vector<T>> m_default_values;  // 是否存在默认值

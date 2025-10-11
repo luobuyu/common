@@ -1,4 +1,5 @@
 #include "option_argument.h"
+#include <sstream>
 
 template <typename T>
 OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
@@ -97,4 +98,36 @@ template <typename T>
 OptionArgument<T>& OptionArgument<T>::callback(std::function<void()> callback) {
   setCallback(callback);
   return *this;
+}
+
+template <typename T>
+size_t OptionArgument<T>::parse(const std::vector<std::string>& args, size_t current_index) {
+  // Option 需要一个额外的值
+  if (current_index + 1 >= args.size()) {
+    throw std::runtime_error("Expected value after " + args[current_index]);
+  }
+  
+  // 从字符串转换为 T 类型
+  // 这里需要实现字符串到 T 的转换
+  const std::string& value_str = args[current_index + 1];
+  
+  // 使用 stringstream 进行转换
+  std::istringstream iss(value_str);
+  T value;
+  if (!(iss >> value) || !iss.eof()) {
+    throw std::runtime_error("Invalid value for " + args[current_index] + ": " + value_str);
+  }
+  
+  setValue(value);
+  return 1;  // 返回 1 表示消耗了 1 个额外参数
+}
+
+template <typename T>
+bool OptionArgument<T>::matches(const std::string& arg) const {
+  // 检查 arg 是否在名称列表中
+  if(arg.empty() || arg[0] != '-') {
+    return false; // 不是选项参数
+  }
+  const auto& names = getNames();
+  return std::find(names.begin(), names.end(), arg) != names.end();
 }
