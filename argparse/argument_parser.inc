@@ -5,12 +5,19 @@
 #include "option_argument.h"
 #include "positional_argument.h"
 
+// OptionArgument: 不绑定
 template <typename T>
 OptionArgument<T>& ArgumentParser::addOptionArgument(
-    const std::vector<std::string>& names,
-    const std::string& description,
-    T* target,
-    bool required,
+    const std::vector<std::string>& names, const std::string& description,
+    bool required, std::function<void()> callback) {
+  // TODO: 在此处插入 return 语句
+}
+
+// OptionArgument: 绑定单个值
+template <typename T>
+OptionArgument<T>& ArgumentParser::addOptionArgument(
+    const std::vector<std::string>& names, T& target,
+    const std::string& description, bool required,
     std::function<void()> callback) {
   // 1. 检查名称列表不能为空（严重错误）
   if (names.empty()) {
@@ -49,12 +56,39 @@ OptionArgument<T>& ArgumentParser::addOptionArgument(
   return ref;
 }
 
+// OptionArgument: 绑定 vector
+template <typename T>
+OptionArgument<T>& ArgumentParser::addOptionArgument(
+    const std::vector<std::string>& names, std::vector<T>& target,
+    const std::string& description, bool required,
+    std::function<void()> callback) {
+  // TODO: 在此处插入 return 语句
+  auto arg = std::make_unique<OptionArgument<T>>(names, description, target, required, callback);
+  OptionArgument<T>& ref = *arg;
+  addArgument(std::move(arg));
+  return ref;
+}
+
 template <typename T>
 PositionalArgument<T>& ArgumentParser::addPositionalArgument(
-    const std::vector<std::string>& names,
-    const std::string& description,
-    std::vector<T>* target,
-    bool required,
+    const std::vector<std::string>& names, const std::string& description,
+    bool required, std::function<void()> callback) {
+  // TODO: 在此处插入 return 语句
+}
+
+template <typename T>
+PositionalArgument<T>& ArgumentParser::addPositionalArgument(
+    const std::vector<std::string>& names, T& target,
+    const std::string& description, bool required,
+    std::function<void()> callback) {
+  return addPositionalArgument<T>(std::vector<std::string>{names}, description,
+                                  required, callback);
+}
+
+template <typename T>
+PositionalArgument<T>& ArgumentParser::addPositionalArgument(
+    const std::vector<std::string>& names, std::vector<T>& target,
+    const std::string& description, bool required,
     std::function<void()> callback) {
   // 1. 检查名称列表不能为空（严重错误）
   if (names.empty()) {
@@ -94,12 +128,3 @@ PositionalArgument<T>& ArgumentParser::addPositionalArgument(
   return ref;
 }
 
-template <typename T>
-PositionalArgument<T>& ArgumentParser::addPositionalArgument(
-    const std::string& name,
-    const std::string& description,
-    std::vector<T>* target,
-    bool required,
-    std::function<void()> callback) {
-  return addPositionalArgument<T>(std::vector<std::string>{name}, description, target, required, callback);
-}

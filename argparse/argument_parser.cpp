@@ -10,25 +10,10 @@ Argument& ArgumentParser::addArgument(std::unique_ptr<Argument> argument) {
   return ref;
 }
 
-// 注意：Argument 是抽象类，不能直接实例化
-// 用户应该使用 addFlagArgument、addOptionArgument 或 addPositionalArgument
-Argument& ArgumentParser::addArgument(const std::vector<std::string>& names,
-                                      const std::string& description,
-                                      bool required,
-                                      std::function<void()> callback) {
-  // 无法实例化抽象类，抛出异常提示用户使用具体的方法
-  (void)names;
-  (void)description;
-  (void)required;
-  (void)callback;
-  throw std::logic_error(
-      "Cannot create abstract Argument directly. "
-      "Use addFlagArgument(), addOptionArgument(), or addPositionalArgument() instead.");
-}
-
 FlagArgument& ArgumentParser::addFlagArgument(
-    const std::vector<std::string>& names, const std::string& description,
-    bool* target, bool required, std::function<void()> callback) {
+    const std::vector<std::string>& names, bool& target,
+    const std::string& description, bool required,
+    std::function<void()> callback) {
   // 1. 检查名称列表不能为空（严重错误）
   if (names.empty()) {
     throw std::invalid_argument("Argument names cannot be empty");
@@ -61,8 +46,19 @@ FlagArgument& ArgumentParser::addFlagArgument(
     }
   }
 
-  auto arg = std::make_unique<FlagArgument>(names, description, target,
-                                            required, callback);
+  std::unique_ptr<FlagArgument> arg;
+  arg = std::make_unique<FlagArgument>(names, target, description, required,
+                                       callback);
+  FlagArgument& ref = *arg;
+  addArgument(std::move(arg));
+  return ref;
+}
+
+FlagArgument& ArgumentParser::addFlagArgument(
+    const std::vector<std::string>& names, const std::string& description,
+    bool required, std::function<void()> callback) {
+  std::unique_ptr<FlagArgument> arg;
+  arg = std::make_unique<FlagArgument>(names, description, required, callback);
   FlagArgument& ref = *arg;
   addArgument(std::move(arg));
   return ref;

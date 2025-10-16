@@ -1,77 +1,40 @@
 #pragma once
-#include "argument.h"
-#include <optional>
-#include <vector>
-#include <functional>
+#include "multi_argument.h"
 
 // 方案：类内枚举 + 命名空间别名（推荐）
 // 既保持封装性，又提供便捷访问
 template <typename T>
-class PositionalArgument : public Argument {
+class PositionalArgument : public MultiArgument<T> {
 public:
-  // 类内枚举类：清晰的语义 + 类型安全
-  enum class ExpectedCount : int {
-    Unlimited = -1,      // nargs='*':  0 到无限个值
-    AtLeastOne = -2      // nargs='+':  至少1个值
-  };
 
-  // 统一构造函数
-  PositionalArgument(const std::vector<std::string>& names,
-                     const std::string& description,
-                     std::vector<T>* target = nullptr,
-                     bool required = false,
-                     std::function<void()> callback = nullptr);
+  // 构造函数1: 绑定 vector<T>
+ PositionalArgument(const std::vector<std::string>& names,
+                    std::vector<T>& target, const std::string& description = "",
+                    bool required = false,
+                    std::function<void()> callback = nullptr);
 
-  // 值操作
-  const std::vector<T>& getValues() const;
-  void addValue(const T& value);
-  void setValues(const std::vector<T>& values);
-  void clearValues();
-  size_t valueCount() const;
+ // 构造函数2: 绑定单个 T
+ PositionalArgument(const std::vector<std::string>& names, T& target,
+                    const std::string& description = "", bool required = false,
+                    std::function<void()> callback = nullptr);
 
-  // 默认值设置（统一使用 std::optional<std::vector<T>>）
-  PositionalArgument<T>& defaultValue(const T& value);  // 单个默认值
-  PositionalArgument<T>& defaultValues(const std::vector<T>& values);  // 多个默认值
-  bool hasDefaultValues() const;
-  const std::vector<T>& getDefaultValues() const;
+ // 构造函数3: 不绑定
+ PositionalArgument(const std::vector<std::string>& names,
+                    const std::string& description = "", bool required = false,
+                    std::function<void()> callback = nullptr);
 
-  // Expected 参数数量控制
-  PositionalArgument<T>& expected(int count);  // 精确数量或特殊值（整数）
-  PositionalArgument<T>& expected(ExpectedCount count);  // 枚举类型：强类型安全
-  PositionalArgument<T>& expected(int min, int max);  // 范围控制
-  int getExpectedMin() const;
-  int getExpectedMax() const;
+ // 重写解析方法
+ size_t parse(const std::vector<std::string>& args,
+              size_t current_index = 0) override {
+   // 位置参数解析逻辑
+   return MultiArgument<T>::parse(args, current_index);
+ }
 
-  // 外部变量绑定
-  PositionalArgument<T>& target(std::vector<T>& external_vector);
-
-  // 验证器（只保留整体验证）
-  PositionalArgument<T>& validator(std::function<bool(const std::vector<T>&)> validator);
-  bool isValid() const;
-
-  // 链式调用
-  PositionalArgument<T>& description(const std::string& description);
-  PositionalArgument<T>& required();
-  PositionalArgument<T>& callback(std::function<void()> callback);
-
-  // 重写多态方法
-  // PositionalArgument 接收值列表（二阶段模式），忽略 current_index
-  // args: 专门给这个位置参数的值列表
-  size_t parse(const std::vector<std::string>& args, size_t current_index = 0) override;
-  
-  // 判断命令行参数是否匹配此位置参数
-  // 位置参数匹配任何不以 '-' 开头的参数
-  bool matches(const std::string& arg) const override;
-
-private:
-  std::vector<T> m_values;  // 已解析的值（统一存储）
-  std::optional<std::vector<T>> m_default_values;  // 是否存在默认值
-  std::vector<T>* m_vector_target;  // 外部变量绑定
-  
-  int m_expected_min;  // 最小期望数量
-  int m_expected_max;  // 最大期望数量
-  
-  std::function<bool(const std::vector<T>&)> m_validator;  // 整体验证器
+  // 重写匹配方法
+  bool matches(const std::string& arg) const override {
+    // 位置参数匹配逻辑
+    return MultiArgument<T>::matches(arg);
+  }
 };
 
 #include "positional_argument.inc"

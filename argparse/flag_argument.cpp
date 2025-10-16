@@ -1,15 +1,22 @@
 #include "flag_argument.h"
 
 // 统一构造函数
+// 统一构造函数
 FlagArgument::FlagArgument(const std::vector<std::string>& names,
                            const std::string& description,
-                           bool* target,
-                           bool required,
-                           std::function<void()> callback)
-  : Argument(names, description, required, callback),
-    m_flag(false),
-    m_default_flag(false),
-    m_target(target) {}
+                           bool required, std::function<void()> callback)
+    : Argument(names, description, required, callback),
+      m_flag(false),
+      m_default_flag(false){}
+
+FlagArgument::FlagArgument(const std::vector<std::string>& names, bool& target,
+                           const std::string& description,
+                           bool required, std::function<void()> callback)
+    : Argument(names, description, required, callback),
+      m_flag(false),
+      m_default_flag(false) {
+  bindTo(target);
+}
 
 bool FlagArgument::getFlag() const {
   // 简化逻辑: 
@@ -24,12 +31,14 @@ bool FlagArgument::getFlag() const {
 void FlagArgument::setFlag(bool value) {
   m_flag = value;
   setParsed(true);  // 标记为已解析
-  // 如果设置了目标变量，同时更新它
-  if (m_target != nullptr) {
-    *m_target = value;
+  
+  // 同步到外部变量 (如果绑定了)
+  if (m_sync_to_target) {
+    m_sync_to_target();
   }
-  // 如果设置了回调函数，调用它
-  if(m_callback) {
+  
+  // 执行用户回调 (如果设置了)
+  if (m_callback) {
     m_callback();
   }
 }
@@ -40,11 +49,6 @@ void FlagArgument::setDefaultValue(bool value) {
 
 bool FlagArgument::getDefaultValue() const {
   return m_default_flag;
-}
-
-FlagArgument& FlagArgument::flag(bool value) {
-  setFlag(value);
-  return *this;
 }
 
 FlagArgument& FlagArgument::description(const std::string& description) {
@@ -64,6 +68,11 @@ FlagArgument& FlagArgument::defaultValue(bool value) {
 
 FlagArgument& FlagArgument::callback(std::function<void()> callback) {
   setCallback(callback);
+  return *this;
+}
+
+FlagArgument& FlagArgument::bindTo(bool& target) {
+  m_sync_to_target = [&target, this]() { target = this->getFlag(); };
   return *this;
 }
 

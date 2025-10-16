@@ -6,10 +6,12 @@ class FlagArgument : public Argument {
  public:
   // 统一构造函数
   FlagArgument(const std::vector<std::string>& names,
-               const std::string& description,
-               bool* target = nullptr,
+               const std::string& description = "",
                bool required = false,
                std::function<void()> callback = nullptr);
+  FlagArgument(const std::vector<std::string>& names, bool& target,
+               const std::string& description = "",
+               bool required = false, std::function<void()> callback = nullptr);
 
   bool getFlag() const;
   void setFlag(bool value);
@@ -17,11 +19,11 @@ class FlagArgument : public Argument {
   bool getDefaultValue() const;
 
   // 链式调用
-  FlagArgument& flag(bool value);
   FlagArgument& description(const std::string& description);
   FlagArgument& required();
   FlagArgument& defaultValue(bool value);
   FlagArgument& callback(std::function<void()> callback);
+  FlagArgument& bindTo(bool& target);
 
   // 重写多态方法
   // FlagArgument 不需要额外参数，忽略 args 和 current_index
@@ -33,5 +35,4 @@ class FlagArgument : public Argument {
  private:
   bool m_flag;     // 存储标志参数的状态，true表示启用，false表示禁用
   bool m_default_flag; // 默认值
-  bool* m_target;  // 指向一个bool变量，用于存储标志参数的状态
 };

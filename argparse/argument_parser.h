@@ -1,7 +1,7 @@
 #pragma once
-#include <unordered_map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "argument.h"
@@ -9,11 +9,10 @@
 #include "option_argument.h"
 #include "positional_argument.h"
 
-
 /**
  * 使用时需要先创建 ArgumentParser 对象
- * 然后通过 addFlagArgument、addOptionArgument、addPositionalArgument 方法添加参数  
- * 最后调用 parse 方法解析命令行参数
+ * 然后通过 addFlagArgument、addOptionArgument、addPositionalArgument
+ * 方法添加参数 最后调用 parse 方法解析命令行参数
  */
 class ArgumentParser {
  public:
@@ -24,34 +23,59 @@ class ArgumentParser {
   void parse(int argc, char** argv);
   void parse(const std::vector<std::string>& args);
   void printHelp() const;
-  Argument& addArgument(const std::vector<std::string>& names,
-                        const std::string& description = "",
-                        bool required = false,
-                        std::function<void()> callback = nullptr);
 
   // 添加参数的高级接口
+  // FlagArgument: 支持外部绑定
+  FlagArgument& addFlagArgument(const std::vector<std::string>& names,
+                                bool& target, const std::string& description = "",
+                                bool required = false,
+                                std::function<void()> callback = nullptr);
+  // 添加参数的高级接口
+  // FlagArgument: 不支持外部绑定
   FlagArgument& addFlagArgument(const std::vector<std::string>& names,
                                 const std::string& description = "",
-                                bool* target = nullptr, bool required = false,
+                                bool required = false,
                                 std::function<void()> callback = nullptr);
 
-  // 模板成员函数声明
+  // OptionArgument: 不绑定(使用默认参数会有歧义,所以单独声明)
   template <typename T>
   OptionArgument<T>& addOptionArgument(
       const std::vector<std::string>& names,
-      const std::string& description = "", T* target = nullptr,
-      bool required = false, std::function<void()> callback = nullptr);
+      const std::string& description = "", bool required = false,
+      std::function<void()> callback = nullptr);
+  // OptionArgument: 绑定单个值
+  template <typename T>
+  OptionArgument<T>& addOptionArgument(
+      const std::vector<std::string>& names, T& target,
+      const std::string& description, bool required = false,
+      std::function<void()> callback = nullptr);
 
+  // OptionArgument: 绑定 vector
+  template <typename T>
+  OptionArgument<T>& addOptionArgument(
+      const std::vector<std::string>& names, std::vector<T>& target,
+      const std::string& description, bool required = false,
+      std::function<void()> callback = nullptr);
+
+  // PositionalArgument: 不绑定
   template <typename T>
   PositionalArgument<T>& addPositionalArgument(
       const std::vector<std::string>& names,
-      const std::string& description = "", std::vector<T>* target = nullptr,
-      bool required = false, std::function<void()> callback = nullptr);
+      const std::string& description = "", bool required = false,
+      std::function<void()> callback = nullptr);
 
+  // PositionalArgument: 绑定单个值
   template <typename T>
   PositionalArgument<T>& addPositionalArgument(
-      const std::string& name, const std::string& description = "",
-      std::vector<T>* target = nullptr, bool required = false,
+      const std::vector<std::string>& names, T& target,
+      const std::string& description, bool required = false,
+      std::function<void()> callback = nullptr);
+
+  // PositionalArgument: 绑定 vector
+  template <typename T>
+  PositionalArgument<T>& addPositionalArgument(
+      const std::vector<std::string>& names, std::vector<T>& target,
+      const std::string& description, bool required = false,
       std::function<void()> callback = nullptr);
 
   // 子命令支持
@@ -64,8 +88,10 @@ class ArgumentParser {
 
   std::string m_program_name;  // 程序名称
   std::string m_description;   // 程序描述
-  std::vector<std::unique_ptr<Argument>> m_args;  // 选项参数、开关参数、位置参数
-  std::unordered_map<std::string, std::unique_ptr<ArgumentParser>> m_subcommands;  // 子命令 [command name -> ArgumentParser]
+  std::vector<std::unique_ptr<Argument>>
+      m_args;  // 选项参数、开关参数、位置参数
+  std::unordered_map<std::string, std::unique_ptr<ArgumentParser>>
+      m_subcommands;  // 子命令 [command name -> ArgumentParser]
 };
 
 // 包含模板函数实现

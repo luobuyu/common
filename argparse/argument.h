@@ -44,4 +44,5 @@ protected:
   bool m_required;                   // 参数是否必填
   bool m_parsed;                     // 是否已被解析
   std::function<void()> m_callback;  // 参数被成功解析时，会自动调用这个函数
+  std::function<void()> m_sync_to_target; // 用于将解析出的变量同步到绑定的外部变量
 };
