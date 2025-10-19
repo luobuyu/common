@@ -32,6 +32,9 @@ class FlagArgument : public Argument {
   // 判断命令行参数是否匹配此标志参数
   bool matches(const std::string& arg) const override;
 
+  // 验证 flag 参数名称（必须以 '-' 开头）
+  void validateNames() const override;
+
  private:
   bool m_flag;     // 存储标志参数的状态，true表示启用，false表示禁用
   bool m_default_flag; // 默认值

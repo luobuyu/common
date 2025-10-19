@@ -25,16 +25,13 @@ public:
 
  // 重写解析方法
  size_t parse(const std::vector<std::string>& args,
-              size_t current_index = 0) override {
-   // 位置参数解析逻辑
-   return MultiArgument<T>::parse(args, current_index);
- }
+              size_t current_index = 0) override;
 
-  // 重写匹配方法
-  bool matches(const std::string& arg) const override {
-    // 位置参数匹配逻辑
-    return MultiArgument<T>::matches(arg);
-  }
+ // 重写匹配方法
+ bool matches(const std::string& arg) const override;
+
+ // 验证 positional 参数名称（不能以 '-' 开头）
+ void validateNames() const override;
 };
 
 #include "positional_argument.inc"

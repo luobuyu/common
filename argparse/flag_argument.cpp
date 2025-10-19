@@ -1,13 +1,13 @@
 #include "flag_argument.h"
 
 // 统一构造函数
-// 统一构造函数
 FlagArgument::FlagArgument(const std::vector<std::string>& names,
                            const std::string& description,
                            bool required, std::function<void()> callback)
     : Argument(names, description, required, callback),
       m_flag(false),
-      m_default_flag(false){}
+      m_default_flag(false) {
+}
 
 FlagArgument::FlagArgument(const std::vector<std::string>& names, bool& target,
                            const std::string& description,
@@ -90,4 +90,21 @@ bool FlagArgument::matches(const std::string& arg) const {
   }
   const auto& names = getNames();
   return std::find(names.begin(), names.end(), arg) != names.end();
+}
+
+void FlagArgument::validateNames() const {
+  const auto& names = getNames();
+  
+  if (names.empty()) {
+    throw std::invalid_argument("Flag argument must have at least one name");
+  }
+  
+  for (const auto& name : names) {
+    if (name.empty()) {
+      throw std::invalid_argument("Flag name cannot be empty");
+    }
+    if (name[0] != '-' || name.size() > 1 && name[1] != '-') {
+      throw std::invalid_argument("Flag name must start with '-' or '--': " + name);
+    }
+  }
 }

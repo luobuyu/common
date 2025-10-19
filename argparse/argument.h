@@ -23,6 +23,9 @@ public:
   bool isRequired() const;
   bool isParsed() const;
 
+  // 验证参数名称是否合法（由子类实现具体规则）
+  virtual void validateNames() const = 0;
+
   // 不同子类的实现:
   //   - FlagArgument/OptionArgument: 检查 arg 以 '-' 开头，是否在 m_names 中（精确匹配）
   //   - PositionalArgument: 检查 arg 是否不以 '-' 开头（任何非选项都可能是位置参数）

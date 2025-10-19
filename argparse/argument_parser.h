@@ -85,6 +85,7 @@ class ArgumentParser {
  private:
   // 内部辅助方法：添加已创建的参数对象
   Argument& addArgument(std::unique_ptr<Argument> argument);
+  void validateNames(const Argument& argument) const;
 
   std::string m_program_name;  // 程序名称
   std::string m_description;   // 程序描述

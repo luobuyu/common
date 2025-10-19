@@ -6,6 +6,7 @@ ArgumentParser::ArgumentParser(const std::string& program_name,
 
 Argument& ArgumentParser::addArgument(std::unique_ptr<Argument> argument) {
   Argument& ref = *argument;
+  validateNames(ref);
   m_args.emplace_back(std::move(argument));
   return ref;
 }
@@ -14,41 +15,8 @@ FlagArgument& ArgumentParser::addFlagArgument(
     const std::vector<std::string>& names, bool& target,
     const std::string& description, bool required,
     std::function<void()> callback) {
-  // 1. 检查名称列表不能为空（严重错误）
-  if (names.empty()) {
-    throw std::invalid_argument("Argument names cannot be empty");
-  }
-
-  // 2. 检查每个名称的格式
-  for (const auto& name : names) {
-    if (name.empty()) {
-      throw std::invalid_argument("Argument name cannot be empty string");
-    }
-    // 选项/标志必须以 - 开头
-    if (name[0] != '-') {
-      throw std::invalid_argument("Option/flag name must start with '-': " + name);
-    }
-  }
-
-  // 3. 检查名称是否已被使用
-  for (const auto& name : names) {
-    // 检查是否与已有参数冲突
-    for (const auto& arg : m_args) {
-      const auto& existing_names = arg->getNames();
-      if (std::find(existing_names.begin(), existing_names.end(), name) !=
-          existing_names.end()) {
-        throw std::invalid_argument("Argument name already exists: " + name);
-      }
-    }
-    // 检查是否与子命令冲突
-    if (m_subcommands.count(name)) {
-      throw std::invalid_argument("Argument name conflicts with subcommand: " + name);
-    }
-  }
-
-  std::unique_ptr<FlagArgument> arg;
-  arg = std::make_unique<FlagArgument>(names, target, description, required,
-                                       callback);
+  // 创建参数对象
+  auto arg = std::make_unique<FlagArgument>(names, target, description, required, callback);
   FlagArgument& ref = *arg;
   addArgument(std::move(arg));
   return ref;
@@ -102,10 +70,13 @@ void ArgumentParser::parse(int argc, char** argv) {
 void ArgumentParser::parse(const std::vector<std::string>& args) {
   // 简单的解析逻辑示例
   // 需要先检查是否是子命令
-  if (!args.empty() && m_subcommands.count(args[0])) {
-    m_subcommands[args[0]]->parse(
-        std::vector<std::string>(args.begin() + 1, args.end()));
-    return;
+  if (!args.empty()) {
+    auto it = m_subcommands.find(args[0]);
+    if (it != m_subcommands.end()) {
+      it->second->parse(
+          std::vector<std::string>(args.begin() + 1, args.end()));
+      return;
+    }
   }
   
   // 不是子命令,解析当前层命令参数
@@ -113,20 +84,17 @@ void ArgumentParser::parse(const std::vector<std::string>& args) {
   for (size_t i = 0; i < args.size(); ++i) {
     const std::string& arg = args[i];
     bool matched = false;
-    
     // 遍历所有已注册的参数，查找能匹配的参数对象
     for (const auto& argument : m_args) {
       // 调用多态方法检查是否匹配
       if (argument->matches(arg)) {
-        // 找到匹配的参数，标记为已解析
-        argument->setParsed(true);
-        matched = true;
-        
         // 调用子类的多态 parse 方法
         // 返回值表示消耗了多少个额外的参数（不包括当前索引 i）
         size_t consumed = argument->parse(args, i);
         i += consumed;  // 跳过已消耗的参数
-        
+        // 找到匹配的参数，标记为已解析
+        argument->setParsed(true);
+        matched = true;
         break;  // 找到匹配后停止遍历
       }
     }
@@ -145,6 +113,17 @@ void ArgumentParser::parse(const std::vector<std::string>& args) {
     if (argument->isRequired() && !argument->isParsed()) {
       throw std::runtime_error("Required argument missing: " + 
                                argument->getNames().front());
+    }
+  }
+}
+
+void ArgumentParser::validateNames(const Argument& argument) const {
+  // 遍历所有参数，调用各自的 validateNames 方法
+  argument.validateNames();
+  // 验证是否出现冲突的名字
+  for(const auto& name: argument.getNames()) {
+    if (m_subcommands.count(name)) {
+      throw std::invalid_argument("Subcommand name conflicts with argument: " + name);
     }
   }
 }

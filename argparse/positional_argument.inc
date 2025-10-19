@@ -1,6 +1,4 @@
 #pragma once
-#include <iostream>
-#include <sstream>
 
 #include "positional_argument.h"
 
@@ -33,3 +31,37 @@ PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
                                           bool required,
                                           std::function<void()> callback)
     : MultiArgument<T>(names, description, required, callback) {}
+
+// 重写解析方法
+template <typename T>
+size_t PositionalArgument<T>::parse(const std::vector<std::string>& args,
+                                    size_t current_index) {
+  // 位置参数解析逻辑
+  return MultiArgument<T>::parse(args, current_index);
+}
+
+// 重写匹配方法
+template <typename T>
+bool PositionalArgument<T>::matches(const std::string& arg) const {
+  // 位置参数匹配逻辑
+  return true;
+}
+
+// 验证名称
+template <typename T>
+void PositionalArgument<T>::validateNames() const {
+  const auto& names = this->getNames();
+  
+  if (names.empty()) {
+    throw std::invalid_argument("Positional argument must have at least one name");
+  }
+  
+  for (const auto& name : names) {
+    if (name.empty()) {
+      throw std::invalid_argument("Positional argument name cannot be empty");
+    }
+    if (name[0] == '-' || name.size() > 1 && name[1] == '-') {
+      throw std::invalid_argument("Positional argument name cannot start with '-' or '--': " + name);
+    }
+  }
+}

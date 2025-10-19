@@ -95,3 +95,23 @@ bool OptionArgument<T>::matches(const std::string& arg) const {
   const auto& names = this->getNames();
   return std::find(names.begin(), names.end(), arg) != names.end();
 }
+
+// 验证名称
+template <typename T>
+void OptionArgument<T>::validateNames() const {
+  const auto& names = this->getNames();
+  
+  if (names.empty()) {
+    throw std::invalid_argument("Option argument must have at least one name");
+  }
+
+  for (const auto& name : names) {
+    if (name.empty()) {
+      throw std::invalid_argument("Flag name cannot be empty");
+    }
+    if (name[0] != '-' || name.size() > 1 && name[1] != '-') {
+      throw std::invalid_argument("Flag name must start with '-' or '--': " +
+                                  name);
+    }
+  }
+}

@@ -36,6 +36,9 @@ class OptionArgument : public MultiArgument<T> {
 
   // 判断命令行参数是否匹配此选项参数
   bool matches(const std::string& arg) const override;
+
+  // 验证 option 参数名称（必须以 '-' 开头）
+  void validateNames() const override;
 };
 
 #include "option_argument.inc"
