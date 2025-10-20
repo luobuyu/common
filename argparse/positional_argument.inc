@@ -43,8 +43,9 @@ size_t PositionalArgument<T>::parse(const std::vector<std::string>& args,
 // 重写匹配方法
 template <typename T>
 bool PositionalArgument<T>::matches(const std::string& arg) const {
-  // 位置参数匹配逻辑
-  return true;
+  // 位置参数匹配任何不以 '-' 开头的参数
+  // 位置参数按顺序识别,不是按名称匹配
+  return !arg.empty() && arg[0] != '-';
 }
 
 // 验证名称

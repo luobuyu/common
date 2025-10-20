@@ -91,6 +91,9 @@ size_t OptionArgument<T>::parse(const std::vector<std::string>& args,
 // 重写匹配方法
 template <typename T>
 bool OptionArgument<T>::matches(const std::string& arg) const {
+  if (arg.empty() || arg[0] != '-') {
+    return false;  // 不是选项参数
+  }
   // 检查 arg 是否在名称列表中
   const auto& names = this->getNames();
   return std::find(names.begin(), names.end(), arg) != names.end();
