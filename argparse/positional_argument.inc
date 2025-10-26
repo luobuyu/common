@@ -61,8 +61,8 @@ void PositionalArgument<T>::validateNames() const {
     if (name.empty()) {
       throw std::invalid_argument("Positional argument name cannot be empty");
     }
-    if (name[0] == '-' || name.size() > 1 && name[1] == '-') {
-      throw std::invalid_argument("Positional argument name cannot start with '-' or '--': " + name);
+    if (name[0] == '-') {
+      throw std::invalid_argument("Positional argument name cannot start with '-': " + name);
     }
   }
 }

@@ -76,9 +76,10 @@ FlagArgument& FlagArgument::bindTo(bool& target) {
   return *this;
 }
 
-size_t FlagArgument::parse(const std::vector<std::string>& args, size_t current_index) {
-  (void)args;  // 未使用
-  (void)current_index;  // 未使用
+size_t FlagArgument::parse(std::vector<std::string>::const_iterator begin,
+                           std::vector<std::string>::const_iterator end) {
+  (void)begin;  // 未使用
+  (void)end;    // 未使用
   setFlag(true);
   return 0;  // 返回 0 表示不消耗额外参数
 }
@@ -102,6 +103,9 @@ void FlagArgument::validateNames() const {
   for (const auto& name : names) {
     if (name.empty()) {
       throw std::invalid_argument("Flag name cannot be empty");
+    }
+    if(name == "-" || name == "--") {
+      throw std::invalid_argument("Flag name cannot only be '-' or '--'");
     }
     if (name[0] != '-' || name.size() > 1 && name[1] != '-') {
       throw std::invalid_argument("Flag name must start with '-' or '--': " + name);

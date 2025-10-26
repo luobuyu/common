@@ -112,6 +112,9 @@ void OptionArgument<T>::validateNames() const {
     if (name.empty()) {
       throw std::invalid_argument("Flag name cannot be empty");
     }
+    if (name == "-" || name == "--") {
+      throw std::invalid_argument("Flag name cannot only be '-' or '--'");
+    }
     if (name[0] != '-' || name.size() > 1 && name[1] != '-') {
       throw std::invalid_argument("Flag name must start with '-' or '--': " +
                                   name);

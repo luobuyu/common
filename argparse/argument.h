@@ -41,7 +41,10 @@ public:
   //   - PositionalArgument: 返回实际消耗的参数数量
   virtual size_t parse(const std::vector<std::string>& args, size_t current_index) = 0;
 
-protected:
+  // 判断是否是选项，flag or option
+  bool isOption(const std::string& argument) const;
+
+ protected:
   std::vector<std::string> m_names;  // 存储命令行参数的名称以及别名 --help, -h
   std::string m_description;         // 参数的描述信息
   bool m_required;                   // 参数是否必填
