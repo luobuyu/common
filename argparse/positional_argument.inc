@@ -9,7 +9,7 @@ PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
                                           const std::string& description,
                                           bool required,
                                           std::function<void()> callback)
-    : MultiArgument<T>(names, description, required, callback) {
+    : MultiArgument<T>(ArgumentType::Positional, names, description, required, callback) {
   this->bindTo(target);
 }
 
@@ -20,7 +20,7 @@ PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
                                           const std::string& description,
                                           bool required,
                                           std::function<void()> callback)
-    : MultiArgument<T>(names, description, required, callback) {
+    : MultiArgument<T>(ArgumentType::Positional, names, description, required, callback) {
   this->bindTo(target);
 }
 
@@ -30,7 +30,7 @@ PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
                                           const std::string& description,
                                           bool required,
                                           std::function<void()> callback)
-    : MultiArgument<T>(names, description, required, callback) {}
+    : MultiArgument<T>(ArgumentType::Positional, names, description, required, callback) {}
 
 // 重写解析方法
 template <typename T>

@@ -79,9 +79,8 @@ void ArgumentParser::parse(const std::vector<std::string>& args) {
     }
   }
   
-  // 不是子命令,解析当前层命令参数
   // 遍历命令行参数，依次匹配并解析
-  for (size_t i = 0; i < args.size(); ++i) {
+  for (size_t i = 0; i < args.size();) {
     const std::string& arg = args[i];
     bool matched = false;
     // 遍历所有已注册的参数，查找能匹配的参数对象
@@ -89,7 +88,7 @@ void ArgumentParser::parse(const std::vector<std::string>& args) {
       // 调用多态方法检查是否匹配
       if (argument->matches(arg)) {
         // 调用子类的多态 parse 方法
-        // 返回值表示消耗了多少个额外的参数（不包括当前索引 i）
+        // 返回值表示当前选项消耗的参数个数
         size_t consumed = argument->parse(args, i);
         i += consumed;  // 跳过已消耗的参数
         // 找到匹配的参数，标记为已解析

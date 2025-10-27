@@ -4,10 +4,20 @@
 #include <string>
 #include <vector>
 
+// 参数类型枚举
+enum class ArgumentType {
+  Flag,       // 标志参数（如 -v, --verbose）
+  Option,     // 选项参数（如 -o file, --output file）
+  Positional  // 位置参数（如 input.txt）
+};
+
 class Argument {
 public:
   // 使用默认参数的构造函数
   Argument(const std::vector<std::string>& names,
+           const std::string& description, bool required = false,
+           std::function<void()> callback = nullptr);
+  Argument(const ArgumentType& type, const std::vector<std::string>& names,
            const std::string& description, bool required = false,
            std::function<void()> callback = nullptr);
   virtual ~Argument() = default;
@@ -45,6 +55,7 @@ public:
   bool isOption(const std::string& argument) const;
 
  protected:
+  ArgumentType m_type;               // 参数类型
   std::vector<std::string> m_names;  // 存储命令行参数的名称以及别名 --help, -h
   std::string m_description;         // 参数的描述信息
   bool m_required;                   // 参数是否必填

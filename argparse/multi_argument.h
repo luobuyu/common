@@ -21,7 +21,13 @@ public:
  MultiArgument(const std::vector<std::string>& names, std::vector<T>& target,
                const std::string& description = "",
                bool required = false, std::function<void()> callback = nullptr);
+ MultiArgument(const ArgumentType& type, const std::vector<std::string>& names, std::vector<T>& target,
+               const std::string& description = "", bool required = false,
+               std::function<void()> callback = nullptr);
  MultiArgument(const std::vector<std::string>& names,
+               T& target, const std::string& description = "",
+               bool required = false, std::function<void()> callback = nullptr);
+ MultiArgument(const ArgumentType& type, const std::vector<std::string>& names,
                T& target, const std::string& description = "",
                bool required = false, std::function<void()> callback = nullptr);
 
@@ -34,6 +40,9 @@ public:
  MultiArgument(const std::vector<std::string>& names,
                const std::string& description = "",
                bool required = false, std::function<void()> callback = nullptr);
+ MultiArgument(const ArgumentType& type, const std::vector<std::string>& names,
+               const std::string& description = "", bool required = false,
+               std::function<void()> callback = nullptr);
  // 值操作
  const std::vector<T>& getValues() const;
  void addValue(const T& value);

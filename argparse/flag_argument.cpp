@@ -4,7 +4,7 @@
 FlagArgument::FlagArgument(const std::vector<std::string>& names,
                            const std::string& description,
                            bool required, std::function<void()> callback)
-    : Argument(names, description, required, callback),
+    : Argument(ArgumentType::Flag, names, description, required, callback),
       m_flag(false),
       m_default_flag(false) {
 }
@@ -12,7 +12,7 @@ FlagArgument::FlagArgument(const std::vector<std::string>& names,
 FlagArgument::FlagArgument(const std::vector<std::string>& names, bool& target,
                            const std::string& description,
                            bool required, std::function<void()> callback)
-    : Argument(names, description, required, callback),
+    : Argument(ArgumentType::Flag, names, description, required, callback),
       m_flag(false),
       m_default_flag(false) {
   bindTo(target);
@@ -76,10 +76,10 @@ FlagArgument& FlagArgument::bindTo(bool& target) {
   return *this;
 }
 
-size_t FlagArgument::parse(std::vector<std::string>::const_iterator begin,
-                           std::vector<std::string>::const_iterator end) {
-  (void)begin;  // 未使用
-  (void)end;    // 未使用
+size_t FlagArgument::parse(const std::vector<std::string>& args,
+                           size_t current_index) {
+  (void)args;  // 未使用
+  (void)current_index;  // 未使用
   setFlag(true);
   return 0;  // 返回 0 表示不消耗额外参数
 }

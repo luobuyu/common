@@ -17,6 +17,19 @@ MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
 }
 
 template <typename T>
+MultiArgument<T>::MultiArgument(const ArgumentType& type,
+                                const std::vector<std::string>& names,
+                                std::vector<T>& target,
+                                const std::string& description, bool required,
+                                std::function<void()> callback)
+    : Argument(type, names, description, required, callback),
+      m_expected_min(1),  // 默认至少需要1个值
+      m_expected_max(1)   // 默认最多1个值
+{
+  bindTo(target);
+}
+
+template <typename T>
 MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
                                 T& target, const std::string& description,
                                 bool required, std::function<void()> callback)
@@ -28,10 +41,32 @@ MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
 }
 
 template <typename T>
+MultiArgument<T>::MultiArgument(const ArgumentType& type,
+                                const std::vector<std::string>& names,
+                                T& target, const std::string& description,
+                                bool required, std::function<void()> callback)
+    : Argument(type, names, description, required, callback),
+      m_expected_min(1),  // 默认至少需要1个值
+      m_expected_max(1)   // 默认最多1个值
+{
+  bindTo(target);
+}
+
+template <typename T>
 MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
                                 const std::string& description, bool required,
                                 std::function<void()> callback)
     : Argument(names, description, required, callback),
+      m_expected_min(1),  // 默认至少需要1个值
+      m_expected_max(1)   // 默认最多1个值
+{}
+
+template <typename T>
+MultiArgument<T>::MultiArgument(const ArgumentType& type,
+                                const std::vector<std::string>& names,
+                                const std::string& description, bool required,
+                                std::function<void()> callback)
+    : Argument(type, names, description, required, callback),
       m_expected_min(1),  // 默认至少需要1个值
       m_expected_max(1)   // 默认最多1个值
 {}
@@ -203,8 +238,7 @@ MultiArgument<T>& MultiArgument<T>::required() {
 }
 
 template <typename T>
-MultiArgument<T>& MultiArgument<T>::callback(
-    std::function<void()> callback) {
+MultiArgument<T>& MultiArgument<T>::callback(std::function<void()> callback) {
   setCallback(callback);
   return *this;
 }

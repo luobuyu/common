@@ -7,7 +7,7 @@ OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
                                   std::vector<T>& target,
                                   const std::string& description,
                                   bool required, std::function<void()> callback)
-    : MultiArgument<T>(names, description, required, callback) {
+    : MultiArgument<T>(ArgumentType::Option, names, description, required, callback) {
   this->bindTo(target);
 }
 
@@ -16,7 +16,7 @@ template <typename T>
 OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
                                   T& target, const std::string& description,
                                   bool required, std::function<void()> callback)
-    : MultiArgument<T>(names, description, required, callback) {
+    : MultiArgument<T>(ArgumentType::Option, names, description, required, callback) {
   this->bindTo(target);
 }
 
@@ -25,7 +25,7 @@ template <typename T>
 OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
                                  const std::string& description,
                                  bool required, std::function<void()> callback)
-    : MultiArgument<T>(names, description, required, callback) {}
+    : MultiArgument<T>(ArgumentType::Option, names, description, required, callback) {}
 
 // 获取和设置值
 template <typename T>
