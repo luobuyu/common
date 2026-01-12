@@ -78,8 +78,6 @@ FlagArgument& FlagArgument::bindTo(bool& target) {
 
 size_t FlagArgument::parse(const std::vector<std::string>& args,
                            size_t current_index) {
-  (void)args;  // 未使用
-  (void)current_index;  // 未使用
   setFlag(true);
   return 0;  // 返回 0 表示不消耗额外参数
 }

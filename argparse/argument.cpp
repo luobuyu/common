@@ -40,6 +40,10 @@ const std::string& Argument::getDescription() const {
   return m_description;
 }
 
+ArgumentType Argument::getType() const {
+  return m_type;
+}
+
 bool Argument::isRequired() const {
   return m_required;
 }

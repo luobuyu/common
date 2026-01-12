@@ -84,11 +84,17 @@ void ArgumentParser::parse(const std::vector<std::string>& args) {
     const std::string& arg = args[i];
     bool matched = false;
     // 遍历所有已注册的参数，查找能匹配的参数对象
+    Argument* first_not_parsed_pos = nullptr;
     for (const auto& argument : m_args) {
-      // 调用多态方法检查是否匹配
+      // 位置参数单独贪婪匹配
+      if(argument->getType() == ArgumentType::Positional) {
+        if(!argument->isParsed() && first_not_parsed_pos == nullptr) {
+          first_not_parsed_pos = argument.get();
+        }
+        continue;
+      }
       if (argument->matches(arg)) {
-        // 调用子类的多态 parse 方法
-        // 返回值表示当前选项消耗的参数个数
+        // 调用子类的多态 parse 方法，返回值消耗的参数个数
         size_t consumed = argument->parse(args, i);
         i += consumed;  // 跳过已消耗的参数
         // 找到匹配的参数，标记为已解析
@@ -97,17 +103,19 @@ void ArgumentParser::parse(const std::vector<std::string>& args) {
         break;  // 找到匹配后停止遍历
       }
     }
-    
     if (!matched) {
-      // 未匹配到任何参数：抛出异常
-      throw std::runtime_error("Unknown or unexpected argument: " + arg);
+      if (first_not_parsed_pos != nullptr) {
+        size_t consumed = first_not_parsed_pos->parse(args, i);
+        i += consumed;  // 跳过已消耗的参数
+        // 找到匹配的参数，标记为已解析
+        first_not_parsed_pos->setParsed(true);
+      } else {
+        throw std::runtime_error("Unknown argument: " + arg);
+      }
     }
   }
 
   // 检查必需参数是否都已解析
-  // 策略: 遵循 Python argparse 风格
-  // - required=true: 必须从命令行提供，忽略默认值
-  // - required=false: 可以不提供，使用默认值
   for (const auto& argument : m_args) {
     if (argument->isRequired() && !argument->isParsed()) {
       throw std::runtime_error("Required argument missing: " + 

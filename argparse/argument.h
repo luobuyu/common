@@ -32,6 +32,7 @@ public:
   const std::string& getDescription() const;
   bool isRequired() const;
   bool isParsed() const;
+  ArgumentType getType() const;
 
   // 验证参数名称是否合法（由子类实现具体规则）
   virtual void validateNames() const = 0;
