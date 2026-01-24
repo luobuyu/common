@@ -94,9 +94,9 @@ void ArgumentParser::parse(const std::vector<std::string>& args) {
         continue;
       }
       if (argument->matches(arg)) {
-        // 调用子类的多态 parse 方法，返回值消耗的参数个数
+        // 调用子类的多态 parse 方法，返回值是消耗的参数总数
         size_t consumed = argument->parse(args, i);
-        i += consumed;  // 跳过已消耗的参数
+        i += consumed;  // 直接跳过消耗的参数数量
         // 找到匹配的参数，标记为已解析
         argument->setParsed(true);
         matched = true;
@@ -106,7 +106,7 @@ void ArgumentParser::parse(const std::vector<std::string>& args) {
     if (!matched) {
       if (first_not_parsed_pos != nullptr) {
         size_t consumed = first_not_parsed_pos->parse(args, i);
-        i += consumed;  // 跳过已消耗的参数
+        i += consumed;  // 位置参数直接跳过消耗的参数数量
         // 找到匹配的参数，标记为已解析
         first_not_parsed_pos->setParsed(true);
       } else {

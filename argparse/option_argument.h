@@ -1,5 +1,37 @@
 #pragma once
 #include "multi_argument.h"
+#include <cctype>
+
+// 判断字符串是否看起来像一个选项参数（以 '-' 开头，且不是负数）
+inline bool isOptionString(const std::string& str) {
+  if (str.size() < 2 || str[0] != '-') {
+    return false;
+  }
+  
+  // 长选项: --xxx
+  if (str[1] == '-') {
+    return true;
+  }
+  
+  // 检查是否为负数（短选项或负数）
+  // 如果第二个字符是数字，可能是负数 -123
+  if (std::isdigit(static_cast<unsigned char>(str[1]))) {
+    // 尝试解析为数字
+    try {
+      size_t pos = 0;
+      std::stod(str, &pos);
+      // 如果完全解析成功，说明是数字
+      return pos != str.length();  // 如果有未解析部分，是选项
+    } catch (const std::invalid_argument&) {
+      return true;  // 不是数字格式，是选项
+    } catch (const std::out_of_range&) {
+      return false;  // 数字溢出，当作数字处理
+    }
+  }
+  
+  // -x 形式：是短选项
+  return true;
+}
 
 template <typename T>
 class OptionArgument : public MultiArgument<T> {

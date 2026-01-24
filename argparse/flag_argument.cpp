@@ -79,7 +79,7 @@ FlagArgument& FlagArgument::bindTo(bool& target) {
 size_t FlagArgument::parse(const std::vector<std::string>& args,
                            size_t current_index) {
   setFlag(true);
-  return 0;  // 返回 0 表示不消耗额外参数
+  return 1;  // 消耗了标志参数本身
 }
 
 bool FlagArgument::matches(const std::string& arg) const {
@@ -105,8 +105,12 @@ void FlagArgument::validateNames() const {
     if(name == "-" || name == "--") {
       throw std::invalid_argument("Flag name cannot only be '-' or '--'");
     }
-    if (name[0] != '-' || name.size() > 1 && name[1] != '-') {
-      throw std::invalid_argument("Flag name must start with '-' or '--': " + name);
+    if (name[0] != '-') {
+      throw std::invalid_argument("Flag name must start with '-': " + name);
+    }
+    // 长选项（超过2个字符）必须以 -- 开头
+    if (name.size() > 2 && name[1] != '-') {
+      throw std::invalid_argument("Long flag name must start with '--': " + name);
     }
   }
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "positional_argument.h"
+#include "../dry/dry_string.h"
 
 // 构造函数1: 绑定 vector<T>
 template <typename T>
@@ -36,8 +37,45 @@ PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
 template <typename T>
 size_t PositionalArgument<T>::parse(const std::vector<std::string>& args,
                                     size_t current_index) {
-  // 位置参数解析逻辑
-  return MultiArgument<T>::parse(args, current_index);
+  size_t consumed = 0;
+  int max_count = this->getExpectedMax();
+  
+  // 贪婪消耗参数，直到：
+  // 1. 达到最大期望数量
+  // 2. 遇到非位置参数
+  // 3. 用完所有参数
+  for (size_t i = current_index; i < args.size() && this->valueCount() < max_count; ++i) {
+    const std::string& arg = args[i];
+    // 遇到选项参数，停止消耗
+    if (!matches(arg)) {
+      break;
+    }
+    this->addValue(dry::strTo<T>(arg));
+    consumed++;
+  }
+  
+  // 检查是否满足最小期望数量
+  int min_count = this->getExpectedMin();
+  if (this->valueCount() < min_count) {
+    throw std::runtime_error("Positional argument expects at least " + 
+                             std::to_string(min_count) + " value(s), got " +
+                             std::to_string(this->valueCount()));
+  }
+  
+  // 标记为已解析
+  this->setParsed(true);
+  
+  // 同步到外部变量 (如果绑定了)
+  if (this->m_sync_to_target) {
+    this->m_sync_to_target();
+  }
+  
+  // 执行用户回调 (如果设置了)
+  if (this->m_callback) {
+    this->m_callback();
+  }
+  
+  return consumed;
 }
 
 // 重写匹配方法

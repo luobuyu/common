@@ -46,14 +46,11 @@ public:
   // 参数:
   //   args: 完整的命令行参数列表
   //   current_index: 当前匹配到的参数位置（对于选项参数，是 --name 的位置）
-  // 返回值: 消耗的额外参数数量（不包括 current_index 本身）
-  //   - FlagArgument: 返回 0（不需要额外参数）
-  //   - OptionArgument: 返回 1（需要 args[current_index+1] 作为值）
+  // 返回值: 消耗的参数总数量（包括 current_index 本身）
+  //   - FlagArgument: 返回 1（消耗标志参数本身）
+  //   - OptionArgument: 返回 1 + 消耗的值的个数
   //   - PositionalArgument: 返回实际消耗的参数数量
   virtual size_t parse(const std::vector<std::string>& args, size_t current_index) = 0;
-
-  // 判断是否是选项，flag or option
-  bool isOption(const std::string& argument) const;
 
  protected:
   ArgumentType m_type;               // 参数类型

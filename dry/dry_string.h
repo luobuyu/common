@@ -1,8 +1,35 @@
 #ifndef DRY_STRING_H
 #define DRY_STRING_H
+#include <sstream>
 #include <string>
 #include <vector>
 namespace dry {
+
+// 通用类型转换：将字符串转换为指定类型
+// 使用 std::istringstream 进行转换
+template <typename T>
+T strTo(const std::string& str) {
+  std::istringstream iss(str);
+  T value;
+  if (!(iss >> value)) {
+    throw std::runtime_error("Failed to convert string to target type: " + str);
+  }
+  return value;
+}
+
+// std::string 特化 - 直接返回
+template <>
+inline std::string strTo<std::string>(const std::string& str) {
+  return str;
+}
+
+// bool 特化 - 支持 "true", "false", "1", "0"
+template <>
+inline bool strTo<bool>(const std::string& str) {
+  if (str == "true" || str == "1") return true;
+  if (str == "false" || str == "0") return false;
+  throw std::runtime_error("Invalid boolean value: " + str);
+}
 
 // split
 static std::vector<std::string> stringSplit(const std::string &s,
