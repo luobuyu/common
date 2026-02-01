@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include <sstream>
 
 #include "multi_argument.h"
 
@@ -8,9 +7,20 @@
 template <typename T>
 MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
                                 std::vector<T>& target,
-                                const std::string& description, bool required,
-                                std::function<void()> callback)
-    : Argument(names, description, required, callback),
+                                const std::string& description)
+    : Argument(names, description),
+      m_expected_min(1),  // 默认至少需要1个值
+      m_expected_max(1)   // 默认最多1个值
+{
+  bindTo(target);
+}
+
+template <typename T>
+MultiArgument<T>::MultiArgument(const ArgumentType& type,
+                                const std::vector<std::string>& names,
+                                std::vector<T>& target,
+                                const std::string& description)
+    : Argument(type, names, description),
       m_expected_min(1),  // 默认至少需要1个值
       m_expected_max(1)   // 默认最多1个值
 {
@@ -19,9 +29,19 @@ MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
 
 template <typename T>
 MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
-                                T& target, const std::string& description,
-                                bool required, std::function<void()> callback)
-    : Argument(names, description, required, callback),
+                                T& target, const std::string& description)
+    : Argument(names, description),
+      m_expected_min(1),  // 默认至少需要1个值
+      m_expected_max(1)   // 默认最多1个值
+{
+  bindTo(target);
+}
+
+template <typename T>
+MultiArgument<T>::MultiArgument(const ArgumentType& type,
+                                const std::vector<std::string>& names,
+                                T& target, const std::string& description)
+    : Argument(type, names, description),
       m_expected_min(1),  // 默认至少需要1个值
       m_expected_max(1)   // 默认最多1个值
 {
@@ -30,9 +50,17 @@ MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
 
 template <typename T>
 MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
-                                const std::string& description, bool required,
-                                std::function<void()> callback)
-    : Argument(names, description, required, callback),
+                                const std::string& description)
+    : Argument(names, description),
+      m_expected_min(1),  // 默认至少需要1个值
+      m_expected_max(1)   // 默认最多1个值
+{}
+
+template <typename T>
+MultiArgument<T>::MultiArgument(const ArgumentType& type,
+                                const std::vector<std::string>& names,
+                                const std::string& description)
+    : Argument(type, names, description),
       m_expected_min(1),  // 默认至少需要1个值
       m_expected_max(1)   // 默认最多1个值
 {}
@@ -85,7 +113,7 @@ MultiArgument<T>& MultiArgument<T>::defaultValues(
 }
 
 template <typename T>
-bool MultiArgument<T>::hasDefaultValues() const {
+bool MultiArgument<T>::hasDefaultValue() const {
   return m_default_values.has_value();
 }
 
@@ -167,7 +195,7 @@ MultiArgument<T>& MultiArgument<T>::bindTo(T& target) {
       target = this->m_values.front();  // 绑定第一个值
     } else if (this->m_default_values.has_value() &&
                !this->m_default_values->empty()) {
-      target = this->m_default_values->back();  // 绑定最后一个默认值
+      target = this->m_default_values->front();
     }
   };
   return *this;
@@ -189,6 +217,14 @@ bool MultiArgument<T>::isValid() const {
   return m_validator(getValues());
 }
 
+template <typename T>
+void MultiArgument<T>::validate() const {
+  if (m_validator && !m_validator(m_values)) {
+    throw std::runtime_error("Validation failed for argument: " + 
+                             this->getNames().front());
+  }
+}
+
 // 链式调用实现
 template <typename T>
 MultiArgument<T>& MultiArgument<T>::description(
@@ -204,61 +240,7 @@ MultiArgument<T>& MultiArgument<T>::required() {
 }
 
 template <typename T>
-MultiArgument<T>& MultiArgument<T>::callback(
-    std::function<void()> callback) {
+MultiArgument<T>& MultiArgument<T>::callback(std::function<void()> callback) {
   setCallback(callback);
   return *this;
-}
-
-template <typename T>
-size_t MultiArgument<T>::parse(const std::vector<std::string>& args,
-                                    size_t current_index) {
-  // 位置参数从 current_index 开始，收集连续的非选项参数
-  // 根据 m_expected_min 和 m_expected_max 决定处理多少个
-
-  size_t consumed = 0;  // 消耗的额外参数数量
-  size_t max_to_consume = static_cast<size_t>(m_expected_max) - m_values.size();
-
-  // 从 current_index 位置开始解析值
-  for (size_t i = current_index; i < args.size() && consumed < max_to_consume;
-       ++i) {
-    const std::string& arg = args[i];
-
-    // 位置参数遇到选项参数时停止
-    if (!arg.empty() && arg[0] == '-') {
-      break;
-    }
-
-    // 解析值
-    std::istringstream iss(arg);
-    T value;
-    if (!(iss >> value) || !iss.eof()) {
-      throw std::runtime_error("Failed to parse value: " + arg);
-    }
-    addValue(value);
-
-    // current_index 位置算是匹配的参数本身，所以从 i > current_index 开始才计入
-    // consumed
-    if (i > current_index) {
-      ++consumed;
-    }
-  }
-
-  // 如果设置了外部目标变量，同步更新
-  if (m_sync_to_target) {
-    m_sync_to_target();
-  }
-
-  // 触发回调
-  if (m_callback) {
-    m_callback();
-  }
-
-  return consumed;  // 返回消耗的额外参数数量（不包括 current_index）
-}
-
-template <typename T>
-bool MultiArgument<T>::matches(const std::string& arg) const {
-  // 位置参数匹配任何不以 '-' 开头的参数
-  return !arg.empty() && arg[0] != '-';
 }
