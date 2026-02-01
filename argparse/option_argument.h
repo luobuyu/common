@@ -38,21 +38,15 @@ class OptionArgument : public MultiArgument<T> {
  public:
   // 构造函数1: 绑定 vector<T>
   OptionArgument(const std::vector<std::string>& names, std::vector<T>& target,
-                 const std::string& description = "",
-                 bool required = false,
-                 std::function<void()> callback = nullptr);
+                 const std::string& description = "");
 
   // 构造函数2: 绑定单个 T
   OptionArgument(const std::vector<std::string>& names, T& target,
-                 const std::string& description = "",
-                 bool required = false,
-                 std::function<void()> callback = nullptr);
+                 const std::string& description = "");
 
   // 构造函数3: 不绑定
   OptionArgument(const std::vector<std::string>& names,
-                 const std::string& description = "",
-                 bool required = false,
-                 std::function<void()> callback = nullptr);
+                 const std::string& description = "");
   
   // 链式调用
   OptionArgument<T>& value(const T& value);

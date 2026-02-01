@@ -7,10 +7,8 @@
 template <typename T>
 PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
                                           std::vector<T>& target,
-                                          const std::string& description,
-                                          bool required,
-                                          std::function<void()> callback)
-    : MultiArgument<T>(ArgumentType::Positional, names, description, required, callback) {
+                                          const std::string& description)
+    : MultiArgument<T>(ArgumentType::Positional, names, description) {
   this->bindTo(target);
 }
 
@@ -18,20 +16,16 @@ PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
 template <typename T>
 PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
                                           T& target,
-                                          const std::string& description,
-                                          bool required,
-                                          std::function<void()> callback)
-    : MultiArgument<T>(ArgumentType::Positional, names, description, required, callback) {
+                                          const std::string& description)
+    : MultiArgument<T>(ArgumentType::Positional, names, description) {
   this->bindTo(target);
 }
 
 // 构造函数3: 不绑定
 template <typename T>
 PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
-                                          const std::string& description,
-                                          bool required,
-                                          std::function<void()> callback)
-    : MultiArgument<T>(ArgumentType::Positional, names, description, required, callback) {}
+                                          const std::string& description)
+    : MultiArgument<T>(ArgumentType::Positional, names, description) {}
 
 // 重写解析方法
 template <typename T>
@@ -39,13 +33,20 @@ size_t PositionalArgument<T>::parse(const std::vector<std::string>& args,
                                     size_t current_index) {
   size_t consumed = 0;
   int max_count = this->getExpectedMax();
+  bool terminated_by_dashdash = false;
   
   // 贪婪消耗参数，直到：
   // 1. 达到最大期望数量
   // 2. 遇到非位置参数
-  // 3. 用完所有参数
+  // 3. 遇到 "--" 终止符
+  // 4. 用完所有参数
   for (size_t i = current_index; i < args.size() && this->valueCount() < max_count; ++i) {
     const std::string& arg = args[i];
+    // 如果遇到 "--"，表示用户想提前结束当前位置参数的收集
+    if (arg == "--") {
+      terminated_by_dashdash = true;
+      break;
+    }
     // 遇到选项参数，停止消耗
     if (!matches(arg)) {
       break;
@@ -70,12 +71,16 @@ size_t PositionalArgument<T>::parse(const std::vector<std::string>& args,
     this->m_sync_to_target();
   }
   
+  // 自动调用验证器
+  this->validate();
+  
   // 执行用户回调 (如果设置了)
   if (this->m_callback) {
     this->m_callback();
   }
   
-  return consumed;
+  // 如果被 -- 终止，还要消耗掉 --
+  return consumed + (terminated_by_dashdash ? 1 : 0);
 }
 
 // 重写匹配方法

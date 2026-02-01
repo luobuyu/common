@@ -5,27 +5,24 @@
 template <typename T>
 OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
                                   std::vector<T>& target,
-                                  const std::string& description,
-                                  bool required, std::function<void()> callback)
-    : MultiArgument<T>(ArgumentType::Option, names, description, required, callback) {
+                                  const std::string& description)
+    : MultiArgument<T>(ArgumentType::Option, names, description) {
   this->bindTo(target);
 }
 
 // 构造函数2: 绑定单个 T
 template <typename T>
 OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
-                                  T& target, const std::string& description,
-                                  bool required, std::function<void()> callback)
-    : MultiArgument<T>(ArgumentType::Option, names, description, required, callback) {
+                                  T& target, const std::string& description)
+    : MultiArgument<T>(ArgumentType::Option, names, description) {
   this->bindTo(target);
 }
 
 // 构造函数3: 不绑定
 template <typename T>
 OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
-                                 const std::string& description,
-                                 bool required, std::function<void()> callback)
-    : MultiArgument<T>(ArgumentType::Option, names, description, required, callback) {}
+                                 const std::string& description)
+    : MultiArgument<T>(ArgumentType::Option, names, description) {}
 
 // 获取和设置值
 template <typename T>
@@ -62,10 +59,16 @@ size_t OptionArgument<T>::parse(const std::vector<std::string>& args,
   // OptionArgument 解析逻辑：消耗后续参数直到遇到下一个选项或达到上限
   size_t consumed = 0;
   int max_count = this->getExpectedMax();
+  bool terminated_by_dashdash = false;
   
   // 从 current_index + 1 开始逐个消耗参数
   for (size_t i = current_index + 1; i < args.size() && consumed < max_count; ++i) {
     const std::string& next_arg = args[i];
+    // 如果遇到 "--"，表示用户想提前结束当前选项的参数收集
+    if (next_arg == "--") {
+      terminated_by_dashdash = true;
+      break;
+    }
     // 如果遇到选项参数，停止消耗
     if (isOptionString(next_arg)) {
       break;
@@ -90,12 +93,16 @@ size_t OptionArgument<T>::parse(const std::vector<std::string>& args,
     this->m_sync_to_target();
   }
   
+  // 自动调用验证器
+  this->validate();
+  
   // 执行用户回调
   if (this->m_callback) {
     this->m_callback();
   }
   
-  return consumed + 1;  // 消耗了选项参数本身 + 值的个数
+  // 消耗了选项参数本身 + 值的个数 + (如果被 -- 终止，还要消耗 --)
+  return consumed + 1 + (terminated_by_dashdash ? 1 : 0);
 }
 
 // 重写匹配方法
@@ -120,14 +127,13 @@ void OptionArgument<T>::validateNames() const {
 
   for (const auto& name : names) {
     if (name.empty()) {
-      throw std::invalid_argument("Flag name cannot be empty");
+      throw std::invalid_argument("Option name cannot be empty");
     }
     if (name == "-" || name == "--") {
-      throw std::invalid_argument("Flag name cannot only be '-' or '--'");
+      throw std::invalid_argument("Option name cannot only be '-' or '--'");
     }
-    if (name[0] != '-' || name.size() > 1 && name[1] != '-') {
-      throw std::invalid_argument("Flag name must start with '-' or '--': " +
-                                  name);
+    if (name[0] != '-') {
+      throw std::invalid_argument("Option name must start with '-': " + name);
     }
   }
 }

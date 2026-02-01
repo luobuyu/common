@@ -9,19 +9,15 @@ public:
 
   // 构造函数1: 绑定 vector<T>
  PositionalArgument(const std::vector<std::string>& names,
-                    std::vector<T>& target, const std::string& description = "",
-                    bool required = false,
-                    std::function<void()> callback = nullptr);
+                    std::vector<T>& target, const std::string& description = "");
 
  // 构造函数2: 绑定单个 T
  PositionalArgument(const std::vector<std::string>& names, T& target,
-                    const std::string& description = "", bool required = false,
-                    std::function<void()> callback = nullptr);
+                    const std::string& description = "");
 
  // 构造函数3: 不绑定
  PositionalArgument(const std::vector<std::string>& names,
-                    const std::string& description = "", bool required = false,
-                    std::function<void()> callback = nullptr);
+                    const std::string& description = "");
 
  // 重写解析方法
  size_t parse(const std::vector<std::string>& args,

@@ -8,25 +8,14 @@
 // OptionArgument: 不绑定
 template <typename T>
 OptionArgument<T>& ArgumentParser::addOptionArgument(
-    const std::vector<std::string>& names, const std::string& description,
-    bool required, std::function<void()> callback) {
-  auto arg = std::make_unique<OptionArgument<T>>(names, description, required, callback);
+    const std::vector<std::string>& names, const std::string& description) {
+  auto arg = std::make_unique<OptionArgument<T>>(names, description);
   
   // 让子类验证自己的名称规则
   arg->validateNames();
   
   // 检查名称冲突
-  for (const auto& name : names) {
-    for (const auto& existing_arg : m_args) {
-      const auto& existing_names = existing_arg->getNames();
-      if (std::find(existing_names.begin(), existing_names.end(), name) != existing_names.end()) {
-        throw std::invalid_argument("Argument name already exists: " + name);
-      }
-    }
-    if (m_subcommands.count(name)) {
-      throw std::invalid_argument("Argument name conflicts with subcommand: " + name);
-    }
-  }
+  checkNameConflicts(names);
   
   OptionArgument<T>& ref = *arg;
   addArgument(std::move(arg));
@@ -37,25 +26,14 @@ OptionArgument<T>& ArgumentParser::addOptionArgument(
 template <typename T>
 OptionArgument<T>& ArgumentParser::addOptionArgument(
     const std::vector<std::string>& names, T& target,
-    const std::string& description, bool required,
-    std::function<void()> callback) {
-  auto arg = std::make_unique<OptionArgument<T>>(names, target, description, required, callback);
+    const std::string& description) {
+  auto arg = std::make_unique<OptionArgument<T>>(names, target, description);
   
   // 让子类验证自己的名称规则
   arg->validateNames();
   
   // 检查名称冲突
-  for (const auto& name : names) {
-    for (const auto& existing_arg : m_args) {
-      const auto& existing_names = existing_arg->getNames();
-      if (std::find(existing_names.begin(), existing_names.end(), name) != existing_names.end()) {
-        throw std::invalid_argument("Argument name already exists: " + name);
-      }
-    }
-    if (m_subcommands.count(name)) {
-      throw std::invalid_argument("Argument name conflicts with subcommand: " + name);
-    }
-  }
+  checkNameConflicts(names);
   
   OptionArgument<T>& ref = *arg;
   addArgument(std::move(arg));
@@ -66,25 +44,14 @@ OptionArgument<T>& ArgumentParser::addOptionArgument(
 template <typename T>
 OptionArgument<T>& ArgumentParser::addOptionArgument(
     const std::vector<std::string>& names, std::vector<T>& target,
-    const std::string& description, bool required,
-    std::function<void()> callback) {
-  auto arg = std::make_unique<OptionArgument<T>>(names, target, description, required, callback);
+    const std::string& description) {
+  auto arg = std::make_unique<OptionArgument<T>>(names, target, description);
   
   // 让子类验证自己的名称规则
   arg->validateNames();
   
   // 检查名称冲突
-  for (const auto& name : names) {
-    for (const auto& existing_arg : m_args) {
-      const auto& existing_names = existing_arg->getNames();
-      if (std::find(existing_names.begin(), existing_names.end(), name) != existing_names.end()) {
-        throw std::invalid_argument("Argument name already exists: " + name);
-      }
-    }
-    if (m_subcommands.count(name)) {
-      throw std::invalid_argument("Argument name conflicts with subcommand: " + name);
-    }
-  }
+  checkNameConflicts(names);
   
   OptionArgument<T>& ref = *arg;
   addArgument(std::move(arg));
@@ -93,25 +60,14 @@ OptionArgument<T>& ArgumentParser::addOptionArgument(
 
 template <typename T>
 PositionalArgument<T>& ArgumentParser::addPositionalArgument(
-    const std::vector<std::string>& names, const std::string& description,
-    bool required, std::function<void()> callback) {
-  auto arg = std::make_unique<PositionalArgument<T>>(names, description, required, callback);
+    const std::vector<std::string>& names, const std::string& description) {
+  auto arg = std::make_unique<PositionalArgument<T>>(names, description);
   
   // 让子类验证自己的名称规则
   arg->validateNames();
   
   // 检查名称冲突
-  for (const auto& name : names) {
-    for (const auto& existing_arg : m_args) {
-      const auto& existing_names = existing_arg->getNames();
-      if (std::find(existing_names.begin(), existing_names.end(), name) != existing_names.end()) {
-        throw std::invalid_argument("Argument name already exists: " + name);
-      }
-    }
-    if (m_subcommands.count(name)) {
-      throw std::invalid_argument("Argument name conflicts with subcommand: " + name);
-    }
-  }
+  checkNameConflicts(names);
   
   PositionalArgument<T>& ref = *arg;
   addArgument(std::move(arg));
@@ -121,25 +77,14 @@ PositionalArgument<T>& ArgumentParser::addPositionalArgument(
 template <typename T>
 PositionalArgument<T>& ArgumentParser::addPositionalArgument(
     const std::vector<std::string>& names, T& target,
-    const std::string& description, bool required,
-    std::function<void()> callback) {
-  auto arg = std::make_unique<PositionalArgument<T>>(names, target, description, required, callback);
+    const std::string& description) {
+  auto arg = std::make_unique<PositionalArgument<T>>(names, target, description);
   
   // 让子类验证自己的名称规则
   arg->validateNames();
   
   // 检查名称冲突
-  for (const auto& name : names) {
-    for (const auto& existing_arg : m_args) {
-      const auto& existing_names = existing_arg->getNames();
-      if (std::find(existing_names.begin(), existing_names.end(), name) != existing_names.end()) {
-        throw std::invalid_argument("Argument name already exists: " + name);
-      }
-    }
-    if (m_subcommands.count(name)) {
-      throw std::invalid_argument("Argument name conflicts with subcommand: " + name);
-    }
-  }
+  checkNameConflicts(names);
   
   PositionalArgument<T>& ref = *arg;
   addArgument(std::move(arg));
@@ -149,28 +94,16 @@ PositionalArgument<T>& ArgumentParser::addPositionalArgument(
 template <typename T>
 PositionalArgument<T>& ArgumentParser::addPositionalArgument(
     const std::vector<std::string>& names, std::vector<T>& target,
-    const std::string& description, bool required,
-    std::function<void()> callback) {
-  auto arg = std::make_unique<PositionalArgument<T>>(names, target, description, required, callback);
+    const std::string& description) {
+  auto arg = std::make_unique<PositionalArgument<T>>(names, target, description);
   
   // 让子类验证自己的名称规则
   arg->validateNames();
   
   // 检查名称冲突
-  for (const auto& name : names) {
-    for (const auto& existing_arg : m_args) {
-      const auto& existing_names = existing_arg->getNames();
-      if (std::find(existing_names.begin(), existing_names.end(), name) != existing_names.end()) {
-        throw std::invalid_argument("Argument name already exists: " + name);
-      }
-    }
-    if (m_subcommands.count(name)) {
-      throw std::invalid_argument("Argument name conflicts with subcommand: " + name);
-    }
-  }
+  checkNameConflicts(names);
   
   PositionalArgument<T>& ref = *arg;
   addArgument(std::move(arg));
   return ref;
 }
-

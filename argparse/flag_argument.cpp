@@ -1,31 +1,27 @@
 #include "flag_argument.h"
 
-// 统一构造函数
+// 构造函数（不带 required 和 callback 参数，避免隐式转换问题）
 FlagArgument::FlagArgument(const std::vector<std::string>& names,
-                           const std::string& description,
-                           bool required, std::function<void()> callback)
-    : Argument(ArgumentType::Flag, names, description, required, callback),
-      m_flag(false),
-      m_default_flag(false) {
+                           const std::string& description)
+    : Argument(ArgumentType::Flag, names, description),
+      m_flag(false) {
 }
 
 FlagArgument::FlagArgument(const std::vector<std::string>& names, bool& target,
-                           const std::string& description,
-                           bool required, std::function<void()> callback)
-    : Argument(ArgumentType::Flag, names, description, required, callback),
-      m_flag(false),
-      m_default_flag(false) {
+                           const std::string& description)
+    : Argument(ArgumentType::Flag, names, description),
+      m_flag(false) {
   bindTo(target);
 }
 
 bool FlagArgument::getFlag() const {
   // 简化逻辑: 
   // - 如果被解析过(m_parsed=true)，返回 m_flag
-  // - 否则返回默认值 m_default_flag
+  // - 否则返回默认值（如果有），或者 false
   if (isParsed()) {
     return m_flag;
   }
-  return m_default_flag;
+  return m_default_flag.value_or(false);
 }
 
 void FlagArgument::setFlag(bool value) {
@@ -48,7 +44,11 @@ void FlagArgument::setDefaultValue(bool value) {
 }
 
 bool FlagArgument::getDefaultValue() const {
-  return m_default_flag;
+  return m_default_flag.value_or(false);
+}
+
+bool FlagArgument::hasDefaultValue() const {
+  return m_default_flag.has_value();
 }
 
 FlagArgument& FlagArgument::description(const std::string& description) {
@@ -76,9 +76,30 @@ FlagArgument& FlagArgument::bindTo(bool& target) {
   return *this;
 }
 
+FlagArgument& FlagArgument::validator(std::function<bool(bool)> validator) {
+  m_validator = validator;
+  return *this;
+}
+
+bool FlagArgument::isValid() const {
+  // 如果没有设置验证器，默认验证通过
+  if (!m_validator) {
+    return true;
+  }
+  return m_validator(getFlag());
+}
+
+void FlagArgument::validate() const {
+  if (!isValid()) {
+    std::string name = getNames().empty() ? "unknown" : getNames()[0];
+    throw std::invalid_argument("Validation failed for flag argument: " + name);
+  }
+}
+
 size_t FlagArgument::parse(const std::vector<std::string>& args,
                            size_t current_index) {
   setFlag(true);
+  validate();  // 解析后自动验证
   return 1;  // 消耗了标志参数本身
 }
 
@@ -97,20 +118,16 @@ void FlagArgument::validateNames() const {
   if (names.empty()) {
     throw std::invalid_argument("Flag argument must have at least one name");
   }
-  
+
   for (const auto& name : names) {
     if (name.empty()) {
       throw std::invalid_argument("Flag name cannot be empty");
     }
-    if(name == "-" || name == "--") {
+    if (name == "-" || name == "--") {
       throw std::invalid_argument("Flag name cannot only be '-' or '--'");
     }
     if (name[0] != '-') {
       throw std::invalid_argument("Flag name must start with '-': " + name);
-    }
-    // 长选项（超过2个字符）必须以 -- 开头
-    if (name.size() > 2 && name[1] != '-') {
-      throw std::invalid_argument("Long flag name must start with '--': " + name);
     }
   }
 }

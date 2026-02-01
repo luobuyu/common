@@ -13,13 +13,12 @@ enum class ArgumentType {
 
 class Argument {
 public:
-  // 使用默认参数的构造函数
+  // 构造函数（不带 required 和 callback 参数，避免隐式转换问题）
+  // 使用链式调用 .required() 和 .callback() 来设置
   Argument(const std::vector<std::string>& names,
-           const std::string& description, bool required = false,
-           std::function<void()> callback = nullptr);
+           const std::string& description);
   Argument(const ArgumentType& type, const std::vector<std::string>& names,
-           const std::string& description, bool required = false,
-           std::function<void()> callback = nullptr);
+           const std::string& description);
   virtual ~Argument() = default;
 
   // setter
@@ -27,6 +26,11 @@ public:
   void setRequired(bool required);
   void setParsed(bool parsed);
   void setCallback(std::function<void()> callback);
+
+  // 链式调用
+  Argument& description(const std::string& description);
+  Argument& required();
+  Argument& callback(std::function<void()> callback);
 
   const std::vector<std::string>& getNames() const;
   const std::string& getDescription() const;
@@ -51,6 +55,27 @@ public:
   //   - OptionArgument: 返回 1 + 消耗的值的个数
   //   - PositionalArgument: 返回实际消耗的参数数量
   virtual size_t parse(const std::vector<std::string>& args, size_t current_index) = 0;
+
+  // 检查是否设置了默认值（子类应重写此方法）
+  virtual bool hasDefaultValue() const { return false; }
+
+  // 将默认值同步到绑定的外部变量（对于未被解析的参数）
+  // 内部会检查 hasDefaultValue，只有设置了默认值时才执行同步
+  // 默认实现调用 m_sync_to_target（如果有的话）
+  virtual void syncDefaultValue() {
+    if (hasDefaultValue() && m_sync_to_target) {
+      m_sync_to_target();
+    }
+  }
+
+  // ========== 验证器接口 ==========
+  // 检查参数值是否有效（由子类实现具体验证逻辑）
+  // 返回 true 表示验证通过，false 表示验证失败
+  virtual bool isValid() const = 0;
+
+  // 验证参数值，如果无效则抛出异常
+  // 默认实现：调用 isValid()，失败时抛出 std::invalid_argument
+  virtual void validate() const = 0;
 
  protected:
   ArgumentType m_type;               // 参数类型
