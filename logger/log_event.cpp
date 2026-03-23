@@ -24,14 +24,16 @@ std::string levelToString(LogLevel level) {
       return re;
     case OFF:
       re = "OFF";
+      return re;
     default:
       return re;
   }
 }
 
-LogEvent::LogEvent(logger::LogLevel log_level, std::string module_name,
-                   std::string file_name, std::string funtion_name,
-                   uint32_t line_id, std::string log_msg)
+LogEvent::LogEvent(logger::LogLevel log_level, const std::string &module_name,
+                   const std::string &file_name,
+                   const std::string &function_name, uint32_t line_id,
+                   const std::string &log_msg)
     : m_timestamp(dry::clock::now()),
       m_log_level(log_level),
       m_module_name(module_name),
@@ -39,9 +41,9 @@ LogEvent::LogEvent(logger::LogLevel log_level, std::string module_name,
       m_thread_id(std::this_thread::get_id()),
       m_coroutine_id(0),
       m_file_name(file_name),
-      m_funtion_name(funtion_name),
+      m_function_name(function_name),
       m_line_id(line_id),
-      m_log_msg(log_msg) {};
+      m_log_msg(log_msg){};
 
 std::ostream &operator<<(std::ostream &os, const logger::LogEvent &log_event) {
   os << dry::getTime(log_event.m_timestamp, "%Y-%m-%d %H:%M:%S ") << "["
@@ -49,7 +51,7 @@ std::ostream &operator<<(std::ostream &os, const logger::LogEvent &log_event) {
      << "[" << std::to_string(log_event.m_process_id) << ", "
      << log_event.m_thread_id << ", " << log_event.m_coroutine_id << "] "
      << "[" << log_event.m_module_name << "] "
-     << "[" << log_event.m_file_name << ":" << log_event.m_funtion_name << ":"
+     << "[" << log_event.m_file_name << ":" << log_event.m_function_name << ":"
      << log_event.m_line_id << "] " << log_event.m_log_msg << "\n";
   return os;
 }

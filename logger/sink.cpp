@@ -3,18 +3,18 @@
 #include <filesystem>
 namespace logger {
 logger::FileSink::FileSink(const std::string &file_path, uint32_t max_size,
-                           dry::clock::duration rotate_inteval)
+                           dry::clock::duration rotate_interval)
     : m_file_path(file_path),
       m_no(0),
       m_max_size(max_size),
-      m_rotate_inteval(rotate_inteval),
-      m_next_start(dry::clock::now() + m_rotate_inteval) {}
+      m_rotate_interval(rotate_interval),
+      m_next_start(dry::clock::now() + m_rotate_interval) {}
 void FileSink::sink(const logger::LogEvent &log_event,
                     LoggerFormat::LoggerFormatPtr &log_format) {
   bool create_new_file = !m_ofs.is_open();
   // 如果超过了日期
   if (log_event.m_timestamp >= m_next_start) {
-    m_next_start += m_rotate_inteval;
+    m_next_start += m_rotate_interval;
     m_no = 0;
     create_new_file = true;
   }
@@ -35,12 +35,15 @@ void FileSink::openNewFile() {
     m_ofs.flush();
     m_ofs.close();
   }
-  std::string date = dry::getTime(m_next_start - m_rotate_inteval, "%Y%m%d%H");
+  std::string date = dry::getTime(m_next_start - m_rotate_interval, "%Y%m%d%H");
   std::filesystem::path file_name = date + "-" + std::to_string(m_no) + ".log";
   std::filesystem::path file_full_name = m_file_path / file_name;
+  // 确保日志目录存在
+  std::filesystem::create_directories(m_file_path);
   m_ofs.open(file_full_name, std::ios::app);
   if (!m_ofs.is_open()) {
-    std::cerr << "fail to open " << file_full_name << std::endl;
+    std::cerr << "fail to open " << file_full_name << ", abort!" << std::endl;
+    std::abort();
   }
 }
 

@@ -11,28 +11,30 @@ static std::string getTime(std::string format) {
   // 获取当前时间
   std::time_t t = clock::to_time_t(now);
 
-  // 将时间转换为本地时间
-  std::tm* local_time = std::localtime(&t);
+  // 将时间转换为本地时间（线程安全）
+  std::tm local_time;
+  localtime_r(&t, &local_time);
 
   // 创建缓冲区来存储格式化日期
   char date_buffer[32];
 
   // 格式化输出日期（格式：YYYY-MM-DD）
-  std::strftime(date_buffer, sizeof(date_buffer), format.c_str(), local_time);
+  std::strftime(date_buffer, sizeof(date_buffer), format.c_str(), &local_time);
   return std::string(date_buffer);
 }
 
 static std::string getTime(const clock::time_point& t,
                            const std::string& format) {
-  // 将时间转换为本地时间
+  // 将时间转换为本地时间（线程安全）
   std::time_t t_time_t = clock::to_time_t(t);
-  std::tm* local_time = std::localtime(&t_time_t);
+  std::tm local_time;
+  localtime_r(&t_time_t, &local_time);
 
   // 创建缓冲区来存储格式化日期
   char date_buffer[32];
 
   // 格式化输出日期（格式：YYYY-MM-DD）
-  std::strftime(date_buffer, sizeof(date_buffer), format.c_str(), local_time);
+  std::strftime(date_buffer, sizeof(date_buffer), format.c_str(), &local_time);
   return std::string(date_buffer);
 }
 

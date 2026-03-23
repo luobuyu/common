@@ -9,7 +9,8 @@ namespace logger {
 /*********************************************************/
 
 void Logger::coredumpHandler(int signal_no) {
-  std::cerr << "progress received invalid signal, will exit" << std::endl;
+  std::cerr << "process received invalid signal, will exit" << std::endl;
+  // 这里仅做 flush 尽量保证已有日志写入磁盘
   if (Logger::getInstance() != nullptr) {
     for (auto &sink : Logger::getInstance()->getLogSinks()) {
       sink->flush();
@@ -42,7 +43,7 @@ void Logger::registerCoredumpHandler() {
   signal(SIGSEGV, coredumpHandler);
   signal(SIGABRT, coredumpHandler);
   signal(SIGTERM, coredumpHandler);
-  signal(SIGKILL, coredumpHandler);
+  // SIGKILL 不可捕获，不注册
   signal(SIGINT, coredumpHandler);
   signal(SIGHUP, coredumpHandler);
   // ignore SIGPIPE
@@ -74,11 +75,11 @@ void Logger::init(const logger::LogLevel &log_level,
   Logger::is_open_log = true;
   Logger::m_module_name = module_name;
   m_log_format = log_format;
-  m_log_sinks = std::move(log_sinks);
+  m_log_sinks = log_sinks;
   registerCoredumpHandler();
 }
 
-std::vector<std::shared_ptr<logger::LogSink>> Logger::getLogSinks() {
+const std::vector<std::shared_ptr<logger::LogSink>> &Logger::getLogSinks() {
   return m_log_sinks;
 }
 
@@ -100,32 +101,38 @@ Logger::~Logger() {
 
 SyncLogger *SyncLogger::getInstance() {
   static SyncLogger sync_logger;
-  logger_ptr = &sync_logger;
+  // 仅在 logger_ptr 未被设置时赋值，避免覆盖其他子类实例
+  if (logger_ptr == nullptr) {
+    logger_ptr = &sync_logger;
+  }
   return &sync_logger;
 }
 
-void SyncLogger::log(const logger::LogEvent &log_event) {
+void SyncLogger::log(logger::LogEvent log_event) {
+  std::lock_guard<std::mutex> lock(m_mtx);
   for (auto &sink : m_log_sinks) {
     sink->sink(log_event, m_log_format);
   }
 }
-void logger::SyncLogger::shutDownNow() {}
-
 /*********************************************************/
 /****************AsyncLogger*******************************/
 /*********************************************************/
 
 AsyncLogger *AsyncLogger::getInstance() {
   static AsyncLogger async_logger;
-  logger_ptr = &async_logger;
+  // 仅在 logger_ptr 未被设置时赋值，避免覆盖其他子类实例
+  if (logger_ptr == nullptr) {
+    logger_ptr = &async_logger;
+  }
   return &async_logger;
 }
 
-AsyncLogger::~AsyncLogger() {
-  m_logs.waitStop();
-  if (m_async_thread.joinable()) m_async_thread.join();
+void AsyncLogger::beforeExit() {
   m_logs.stop();
+  if (m_async_thread.joinable()) m_async_thread.join();
 }
+
+AsyncLogger::~AsyncLogger() { beforeExit(); }
 
 void logger::AsyncLogger::init(
     const logger::LogLevel &log_level, const std::string &module_name,
@@ -151,7 +158,7 @@ void logger::AsyncLogger::init(
   Logger::log_level = log_level;
   Logger::is_open_log = true;
   Logger::m_module_name = module_name;
-  m_log_sinks = std::move(log_sinks);
+  m_log_sinks = log_sinks;
   m_logs.resize(queue_size);
   m_log_format = log_format;
   m_async_thread =
@@ -164,20 +171,27 @@ void AsyncLogger::bgLogLoop() {
   while (true) {
     logger::LogEvent log_event;
 
-    if (!m_logs.pop(log_event)) break;
+    if (!m_logs.pop(log_event)) {
+      // 队列停止了，退出前 flush 所有 sink
+      for (auto &sink : m_log_sinks) {
+        sink->flush();
+      }
+      break;
+    }
     if (log_event.m_log_msg.empty()) continue;
     for (auto &sink : m_log_sinks) {
       sink->sink(log_event, m_log_format);
     }
+    // 如果队列已经被消费空了，主动 flush 一次
+    if (m_logs.empty()) {
+      for (auto &sink : m_log_sinks) {
+        sink->flush();
+      }
+    }
   }
 }
 
-void AsyncLogger::log(const logger::LogEvent &log_event) {
+void AsyncLogger::log(logger::LogEvent log_event) {
   m_logs.push(std::move(log_event));
-}
-
-void logger::AsyncLogger::shutDownNow() {
-  m_logs.stop();
-  if (m_async_thread.joinable()) m_async_thread.join();
 }
 };  // namespace logger

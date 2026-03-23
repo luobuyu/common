@@ -2,6 +2,7 @@
 #define LOG_LOG_H
 
 #include <memory>
+#include <mutex>
 #include <string>
 #include <thread>
 #include <vector>
@@ -35,7 +36,7 @@ std::string formatString(const char *str, Args &&...args) {
                                          ", so it's truncated.";
   bool flag = false;
   int size = snprintf(nullptr, 0, str, args...);
-  if (size <= 0) return "";
+  if (size < 0) return "";
 #ifdef FMT_FOUND
   std::string result = fmt::sprintf(str, std::forward<Args>(args)...);
   flag = (result.length() > MAX_SIZE);
@@ -74,16 +75,17 @@ class Logger {
             const std::vector<logger::LogSink::LogSinkPtr> &log_sinks,
             const logger::LoggerFormat::LoggerFormatPtr &log_format =
                 logger::LoggerFormat::LoggerFormatPtr(new LoggerFormat()));
-  std::vector<std::shared_ptr<logger::LogSink>> getLogSinks();
+  const std::vector<std::shared_ptr<logger::LogSink>> &getLogSinks();
   void registerCoredumpHandler();
 
   // 静态成员函数 - 信号处理
   static void coredumpHandler(int signal_no);
 
   // 需要重写，同步写日志和异步写日志方法
-  virtual void shutDownNow() = 0;
-  virtual void log(const logger::LogEvent &log_event) = 0;
-  ~Logger();
+  virtual void log(logger::LogEvent log_event) = 0;
+  // 退出前的清理操作，子类可重写（如 AsyncLogger 需排空队列）
+  virtual void beforeExit() {}
+  virtual ~Logger();
 
  protected:
   Logger() = default;
@@ -98,12 +100,12 @@ class Logger {
 class SyncLogger : public Logger {
  public:
   static SyncLogger *getInstance();
-  void log(const logger::LogEvent &log_event) override;
-  void shutDownNow() override;
+  void log(logger::LogEvent log_event) override;
   ~SyncLogger() = default;
 
  private:
   SyncLogger() = default;
+  std::mutex m_mtx;  // 保护多线程同步写入
 };
 
 // 异步刷盘类，将queue中的日志刷盘
@@ -125,8 +127,9 @@ class AsyncLogger : public Logger {
 
   AsyncLogger(const AsyncLogger &) = delete;
   AsyncLogger &operator=(const AsyncLogger &) = delete;
-  void log(const logger::LogEvent &log_event) override;
-  void shutDownNow() override;
+  void log(logger::LogEvent log_event) override;
+  // 退出前排空异步队列并等待消费线程结束
+  void beforeExit() override;
   ~AsyncLogger();
 
  private:

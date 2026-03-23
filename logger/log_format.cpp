@@ -40,7 +40,9 @@ void logger::LoggerFormat::parserPattern() {
         is_pre_other = false;
       } else {
         // % 是末尾，或者 不能生产，就是 other
-        size_t index = m_pattern.find_first_of('%', i + 1) - 1;
+        size_t pos = m_pattern.find_first_of('%', i + 1);
+        size_t index =
+            (pos == std::string::npos) ? m_pattern.size() - 1 : pos - 1;
         std::string val = m_pattern.substr(i, index - i + 1);
         if (is_pre_other)
           m_format_items.back()->setFmt(
@@ -53,7 +55,9 @@ void logger::LoggerFormat::parserPattern() {
       }
     } else {
       // other char
-      size_t index = m_pattern.find_first_of('%', i) - 1;
+      size_t pos = m_pattern.find_first_of('%', i);
+      size_t index =
+          (pos == std::string::npos) ? m_pattern.size() - 1 : pos - 1;
       std::string val = m_pattern.substr(i, index - i + 1);
       if (is_pre_other)
         m_format_items.back()->setFmt(
@@ -110,7 +114,7 @@ void FileNameFormatItem::format(std::ostream &os,
 }
 void FunctionNameFormatItem::format(std::ostream &os,
                                     const logger::LogEvent &log_msg) {
-  os << log_msg.m_funtion_name;
+  os << log_msg.m_function_name;
 }
 void LineIdFormatItem::format(std::ostream &os,
                               const logger::LogEvent &log_msg) {

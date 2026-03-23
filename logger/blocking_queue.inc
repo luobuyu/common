@@ -31,7 +31,7 @@ void CircleQueue<T>::push(T &&item) {
 
 template <class T>
 void CircleQueue<T>::push(const T &item) {
-  m_vec[m_tail] = std::move(item);
+  m_vec[m_tail] = item;
   m_tail = (m_tail + 1) % m_max_size;
 }
 
@@ -56,11 +56,10 @@ void logger::CircleQueue<T>::resize(int size) {
 /****************BlockingQueue*******************************/
 /*********************************************************/
 template <class T>
-BlockingQueue<T>::BlockingQueue()
-    : m_queue(1024), m_is_stop_now(false), m_is_stop_wait(false) {}
+BlockingQueue<T>::BlockingQueue() : m_queue(1024), m_is_stopping(false) {}
 template <class T>
 BlockingQueue<T>::BlockingQueue(int max_size)
-    : m_queue(max_size), m_is_stop_now(false), m_is_stop_wait(false) {}
+    : m_queue(max_size), m_is_stopping(false) {}
 template <class T>
 BlockingQueue<T>::~BlockingQueue() {
   m_cond_comsumer.notify_all();
@@ -69,7 +68,9 @@ template <class T>
 void BlockingQueue<T>::push(T &&item) {
   {
     std::unique_lock<std::mutex> lock(m_mtx);
-    m_cond_producer.wait(lock, [&]() { return !m_queue.full(); });
+    m_cond_producer.wait(lock,
+                         [&]() { return !m_queue.full() || m_is_stopping; });
+    if (m_is_stopping) return;  // 停止后不再接受新数据
     m_queue.push(std::move(item));
   }
   m_cond_comsumer.notify_one();
@@ -78,7 +79,9 @@ template <class T>
 void BlockingQueue<T>::push(const T &item) {
   {
     std::unique_lock<std::mutex> lock(m_mtx);
-    m_cond_producer.wait(lock, [&]() { return !m_queue.full(); });
+    m_cond_producer.wait(lock,
+                         [&]() { return !m_queue.full() || m_is_stopping; });
+    if (m_is_stopping) return;  // 停止后不再接受新数据
     m_queue.push(std::move(item));
   }
   m_cond_comsumer.notify_one();
@@ -88,17 +91,16 @@ bool BlockingQueue<T>::tryPop(T &item) {
   std::lock_guard<std::mutex> lock(m_mtx);
   if (m_queue.empty()) return false;
   item = std::move(m_queue.front());
-  m_queue.pop();
+  m_queue.popFront();
   m_cond_producer.notify_one();
   return true;
 }
 template <class T>
 bool BlockingQueue<T>::pop(T &item) {
   std::unique_lock<std::mutex> lock(m_mtx);
-  m_cond_comsumer.wait(lock, [&]() {
-    return !m_queue.empty() || m_is_stop_now || m_is_stop_wait;
-  });
-  if (m_is_stop_now || m_is_stop_wait && m_queue.empty()) return false;
+  m_cond_comsumer.wait(lock,
+                       [&]() { return !m_queue.empty() || m_is_stopping; });
+  if (m_is_stopping && m_queue.empty()) return false;
   item = std::move(m_queue.front());
   m_queue.popFront();
   m_cond_producer.notify_one();
@@ -114,8 +116,7 @@ template <class T>
 void BlockingQueue<T>::resize(int size) {
   std::lock_guard<std::mutex> lock(m_mtx);
   m_queue.resize(size);
-  m_is_stop_now.store(false);
-  m_is_stop_wait.store(false);
+  m_is_stopping.store(false);
 }
 template <class T>
 bool BlockingQueue<T>::empty() {
@@ -124,12 +125,8 @@ bool BlockingQueue<T>::empty() {
 }
 template <class T>
 void BlockingQueue<T>::stop() {
-  m_is_stop_now.store(true);
+  m_is_stopping.store(true);
   m_cond_comsumer.notify_all();
-}
-template <class T>
-void BlockingQueue<T>::waitStop() {
-  m_is_stop_wait.store(true);
-  m_cond_comsumer.notify_all();
+  m_cond_producer.notify_all();  // 唤醒可能阻塞在 push 的生产者
 }
 }  // namespace logger

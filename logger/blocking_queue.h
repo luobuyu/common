@@ -21,9 +21,9 @@ class CircleQueue {
   void resize(int size);
 
  private:
-  uint32_t m_max_size;
-  uint32_t m_head;
-  uint32_t m_tail;
+  uint32_t m_max_size = 0;
+  uint32_t m_head = 0;
+  uint32_t m_tail = 0;
   std::vector<T> m_vec;
 };
 
@@ -43,15 +43,13 @@ class BlockingQueue {
   bool empty();
 
   void stop();
-  void waitStop();
 
  private:
   logger::CircleQueue<T> m_queue;
   mutable std::mutex m_mtx;
   std::condition_variable m_cond_producer;
   std::condition_variable m_cond_comsumer;
-  std::atomic_bool m_is_stop_now;
-  std::atomic_bool m_is_stop_wait;
+  std::atomic_bool m_is_stopping;
 };
 }  // namespace logger
 

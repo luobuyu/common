@@ -19,9 +19,9 @@ std::string levelToString(LogLevel level);
 // [时间戳] [日志级别] [模块名] [线程ID] [文件名:行号] [callgraphid]
 struct LogEvent {
  public:
-  LogEvent(logger::LogLevel log_level, std::string module_name,
-           std::string file_name, std::string funtion_name, uint32_t line_id,
-           std::string log_msg);
+  LogEvent(logger::LogLevel log_level, const std::string &module_name,
+           const std::string &file_name, const std::string &function_name,
+           uint32_t line_id, const std::string &log_msg);
   friend std::ostream &operator<<(std::ostream &os,
                                   const logger::LogEvent &log_event);
   LogEvent() = default;
@@ -33,7 +33,7 @@ struct LogEvent {
   std::thread::id m_thread_id;
   uint32_t m_coroutine_id;
   std::string m_file_name;
-  std::string m_funtion_name;
+  std::string m_function_name;
   uint32_t m_line_id;
   std::string m_log_msg;
 };

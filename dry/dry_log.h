@@ -16,9 +16,9 @@ namespace dry {
 static void initLogger(config::Config& conf) {
   auto logger = logger::AsyncLogger::getInstance();
   std::string module_name = conf.getString("logger", "module_name", "app");
-  logger::LogLevel log_level = static_cast<logger::LogLevel>(
-      conf.getInt("logger", "log_level", static_cast<int>(logger::LogLevel::INFO)));
-  
+  logger::LogLevel log_level = static_cast<logger::LogLevel>(conf.getInt(
+      "logger", "log_level", static_cast<int>(logger::LogLevel::INFO)));
+
   std::vector<logger::LogSink::LogSinkPtr> log_sinks;
   if (conf.getInt("logger", "file_sink", 1)) {
     std::string log_path = conf.getString("logger", "log_path", "../log");
@@ -27,13 +27,14 @@ static void initLogger(config::Config& conf) {
   if (conf.getInt("logger", "std_sink", 1)) {
     log_sinks.emplace_back(new logger::StdoutSink());
   }
-  
-  auto logger_format = logger::LoggerFormat::LoggerFormatPtr(new logger::LoggerFormat());
+
+  auto logger_format =
+      logger::LoggerFormat::LoggerFormatPtr(new logger::LoggerFormat());
   std::string pattern = conf.getString("logger", "log_format", "");
   if (!pattern.empty()) {
     logger_format->setPattern(pattern);
   }
-  
+
   logger->init(log_level, module_name, log_sinks, logger_format);
 }
 
@@ -44,37 +45,25 @@ static void initLogger(config::Config& conf) {
  * @param log_path 日志文件路径
  * @param enable_stdout 是否输出到控制台
  */
-static void initLogger(const std::string& module_name, 
-                      int level = 2, 
-                      const std::string& log_path = "../log",
-                      bool enable_stdout = true) {
+static void initLogger(const std::string& module_name, int level = 2,
+                       const std::string& log_path = "../log",
+                       bool enable_stdout = true) {
   auto logger = logger::AsyncLogger::getInstance();
   logger::LogLevel log_level = static_cast<logger::LogLevel>(level);
-  
+
   std::vector<logger::LogSink::LogSinkPtr> log_sinks;
   log_sinks.emplace_back(new logger::FileSink(log_path));
   if (enable_stdout) {
     log_sinks.emplace_back(new logger::StdoutSink());
   }
-  
+
   logger->init(log_level, module_name, log_sinks);
 }
 
-/**
- * @brief 关闭日志系统
- */
-static void shutdownLogger() {
-  if (auto logger = logger::AsyncLogger::getInstance()) {
-    logger->shutDownNow();
-  }
-}
-
 // 向后兼容的函数名
-static void openLog(config::Config& conf) {
-  initLogger(conf);
-}
+static void openLog(config::Config& conf) { initLogger(conf); }
 
-} // namespace dry
+}  // namespace dry
 
 // =============================================================================
 // 便捷的日志宏定义（dry库风格）

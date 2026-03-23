@@ -28,7 +28,7 @@ class FileSink : public LogSink {
   void openNewFile();
   void flush() override;
   FileSink(const std::string &file_path, uint32_t max_size = 10 * 1024 * 1024,
-           dry::clock::duration rotate_inteval = std::chrono::hours(1));
+           dry::clock::duration rotate_interval = std::chrono::hours(1));
 
  private:
   std::string m_file_path;  // 路径，
@@ -36,7 +36,7 @@ class FileSink : public LogSink {
   uint32_t m_max_size;
 
   std::ofstream m_ofs;  // 当前文件
-  dry::clock::duration m_rotate_inteval;
+  dry::clock::duration m_rotate_interval;
   dry::clock::time_point m_next_start;
 };
 
