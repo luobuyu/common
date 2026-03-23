@@ -137,7 +137,8 @@ AsyncLogger::~AsyncLogger() { beforeExit(); }
 void logger::AsyncLogger::init(
     const logger::LogLevel &log_level, const std::string &module_name,
     const logger::LogSink::LogSinkPtr &log_sink,
-    const logger::LoggerFormat::LoggerFormatPtr &log_format, int queue_size) {
+    const logger::LoggerFormat::LoggerFormatPtr &log_format, int queue_size,
+    std::chrono::milliseconds flush_interval) {
   if (log_level == OFF) return;
   Logger::log_level = log_level;
   Logger::is_open_log = true;
@@ -145,6 +146,7 @@ void logger::AsyncLogger::init(
   m_log_sinks.emplace_back(log_sink);
   m_logs.resize(queue_size);
   m_log_format = log_format;
+  m_flush_interval = flush_interval;
   m_async_thread =
       std::thread(&AsyncLogger::bgLogLoop, AsyncLogger::getInstance());
   registerCoredumpHandler();
@@ -153,7 +155,8 @@ void logger::AsyncLogger::init(
 void logger::AsyncLogger::init(
     const logger::LogLevel &log_level, const std::string &module_name,
     const std::vector<logger::LogSink::LogSinkPtr> &log_sinks,
-    const logger::LoggerFormat::LoggerFormatPtr &log_format, int queue_size) {
+    const logger::LoggerFormat::LoggerFormatPtr &log_format, int queue_size,
+    std::chrono::milliseconds flush_interval) {
   if (log_level == OFF) return;
   Logger::log_level = log_level;
   Logger::is_open_log = true;
@@ -161,6 +164,7 @@ void logger::AsyncLogger::init(
   m_log_sinks = log_sinks;
   m_logs.resize(queue_size);
   m_log_format = log_format;
+  m_flush_interval = flush_interval;
   m_async_thread =
       std::thread(&AsyncLogger::bgLogLoop, AsyncLogger::getInstance());
   registerCoredumpHandler();
@@ -171,22 +175,23 @@ void AsyncLogger::bgLogLoop() {
   while (true) {
     logger::LogEvent log_event;
 
-    if (!m_logs.pop(log_event)) {
-      // 队列停止了，退出前 flush 所有 sink
+    if (m_logs.popWithTimeout(log_event, m_flush_interval)) {
+      // 正常拿到数据，消费
+      if (!log_event.m_log_msg.empty()) {
+        for (auto &sink : m_log_sinks) {
+          sink->sink(log_event, m_log_format);
+        }
+      }
+    } else {
+      // popWithTimeout 返回 false：超时 或 stop+空
+      // 无论哪种情况，先 flush 一次确保已有日志落盘
       for (auto &sink : m_log_sinks) {
         sink->flush();
       }
-      break;
-    }
-    if (log_event.m_log_msg.empty()) continue;
-    for (auto &sink : m_log_sinks) {
-      sink->sink(log_event, m_log_format);
-    }
-    // 如果队列已经被消费空了，主动 flush 一次
-    if (m_logs.empty()) {
-      for (auto &sink : m_log_sinks) {
-        sink->flush();
+      if (m_logs.isStopping()) {
+        break;  // stop 且队列已空，直接退出
       }
+      // 是超时，继续循环等待新日志
     }
   }
 }

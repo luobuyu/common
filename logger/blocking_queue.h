@@ -1,6 +1,7 @@
 #ifndef LOG_BLOCKING_QUEUE_H
 #define LOG_BLOCKING_QUEUE_H
 #include <atomic>
+#include <chrono>
 #include <condition_variable>
 #include <mutex>
 #include <vector>
@@ -37,12 +38,15 @@ class BlockingQueue {
   void push(const T &item);
   bool tryPop(T &item);
   bool pop(T &item);
+  // 带超时的 pop，超时返回 false 且 item 不变，队列 stop+空 时也返回 false
+  bool popWithTimeout(T &item, std::chrono::milliseconds timeout);
 
   int size() const;
   void resize(int size);
   bool empty();
 
   void stop();
+  bool isStopping() const;
 
  private:
   logger::CircleQueue<T> m_queue;

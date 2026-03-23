@@ -106,6 +106,20 @@ bool BlockingQueue<T>::pop(T &item) {
   m_cond_producer.notify_one();
   return true;
 }
+template <class T>
+bool BlockingQueue<T>::popWithTimeout(T &item,
+                                      std::chrono::milliseconds timeout) {
+  std::unique_lock<std::mutex> lock(m_mtx);
+  bool got = m_cond_comsumer.wait_for(
+      lock, timeout, [&]() { return !m_queue.empty() || m_is_stopping; });
+  // got == false: 超时且谓词仍不满足 → 返回 false
+  // m_is_stopping && m_queue.empty(): stop 且队列空 → 返回 false
+  if (!got || (m_is_stopping && m_queue.empty())) return false;
+  item = std::move(m_queue.front());
+  m_queue.popFront();
+  m_cond_producer.notify_one();
+  return true;
+}
 
 template <class T>
 int BlockingQueue<T>::size() const {
@@ -128,5 +142,9 @@ void BlockingQueue<T>::stop() {
   m_is_stopping.store(true);
   m_cond_comsumer.notify_all();
   m_cond_producer.notify_all();  // 唤醒可能阻塞在 push 的生产者
+}
+template <class T>
+bool BlockingQueue<T>::isStopping() const {
+  return m_is_stopping.load();
 }
 }  // namespace logger

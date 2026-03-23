@@ -1,6 +1,7 @@
 #ifndef LOG_LOG_H
 #define LOG_LOG_H
 
+#include <chrono>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -118,12 +119,16 @@ class AsyncLogger : public Logger {
             const logger::LogSink::LogSinkPtr &log_sink,
             const logger::LoggerFormat::LoggerFormatPtr &log_format =
                 logger::LoggerFormat::LoggerFormatPtr(new LoggerFormat()),
-            int queue_size = 8192);
+            int queue_size = 8192,
+            std::chrono::milliseconds flush_interval =
+                std::chrono::milliseconds(3000));
   void init(const logger::LogLevel &log_level, const std::string &module_name,
             const std::vector<logger::LogSink::LogSinkPtr> &log_sinks,
             const logger::LoggerFormat::LoggerFormatPtr &log_format =
                 logger::LoggerFormat::LoggerFormatPtr(new LoggerFormat()),
-            int queue_size = 8192);
+            int queue_size = 8192,
+            std::chrono::milliseconds flush_interval =
+                std::chrono::milliseconds(3000));
 
   AsyncLogger(const AsyncLogger &) = delete;
   AsyncLogger &operator=(const AsyncLogger &) = delete;
@@ -138,6 +143,8 @@ class AsyncLogger : public Logger {
   // 单线程刷盘
   std::thread m_async_thread;
   logger::BlockingQueue<logger::LogEvent> m_logs;
+  // 定时刷盘间隔，默认 3 秒
+  std::chrono::milliseconds m_flush_interval{3000};
 };
 };  // namespace logger
 
