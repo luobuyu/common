@@ -1,93 +1,23 @@
 #include "log.h"
 
-#include <csignal>
-
 namespace logger {
 
-/*********************************************************/
-/****************Logger Static Members*******************/
-/*********************************************************/
+// =============================================================================
+// Logger 基类实现
+// =============================================================================
 
-void Logger::coredumpHandler(int signal_no) {
-  std::cerr << "process received invalid signal, will exit" << std::endl;
-  // 这里仅做 flush 尽量保证已有日志写入磁盘
-  if (Logger::getInstance() != nullptr) {
-    for (auto &sink : Logger::getInstance()->getLogSinks()) {
-      sink->flush();
-    }
-  }
-  signal(signal_no, SIG_DFL);
-  raise(signal_no);
-}
+Logger::Logger(std::vector<LogSink::LogSinkPtr> sinks,
+               LoggerFormat::LoggerFormatPtr fmt)
+    : m_log_sinks(std::move(sinks)), m_log_format(std::move(fmt)) {}
 
-bool Logger::openLog() {
-  return Logger::getInstance() != nullptr && Logger::is_open_log;
-}
-
-bool Logger::shouldLog(logger::LogLevel level) {
-  return level <= Logger::log_level;
-}
-
-std::string Logger::getModuleName() { return Logger::m_module_name; }
-
-/*********************************************************/
-/****************Logger*******************************/
-/*********************************************************/
-Logger *Logger::logger_ptr = nullptr;
-logger::LogLevel Logger::log_level = logger::LogLevel::OFF;
-bool Logger::is_open_log = false;
-std::string Logger::m_module_name = "";
-
-void Logger::registerCoredumpHandler() {
-#if defined(__linux__) || defined(__APPLE__)
-  signal(SIGSEGV, coredumpHandler);
-  signal(SIGABRT, coredumpHandler);
-  signal(SIGTERM, coredumpHandler);
-  // SIGKILL 不可捕获，不注册
-  signal(SIGINT, coredumpHandler);
-  signal(SIGHUP, coredumpHandler);
-  // ignore SIGPIPE
-  signal(SIGPIPE, SIG_IGN);
-#endif
-#if defined(__linux__)
-  signal(SIGSTKFLT, coredumpHandler);
-#endif
-}
-
-void Logger::init(const logger::LogLevel &log_level,
-                  const std::string &module_name,
-                  const logger::LogSink::LogSinkPtr &log_sink,
-                  const logger::LoggerFormat::LoggerFormatPtr &log_format) {
-  if (log_level == LogLevel::OFF) return;
-  Logger::log_level = log_level;
-  Logger::is_open_log = true;
-  Logger::m_module_name = module_name;
-  m_log_format = log_format;
+void Logger::addSink(const LogSink::LogSinkPtr &log_sink) {
+  std::lock_guard<std::mutex> lock(m_sink_mtx);
   m_log_sinks.emplace_back(log_sink);
-  registerCoredumpHandler();
-}
-void Logger::init(const logger::LogLevel &log_level,
-                  const std::string &module_name,
-                  const std::vector<logger::LogSink::LogSinkPtr> &log_sinks,
-                  const logger::LoggerFormat::LoggerFormatPtr &log_format) {
-  if (log_level == LogLevel::OFF) return;
-  Logger::log_level = log_level;
-  Logger::is_open_log = true;
-  Logger::m_module_name = module_name;
-  m_log_format = log_format;
-  m_log_sinks = log_sinks;
-  registerCoredumpHandler();
 }
 
-const std::vector<std::shared_ptr<logger::LogSink>> &Logger::getLogSinks() {
+const std::vector<LogSink::LogSinkPtr> &Logger::getLogSinks() const {
   return m_log_sinks;
 }
-
-void Logger::addSink(const logger::LogSink::LogSinkPtr &log_sink) {
-  m_log_sinks.emplace_back(log_sink);
-}
-
-Logger *Logger::getInstance() { return logger_ptr; }
 
 Logger::~Logger() {
   for (auto &sink : m_log_sinks) {
@@ -95,36 +25,37 @@ Logger::~Logger() {
   }
 }
 
-/*********************************************************/
-/****************SyncLogger*******************************/
-/*********************************************************/
+// =============================================================================
+// SyncLogger 实现
+// =============================================================================
 
-SyncLogger *SyncLogger::getInstance() {
-  static SyncLogger sync_logger;
-  // 仅在 logger_ptr 未被设置时赋值，避免覆盖其他子类实例
-  if (logger_ptr == nullptr) {
-    logger_ptr = &sync_logger;
-  }
-  return &sync_logger;
-}
+SyncLogger::SyncLogger(std::vector<LogSink::LogSinkPtr> sinks,
+                       LoggerFormat::LoggerFormatPtr fmt)
+    : Logger(std::move(sinks), std::move(fmt)) {}
 
-void SyncLogger::log(logger::LogEvent log_event) {
+void SyncLogger::log(LogEvent log_event) {
   std::lock_guard<std::mutex> lock(m_mtx);
   for (auto &sink : m_log_sinks) {
     sink->sink(log_event, m_log_format);
   }
 }
-/*********************************************************/
-/****************AsyncLogger*******************************/
-/*********************************************************/
 
-AsyncLogger *AsyncLogger::getInstance() {
-  static AsyncLogger async_logger;
-  // 仅在 logger_ptr 未被设置时赋值，避免覆盖其他子类实例
-  if (logger_ptr == nullptr) {
-    logger_ptr = &async_logger;
-  }
-  return &async_logger;
+// =============================================================================
+// AsyncLogger 实现
+// =============================================================================
+
+AsyncLogger::AsyncLogger(std::vector<LogSink::LogSinkPtr> sinks,
+                         LoggerFormat::LoggerFormatPtr fmt, int queue_size,
+                         std::chrono::milliseconds flush_interval)
+    : Logger(std::move(sinks), std::move(fmt)) {
+  startBgThread(queue_size, flush_interval);
+}
+
+void AsyncLogger::startBgThread(int queue_size,
+                                std::chrono::milliseconds flush_interval) {
+  m_logs.resize(queue_size);
+  m_flush_interval = flush_interval;
+  m_async_thread = std::thread(&AsyncLogger::bgLogLoop, this);
 }
 
 void AsyncLogger::beforeExit() {
@@ -134,69 +65,37 @@ void AsyncLogger::beforeExit() {
 
 AsyncLogger::~AsyncLogger() { beforeExit(); }
 
-void logger::AsyncLogger::init(
-    const logger::LogLevel &log_level, const std::string &module_name,
-    const logger::LogSink::LogSinkPtr &log_sink,
-    const logger::LoggerFormat::LoggerFormatPtr &log_format, int queue_size,
-    std::chrono::milliseconds flush_interval) {
-  if (log_level == OFF) return;
-  Logger::log_level = log_level;
-  Logger::is_open_log = true;
-  Logger::m_module_name = module_name;
-  m_log_sinks.emplace_back(log_sink);
-  m_logs.resize(queue_size);
-  m_log_format = log_format;
-  m_flush_interval = flush_interval;
-  m_async_thread =
-      std::thread(&AsyncLogger::bgLogLoop, AsyncLogger::getInstance());
-  registerCoredumpHandler();
-}
+void AsyncLogger::log(LogEvent log_event) { m_logs.push(std::move(log_event)); }
 
-void logger::AsyncLogger::init(
-    const logger::LogLevel &log_level, const std::string &module_name,
-    const std::vector<logger::LogSink::LogSinkPtr> &log_sinks,
-    const logger::LoggerFormat::LoggerFormatPtr &log_format, int queue_size,
-    std::chrono::milliseconds flush_interval) {
-  if (log_level == OFF) return;
-  Logger::log_level = log_level;
-  Logger::is_open_log = true;
-  Logger::m_module_name = module_name;
-  m_log_sinks = log_sinks;
-  m_logs.resize(queue_size);
-  m_log_format = log_format;
-  m_flush_interval = flush_interval;
-  m_async_thread =
-      std::thread(&AsyncLogger::bgLogLoop, AsyncLogger::getInstance());
-  registerCoredumpHandler();
-}
-
-// 另起一个线程运行
 void AsyncLogger::bgLogLoop() {
-  while (true) {
-    logger::LogEvent log_event;
+  static constexpr std::size_t kBatchSize = 64;  // 每批最多弹出条数
+  std::vector<LogEvent> batch;
+  batch.reserve(kBatchSize);
 
-    if (m_logs.popWithTimeout(log_event, m_flush_interval)) {
-      // 正常拿到数据，消费
-      if (!log_event.m_log_msg.empty()) {
-        for (auto &sink : m_log_sinks) {
-          sink->sink(log_event, m_log_format);
+  while (true) {
+    batch.clear();
+    std::size_t n =
+        m_logs.batchPopWithTimeout(batch, kBatchSize, m_flush_interval);
+
+    if (n > 0) {
+      // 批量写入所有 sink
+      for (auto &log_event : batch) {
+        if (!log_event.m_log_msg.empty()) {
+          for (auto &sink : m_log_sinks) {
+            sink->sink(log_event, m_log_format);
+          }
         }
       }
     } else {
-      // popWithTimeout 返回 false：超时 或 stop+空
-      // 无论哪种情况，先 flush 一次确保已有日志落盘
+      // 超时或 stop+空 → flush 一次确保已有日志落盘
       for (auto &sink : m_log_sinks) {
         sink->flush();
       }
       if (m_logs.isStopping()) {
-        break;  // stop 且队列已空，直接退出
+        break;
       }
-      // 是超时，继续循环等待新日志
     }
   }
 }
 
-void AsyncLogger::log(logger::LogEvent log_event) {
-  m_logs.push(std::move(log_event));
-}
-};  // namespace logger
+}  // namespace logger

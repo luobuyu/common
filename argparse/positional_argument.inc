@@ -1,7 +1,7 @@
 #pragma once
 
+#include "../dry_core/dry_string.h"
 #include "positional_argument.h"
-#include "../dry/dry_string.h"
 
 // 构造函数1: 绑定 vector<T>
 template <typename T>
@@ -34,13 +34,14 @@ size_t PositionalArgument<T>::parse(const std::vector<std::string>& args,
   size_t consumed = 0;
   int max_count = this->getExpectedMax();
   bool terminated_by_dashdash = false;
-  
+
   // 贪婪消耗参数，直到：
   // 1. 达到最大期望数量
   // 2. 遇到非位置参数
   // 3. 遇到 "--" 终止符
   // 4. 用完所有参数
-  for (size_t i = current_index; i < args.size() && this->valueCount() < max_count; ++i) {
+  for (size_t i = current_index;
+       i < args.size() && this->valueCount() < max_count; ++i) {
     const std::string& arg = args[i];
     // 如果遇到 "--"，表示用户想提前结束当前位置参数的收集
     if (arg == "--") {
@@ -54,31 +55,31 @@ size_t PositionalArgument<T>::parse(const std::vector<std::string>& args,
     this->addValue(dry::strTo<T>(arg));
     consumed++;
   }
-  
+
   // 检查是否满足最小期望数量
   int min_count = this->getExpectedMin();
   if (this->valueCount() < min_count) {
-    throw std::runtime_error("Positional argument expects at least " + 
+    throw std::runtime_error("Positional argument expects at least " +
                              std::to_string(min_count) + " value(s), got " +
                              std::to_string(this->valueCount()));
   }
-  
+
   // 标记为已解析
   this->setParsed(true);
-  
+
   // 同步到外部变量 (如果绑定了)
   if (this->m_sync_to_target) {
     this->m_sync_to_target();
   }
-  
+
   // 自动调用验证器
   this->validate();
-  
+
   // 执行用户回调 (如果设置了)
   if (this->m_callback) {
     this->m_callback();
   }
-  
+
   // 如果被 -- 终止，还要消耗掉 --
   return consumed + (terminated_by_dashdash ? 1 : 0);
 }
@@ -95,17 +96,19 @@ bool PositionalArgument<T>::matches(const std::string& arg) const {
 template <typename T>
 void PositionalArgument<T>::validateNames() const {
   const auto& names = this->getNames();
-  
+
   if (names.empty()) {
-    throw std::invalid_argument("Positional argument must have at least one name");
+    throw std::invalid_argument(
+        "Positional argument must have at least one name");
   }
-  
+
   for (const auto& name : names) {
     if (name.empty()) {
       throw std::invalid_argument("Positional argument name cannot be empty");
     }
     if (name[0] == '-') {
-      throw std::invalid_argument("Positional argument name cannot start with '-': " + name);
+      throw std::invalid_argument(
+          "Positional argument name cannot start with '-': " + name);
     }
   }
 }

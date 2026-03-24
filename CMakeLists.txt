@@ -17,6 +17,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # 生成 compile_commands.json 用于 IntelliSense
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+add_subdirectory(dry_core)
 add_subdirectory(config)
 add_subdirectory(logger)
 add_subdirectory(argparse)
+add_subdirectory(dry)

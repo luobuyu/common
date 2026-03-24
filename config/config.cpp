@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "../dry/dry_string.h"
+#include "../dry_core/dry_string.h"
 namespace config {
 
 bool Config::initConfig(const std::string &path) {

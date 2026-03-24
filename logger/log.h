@@ -2,7 +2,6 @@
 #define LOG_LOG_H
 
 #include <chrono>
-#include <memory>
 #include <mutex>
 #include <string>
 #include <thread>
@@ -31,121 +30,141 @@ namespace logger {
  */
 template <typename... Args>
 std::string formatString(const char *str, Args &&...args) {
-  const int MAX_SIZE = 4096;  // 最大长度限制
-  const std::string truncation_message = " ... It's longer than " +
-                                         std::to_string(MAX_SIZE) +
-                                         ", so it's truncated.";
-  bool flag = false;
-  int size = snprintf(nullptr, 0, str, args...);
-  if (size < 0) return "";
+  static constexpr int MAX_SIZE = 4096;  // 最大长度限制
+  static const std::string truncation_message = " ... It's longer than " +
+                                                std::to_string(MAX_SIZE) +
+                                                ", so it's truncated.";
+
 #ifdef FMT_FOUND
   std::string result = fmt::sprintf(str, std::forward<Args>(args)...);
-  flag = (result.length() > MAX_SIZE);
-#else
-  if (size > MAX_SIZE) {
-    flag = true;
-    size = MAX_SIZE;
-  }
-  std::string result(size, '\0');
-  snprintf(result.data(), result.size() + 1, str, args...);
-#endif
-  if (flag) {
+  if (result.length() > MAX_SIZE) {
     result.resize(MAX_SIZE);
     result += truncation_message;
   }
   return result;
+#else
+  // 栈上 buffer 优先，绝大多数日志一次 snprintf 搞定
+  char stack_buf[MAX_SIZE + 1];
+  int size = snprintf(stack_buf, sizeof(stack_buf), str, args...);
+  if (size < 0) return "";
+
+  if (size < static_cast<int>(sizeof(stack_buf))) {
+    // 未截断，直接从栈 buffer 构造 string
+    return std::string(stack_buf, size);
+  }
+
+  // 超长：stack_buf 中已有 MAX_SIZE 字节的有效内容，拼上截断提示
+  std::string result(stack_buf, MAX_SIZE);
+  result += truncation_message;
+  return result;
+#endif
 }
 
 // =============================================================================
-// Logger类定义
+// Logger 纯抽象接口
 // =============================================================================
+
+/**
+ * @brief Logger 抽象基类
+ * @details 只定义日志写入接口和 sink/format 管理，不持有任何全局状态。
+ *          全局状态（log_level、module_name 等）由 LogManager 管理。
+ */
 class Logger {
  public:
-  static Logger *getInstance();
   Logger(const Logger &) = delete;
   Logger &operator=(const Logger &) = delete;
-  static bool openLog();
-  static bool shouldLog(logger::LogLevel level);
-  static std::string getModuleName();
-  void addSink(const logger::LogSink::LogSinkPtr &log_sink);
-  void init(const logger::LogLevel &log_level, const std::string &module_name,
-            const logger::LogSink::LogSinkPtr &log_sink,
-            const logger::LoggerFormat::LoggerFormatPtr &log_format =
-                logger::LoggerFormat::LoggerFormatPtr(new LoggerFormat()));
-  void init(const logger::LogLevel &log_level, const std::string &module_name,
-            const std::vector<logger::LogSink::LogSinkPtr> &log_sinks,
-            const logger::LoggerFormat::LoggerFormatPtr &log_format =
-                logger::LoggerFormat::LoggerFormatPtr(new LoggerFormat()));
-  const std::vector<std::shared_ptr<logger::LogSink>> &getLogSinks();
-  void registerCoredumpHandler();
 
-  // 静态成员函数 - 信号处理
-  static void coredumpHandler(int signal_no);
+  /// 添加日志输出目标（线程安全）
+  void addSink(const LogSink::LogSinkPtr &log_sink);
 
-  // 需要重写，同步写日志和异步写日志方法
-  virtual void log(logger::LogEvent log_event) = 0;
-  // 退出前的清理操作，子类可重写（如 AsyncLogger 需排空队列）
+  /// 获取所有 sink
+  const std::vector<LogSink::LogSinkPtr> &getLogSinks() const;
+
+  /// 写入一条日志（子类实现同步/异步逻辑）
+  virtual void log(LogEvent log_event) = 0;
+
+  /// 退出前的清理操作，子类可重写（如 AsyncLogger 需排空队列）
   virtual void beforeExit() {}
+
   virtual ~Logger();
 
  protected:
+  /// 默认构造
   Logger() = default;
-  static bool is_open_log;  // 是否打开了log
-  static logger::LogLevel log_level;
-  static Logger *logger_ptr;
-  static std::string m_module_name;
-  std::vector<std::shared_ptr<logger::LogSink>> m_log_sinks;
+
+  /// 带参构造：直接传入 sinks 和 format，满足 RAII 原则
+  Logger(std::vector<LogSink::LogSinkPtr> sinks,
+         LoggerFormat::LoggerFormatPtr fmt);
+
+  std::mutex m_sink_mtx;  ///< 保护 m_log_sinks 的并发访问
+  std::vector<LogSink::LogSinkPtr> m_log_sinks;
   LoggerFormat::LoggerFormatPtr m_log_format;
 };
 
+// =============================================================================
+// 同步日志器
+// =============================================================================
+
 class SyncLogger : public Logger {
  public:
-  static SyncLogger *getInstance();
-  void log(logger::LogEvent log_event) override;
+  SyncLogger() = default;
+
+  /// 带参构造：构造即可用
+  SyncLogger(std::vector<LogSink::LogSinkPtr> sinks,
+             LoggerFormat::LoggerFormatPtr fmt);
+
+  void log(LogEvent log_event) override;
   ~SyncLogger() = default;
 
  private:
-  SyncLogger() = default;
-  std::mutex m_mtx;  // 保护多线程同步写入
+  std::mutex m_mtx;  ///< 保护多线程同步写入
 };
 
-// 异步刷盘类，将queue中的日志刷盘
-// 如果需要输出到多个地方，可以搞多个刷盘的buffer。
+// =============================================================================
+// 异步日志器
+// =============================================================================
+
+/**
+ * @brief 异步日志器，通过阻塞队列 + 后台线程异步写入
+ */
 class AsyncLogger : public Logger {
  public:
-  void bgLogLoop();
-  static AsyncLogger *getInstance();
-  void init(const logger::LogLevel &log_level, const std::string &module_name,
-            const logger::LogSink::LogSinkPtr &log_sink,
-            const logger::LoggerFormat::LoggerFormatPtr &log_format =
-                logger::LoggerFormat::LoggerFormatPtr(new LoggerFormat()),
-            int queue_size = 8192,
-            std::chrono::milliseconds flush_interval =
-                std::chrono::milliseconds(3000));
-  void init(const logger::LogLevel &log_level, const std::string &module_name,
-            const std::vector<logger::LogSink::LogSinkPtr> &log_sinks,
-            const logger::LoggerFormat::LoggerFormatPtr &log_format =
-                logger::LoggerFormat::LoggerFormatPtr(new LoggerFormat()),
-            int queue_size = 8192,
-            std::chrono::milliseconds flush_interval =
-                std::chrono::milliseconds(3000));
-
+  AsyncLogger() = default;
   AsyncLogger(const AsyncLogger &) = delete;
   AsyncLogger &operator=(const AsyncLogger &) = delete;
-  void log(logger::LogEvent log_event) override;
-  // 退出前排空异步队列并等待消费线程结束
+
+  /// 带参构造：构造即启动后台线程，满足 RAII
+  AsyncLogger(std::vector<LogSink::LogSinkPtr> sinks,
+              LoggerFormat::LoggerFormatPtr fmt, int queue_size = 8192,
+              std::chrono::milliseconds flush_interval =
+                  std::chrono::milliseconds(3000));
+
+  /**
+   * @brief 启动后台消费线程
+   * @param queue_size 阻塞队列大小
+   * @param flush_interval 定时刷盘间隔
+   */
+  void startBgThread(int queue_size = 8192,
+                     std::chrono::milliseconds flush_interval =
+                         std::chrono::milliseconds(3000));
+
+  void log(LogEvent log_event) override;
+
+  /// 退出前排空异步队列并等待消费线程结束
   void beforeExit() override;
+
   ~AsyncLogger();
 
  private:
-  AsyncLogger() = default;
+  /// 后台日志消费循环
+  void bgLogLoop();
 
-  // 单线程刷盘
   std::thread m_async_thread;
-  logger::BlockingQueue<logger::LogEvent> m_logs;
-  // 定时刷盘间隔，默认 3 秒
+  BlockingQueue<LogEvent> m_logs;
+  /// 定时刷盘间隔，默认 3 秒
   std::chrono::milliseconds m_flush_interval{3000};
 };
-};  // namespace logger
+
+}  // namespace logger
 
 #endif

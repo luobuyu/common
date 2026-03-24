@@ -2,9 +2,9 @@
 
 #include <filesystem>
 namespace logger {
-logger::FileSink::FileSink(const std::string &file_path, uint32_t max_size,
+logger::FileSink::FileSink(std::string file_path, uint32_t max_size,
                            dry::clock::duration rotate_interval)
-    : m_file_path(file_path),
+    : m_file_path(std::move(file_path)),
       m_no(0),
       m_max_size(max_size),
       m_rotate_interval(rotate_interval),

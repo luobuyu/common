@@ -21,3 +21,4 @@ add_library(argparse
 
 # 设置头文件搜索路径,让其他项目能找到这些头文件
 target_include_directories(argparse PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(argparse PUBLIC dry_core)

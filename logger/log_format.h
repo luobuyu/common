@@ -20,7 +20,7 @@ class FormatItem {
 
 class DateFormatItem : public FormatItem {
  public:
-  DateFormatItem(const std::string &time_fmt = "%Y-%m-%d %H-%M-%S");
+  DateFormatItem(std::string time_fmt = "%Y-%m-%d %H:%M:%S");
   void format(std::ostream &os, const logger::LogEvent &log_msg) override;
 
  private:
@@ -105,7 +105,7 @@ class NewLineFormatItem : public FormatItem {
 
 class OtherFormatItem : public FormatItem {
  public:
-  OtherFormatItem(const std::string &other_fmt);
+  OtherFormatItem(std::string other_fmt);
   void format(std::ostream &os, const logger::LogEvent &log_msg) override;
   void setFmt(const std::string &fmt) override;
   std::string getFmt() override;
@@ -130,14 +130,14 @@ class LoggerFormat {
   // %m : 日志内容           MessageFormatItem
   // %n : 换行符[\r\n]       NewLineFormatItem
   LoggerFormat(
-      const std::string &pattern =
+      std::string pattern =
           "%d{%Y-%m-%d %H:%M:%S}%T[%L]%T[%p,%t,%c]%T[%M]%T[%F:%f:%l]%T%m%n");
   ~LoggerFormat() = default;
   void parserPattern();
   void format(std::ostream &os, const logger::LogEvent &log_msg);
   void setPattern(const std::string &pattern);
 
- public:
+ private:
   std::string m_pattern;
   std::vector<FormatItem::FormatItemPtr> m_format_items;
 };

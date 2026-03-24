@@ -1,88 +1,84 @@
 #ifndef DRY_LOG_H
 #define DRY_LOG_H
-#include <string>
-#include <vector>
 
-#include "../config/config.h"
-#include "../logger/log.h"
+/**
+ * @file dry_log.h
+ * @brief 日志系统用户入口 — 初始化函数 + 便捷宏
+ * @details 使用者只需 #include 此文件即可使用
+ * LOG_DEBUG/LOG_INFO/LOG_WARN/LOG_ERROR 宏。 初始化可选：通过 Config
+ * 对象或手动指定参数。
+ */
+
+#include <string>
+
+#include "../logger/log_manager.h"
+
+// 前向声明，避免在头文件中 include config.h（只有 .cpp 中需要）
+namespace config {
+class Config;
+}
 
 namespace dry {
 
 /**
  * @brief 从配置文件快速初始化日志系统
  * @param conf 配置对象
- * @details 这是dry库风格的便捷函数，一行代码搞定日志初始化
+ * @details 一行代码搞定日志初始化。支持通过配置项 logger.async
+ * 选择同步/异步，默认异步。
  */
-static void initLogger(config::Config& conf) {
-  auto logger = logger::AsyncLogger::getInstance();
-  std::string module_name = conf.getString("logger", "module_name", "app");
-  logger::LogLevel log_level = static_cast<logger::LogLevel>(conf.getInt(
-      "logger", "log_level", static_cast<int>(logger::LogLevel::INFO)));
-
-  std::vector<logger::LogSink::LogSinkPtr> log_sinks;
-  if (conf.getInt("logger", "file_sink", 1)) {
-    std::string log_path = conf.getString("logger", "log_path", "../log");
-    log_sinks.emplace_back(new logger::FileSink(log_path));
-  }
-  if (conf.getInt("logger", "std_sink", 1)) {
-    log_sinks.emplace_back(new logger::StdoutSink());
-  }
-
-  auto logger_format =
-      logger::LoggerFormat::LoggerFormatPtr(new logger::LoggerFormat());
-  std::string pattern = conf.getString("logger", "log_format", "");
-  if (!pattern.empty()) {
-    logger_format->setPattern(pattern);
-  }
-
-  logger->init(log_level, module_name, log_sinks, logger_format);
-}
+void initLogger(config::Config& conf);
 
 /**
  * @brief 快速初始化日志系统（不需要配置文件）
  * @param module_name 模块名称
- * @param level 日志级别 (1=DEBUG, 2=INFO, 3=WARN, 4=ERROR, 5=OFF)
+ * @param level 日志级别，对应 logger::LogLevel 枚举（DEBUG=1, INFO=2, WARN=3,
+ *               ERROR=4, OFF=5）
  * @param log_path 日志文件路径
  * @param enable_stdout 是否输出到控制台
+ * @param type 日志器类型，默认异步
  */
-static void initLogger(const std::string& module_name, int level = 2,
-                       const std::string& log_path = "../log",
-                       bool enable_stdout = true) {
-  auto logger = logger::AsyncLogger::getInstance();
-  logger::LogLevel log_level = static_cast<logger::LogLevel>(level);
+void initLogger(const std::string& module_name, int level = 2,
+                const std::string& log_path = "../log",
+                bool enable_stdout = true,
+                logger::LogManager::LoggerType type =
+                    logger::LogManager::LoggerType::ASYNC);
 
-  std::vector<logger::LogSink::LogSinkPtr> log_sinks;
-  log_sinks.emplace_back(new logger::FileSink(log_path));
-  if (enable_stdout) {
-    log_sinks.emplace_back(new logger::StdoutSink());
-  }
-
-  logger->init(log_level, module_name, log_sinks);
-}
-
-// 向后兼容的函数名
-static void openLog(config::Config& conf) { initLogger(conf); }
+/// 向后兼容的函数名
+void openLog(config::Config& conf);
 
 }  // namespace dry
 
 // =============================================================================
-// 便捷的日志宏定义（dry库风格）
+// 便捷的日志宏定义
 // =============================================================================
 
-#define LOG_FMT(level, str, ...)                                         \
+/**
+ * @internal 内部实现宏，请勿直接调用，应使用
+ * LOG_DEBUG/LOG_INFO/LOG_WARN/LOG_ERROR
+ */
+#define LOG_FMT(level, fmt, ...)                                         \
   do {                                                                   \
-    if (logger::Logger::openLog() && logger::Logger::shouldLog(level)) { \
-      logger::Logger::getInstance()->log(logger::LogEvent(               \
-          level, logger::Logger::getModuleName(), __FILE__, __func__,    \
-          __LINE__, logger::formatString(str, ##__VA_ARGS__)));          \
+    auto& _log_mgr = logger::LogManager::getInstance();                  \
+    if (_log_mgr.isOpen() && _log_mgr.shouldLog(level)) {                \
+      _log_mgr.getLogger()->log(logger::LogEvent(                        \
+          level, _log_mgr.getModuleName(), __FILE__, __func__, __LINE__, \
+          logger::formatString(fmt, ##__VA_ARGS__)));                    \
     }                                                                    \
   } while (0)
 
-// 日志级别宏定义
-#define LOG_DEBUG(str, ...) LOG_FMT(logger::LogLevel::DEBUG, str, ##__VA_ARGS__)
-#define LOG_INFO(str, ...) LOG_FMT(logger::LogLevel::INFO, str, ##__VA_ARGS__)
-#define LOG_WARN(str, ...) LOG_FMT(logger::LogLevel::WARN, str, ##__VA_ARGS__)
-#define LOG_ERROR(str, ...) LOG_FMT(logger::LogLevel::ERROR, str, ##__VA_ARGS__)
-#define LOG_OFF(str, ...) LOG_FMT(logger::LogLevel::OFF, str, ##__VA_ARGS__)
+/// @name 日志输出宏
+/// @brief 格式化输出日志，语法兼容 printf
+/// @code
+///   LOG_DEBUG("user_id=%d, name=%s", uid, name.c_str());
+///   LOG_INFO("server started on port %d", port);
+///   LOG_WARN("retry count exceeded: %d", retry);
+///   LOG_ERROR("connect failed, ret=%d", ret);
+/// @endcode
+/// @{
+#define LOG_DEBUG(fmt, ...) LOG_FMT(logger::LogLevel::DEBUG, fmt, ##__VA_ARGS__)
+#define LOG_INFO(fmt, ...) LOG_FMT(logger::LogLevel::INFO, fmt, ##__VA_ARGS__)
+#define LOG_WARN(fmt, ...) LOG_FMT(logger::LogLevel::WARN, fmt, ##__VA_ARGS__)
+#define LOG_ERROR(fmt, ...) LOG_FMT(logger::LogLevel::ERROR, fmt, ##__VA_ARGS__)
+/// @}
 
 #endif

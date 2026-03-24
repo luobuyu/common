@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-#include "../dry/dry_time.h"
+#include "../dry_core/dry_time.h"
 #include "log_event.h"
 #include "log_format.h"
 
@@ -27,7 +27,7 @@ class FileSink : public LogSink {
             LoggerFormat::LoggerFormatPtr &log_format) override;
   void openNewFile();
   void flush() override;
-  FileSink(const std::string &file_path, uint32_t max_size = 10 * 1024 * 1024,
+  FileSink(std::string file_path, uint32_t max_size = 10 * 1024 * 1024,
            dry::clock::duration rotate_interval = std::chrono::hours(1));
 
  private:

@@ -41,6 +41,17 @@ class BlockingQueue {
   // 带超时的 pop，超时返回 false 且 item 不变，队列 stop+空 时也返回 false
   bool popWithTimeout(T &item, std::chrono::milliseconds timeout);
 
+  /**
+   * @brief 带超时的批量弹出，一次加锁，等第一条到来后尽可能多弹出（最多
+   * max_count 条）
+   * @param[out] out 输出容器，弹出的元素 move-append 到末尾
+   * @param max_count 最多弹出的数量
+   * @param timeout 队列为空时等待第一条到来的最长时间
+   * @return 实际弹出的数量，0 表示超时或队列已 stop 且为空
+   */
+  std::size_t batchPopWithTimeout(std::vector<T> &out, std::size_t max_count,
+                                  std::chrono::milliseconds timeout);
+
   int size() const;
   void resize(int size);
   bool empty();
