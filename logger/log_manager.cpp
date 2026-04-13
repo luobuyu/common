@@ -48,7 +48,7 @@ void LogManager::init(LogLevel log_level, std::string module_name,
 bool LogManager::isOpen() const { return m_is_open && m_logger != nullptr; }
 
 bool LogManager::shouldLog(LogLevel level) const {
-  return level <= m_log_level;
+  return level >= m_log_level;
 }
 
 const std::string& LogManager::getModuleName() const { return m_module_name; }
