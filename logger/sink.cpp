@@ -14,7 +14,11 @@ void FileSink::sink(const logger::LogEvent &log_event,
   bool create_new_file = !m_ofs.is_open();
   // 如果超过了日期
   if (log_event.m_timestamp >= m_next_start) {
-    m_next_start += m_rotate_interval;
+    // 直接计算需要跳过的周期数，O(1) 定位到当前所在的周期
+    // 避免程序暂停后恢复时频繁创建空文件
+    auto elapsed = log_event.m_timestamp - m_next_start;
+    auto periods = elapsed / m_rotate_interval + 1;
+    m_next_start += periods * m_rotate_interval;
     m_no = 0;
     create_new_file = true;
   }
