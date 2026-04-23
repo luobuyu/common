@@ -1,5 +1,6 @@
 #include "blocking_queue.h"
 
+namespace dry {
 namespace logger {
 /*********************************************************/
 /****************CircleQueue*******************************/
@@ -170,3 +171,4 @@ std::size_t BlockingQueue<T>::batchPopWithTimeout(
   return count;
 }
 }  // namespace logger
+}  // namespace dry

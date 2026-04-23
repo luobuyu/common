@@ -1,28 +1,33 @@
 #include "argument.h"
 
+namespace dry {
+namespace argparse {
+
 // 构造函数（不带 required 和 callback 参数，避免隐式转换问题）
 Argument::Argument(const std::vector<std::string>& names,
                    const std::string& description)
-  : m_names{names}, m_description{description}, m_required{false}, 
-    m_parsed{false}, m_callback{nullptr} {
-}
+    : m_names{names},
+      m_description{description},
+      m_required{false},
+      m_parsed{false},
+      m_callback{nullptr} {}
 Argument::Argument(const ArgumentType& type,
                    const std::vector<std::string>& names,
                    const std::string& description)
-  : m_type{type}, m_names{names}, m_description{description}, m_required{false},
-    m_parsed{false}, m_callback{nullptr} {}
+    : m_type{type},
+      m_names{names},
+      m_description{description},
+      m_required{false},
+      m_parsed{false},
+      m_callback{nullptr} {}
 
 void Argument::setDescription(const std::string& description) {
   m_description = description;
 }
 
-void Argument::setRequired(bool required) {
-  m_required = required;
-}
+void Argument::setRequired(bool required) { m_required = required; }
 
-void Argument::setParsed(bool parsed) {
-  m_parsed = parsed;
-}
+void Argument::setParsed(bool parsed) { m_parsed = parsed; }
 
 void Argument::setCallback(std::function<void()> callback) {
   m_callback = callback;
@@ -43,22 +48,15 @@ Argument& Argument::callback(std::function<void()> callback) {
   return *this;
 }
 
-const std::vector<std::string>& Argument::getNames() const {
-  return m_names;
-}
+const std::vector<std::string>& Argument::getNames() const { return m_names; }
 
-const std::string& Argument::getDescription() const {
-  return m_description;
-}
+const std::string& Argument::getDescription() const { return m_description; }
 
-ArgumentType Argument::getType() const {
-  return m_type;
-}
+ArgumentType Argument::getType() const { return m_type; }
 
-bool Argument::isRequired() const {
-  return m_required;
-}
+bool Argument::isRequired() const { return m_required; }
 
-bool Argument::isParsed() const {
-  return m_parsed;
-}
+bool Argument::isParsed() const { return m_parsed; }
+
+}  // namespace argparse
+}  // namespace dry

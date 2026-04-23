@@ -1,7 +1,11 @@
 #pragma once
 #include <iostream>
+#include <limits>
 
 #include "multi_argument.h"
+
+namespace dry {
+namespace argparse {
 
 // 构造函数实现
 template <typename T>
@@ -220,7 +224,7 @@ bool MultiArgument<T>::isValid() const {
 template <typename T>
 void MultiArgument<T>::validate() const {
   if (m_validator && !m_validator(m_values)) {
-    throw std::runtime_error("Validation failed for argument: " + 
+    throw std::runtime_error("Validation failed for argument: " +
                              this->getNames().front());
   }
 }
@@ -244,3 +248,6 @@ MultiArgument<T>& MultiArgument<T>::callback(std::function<void()> callback) {
   setCallback(callback);
   return *this;
 }
+
+}  // namespace argparse
+}  // namespace dry

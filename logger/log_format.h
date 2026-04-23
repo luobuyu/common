@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "log_event.h"
+namespace dry {
 namespace logger {
 
 class FormatItem {
@@ -149,5 +150,6 @@ class FormatItemFactory {
   static bool canCreate(const char &key);
 };
 };  // namespace logger
+}  // namespace dry
 
 #endif

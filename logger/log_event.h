@@ -5,6 +5,7 @@
 #include <thread>
 
 #include "../dry_core/dry_time.h"
+namespace dry {
 namespace logger {
 enum LogLevel {
   DEBUG = 1,
@@ -39,5 +40,6 @@ struct LogEvent {
   std::string m_log_msg;
 };
 };  // namespace logger
+}  // namespace dry
 
 #endif

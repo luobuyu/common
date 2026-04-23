@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "../dry_core/dry_string.h"
+namespace dry {
 namespace config {
 
 bool Config::initConfig(const std::string &path) {
@@ -145,3 +146,4 @@ void Config::setValue(const std::string &section, const std::string &key,
 }
 
 };  // namespace config
+}  // namespace dry

@@ -75,7 +75,7 @@ double prob = dry::Random::rand();           // [0, 1)
 ```cpp
 #include "config/config.h"
 
-config::Config conf;
+dry::config::Config conf;
 conf.initConfig("./config.ini");
 
 // 带默认值获取
@@ -213,12 +213,12 @@ std::cout << "port=" << port << ", file=" << input_file << std::endl;
 #include "dry/dry_log.h"
 
 // 方式一：从配置文件初始化
-config::Config conf;
+dry::config::Config conf;
 conf.initConfig("config.ini");
 dry::initLogger(conf);
 
 // 方式二：手动指定参数
-dry::initLogger("my_module", logger::LogLevel::INFO, "../log", true);
+dry::initLogger("my_module", dry::logger::LogLevel::INFO, "../log", true);
 
 // 打日志（printf 风格）
 LOG_DEBUG("user_id=%d, name=%s", uid, name.c_str());

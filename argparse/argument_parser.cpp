@@ -2,10 +2,14 @@
 
 #include <algorithm>
 
+namespace dry {
+namespace argparse {
+
 ArgumentParser::ArgumentParser(const std::string& program_name,
-                               const std::string& description,
-                               bool add_help)
-    : m_program_name(program_name), m_description(description), m_add_help(add_help) {}
+                               const std::string& description, bool add_help)
+    : m_program_name(program_name),
+      m_description(description),
+      m_add_help(add_help) {}
 
 Argument& ArgumentParser::addArgument(std::unique_ptr<Argument> argument) {
   Argument& ref = *argument;
@@ -60,7 +64,8 @@ ArgumentParser& ArgumentParser::addSubcommand(const std::string& name,
 
   // 2. 子命令名称不能以 - 开头
   if (name[0] == '-') {
-    throw std::invalid_argument("Subcommand name cannot start with '-': " + name);
+    throw std::invalid_argument("Subcommand name cannot start with '-': " +
+                                name);
   }
 
   // 3. 检查子命令名称是否已存在
@@ -72,7 +77,8 @@ ArgumentParser& ArgumentParser::addSubcommand(const std::string& name,
   for (const auto& arg : m_args) {
     const auto& names = arg->getNames();
     if (std::find(names.begin(), names.end(), name) != names.end()) {
-      throw std::invalid_argument("Subcommand name conflicts with argument: " + name);
+      throw std::invalid_argument("Subcommand name conflicts with argument: " +
+                                  name);
     }
   }
 
@@ -106,25 +112,25 @@ bool ArgumentParser::parse(const std::vector<std::string>& args) {
           std::vector<std::string>(args.begin() + 1, args.end()));
     }
   }
-  
+
   // 遍历命令行参数，依次匹配并解析
   for (size_t i = 0; i < args.size();) {
     const std::string& arg = args[i];
-    
+
     // 跳过单独出现的 "--"（参数终止符）
     // 当 "--" 没有被某个 Argument 消费时，它会单独出现在主循环中
     if (arg == "--") {
       ++i;
       continue;
     }
-    
+
     bool matched = false;
     // 遍历所有已注册的参数，查找能匹配的参数对象
     Argument* first_not_parsed_pos = nullptr;
     for (const auto& argument : m_args) {
       // 位置参数单独贪婪匹配
-      if(argument->getType() == ArgumentType::Positional) {
-        if(!argument->isParsed() && first_not_parsed_pos == nullptr) {
+      if (argument->getType() == ArgumentType::Positional) {
+        if (!argument->isParsed() && first_not_parsed_pos == nullptr) {
           first_not_parsed_pos = argument.get();
         }
         continue;
@@ -161,7 +167,7 @@ bool ArgumentParser::parse(const std::vector<std::string>& args) {
   // 检查必需参数是否都已解析
   for (const auto& argument : m_args) {
     if (argument->isRequired() && !argument->isParsed()) {
-      throw std::runtime_error("Required argument missing: " + 
+      throw std::runtime_error("Required argument missing: " +
                                argument->getNames().front());
     }
   }
@@ -173,9 +179,10 @@ void ArgumentParser::validateNames(const Argument& argument) const {
   // 遍历所有参数，调用各自的 validateNames 方法
   argument.validateNames();
   // 验证是否出现冲突的名字
-  for(const auto& name: argument.getNames()) {
+  for (const auto& name : argument.getNames()) {
     if (m_subcommands.count(name)) {
-      throw std::invalid_argument("Subcommand name conflicts with argument: " + name);
+      throw std::invalid_argument("Subcommand name conflicts with argument: " +
+                                  name);
     }
   }
 }
@@ -190,23 +197,26 @@ bool ArgumentParser::hasArgument(const std::string& name) const {
   return false;
 }
 
-void ArgumentParser::checkNameConflicts(const std::vector<std::string>& names) const {
+void ArgumentParser::checkNameConflicts(
+    const std::vector<std::string>& names) const {
   for (const auto& name : names) {
     for (const auto& existing_arg : m_args) {
       const auto& existing_names = existing_arg->getNames();
-      if (std::find(existing_names.begin(), existing_names.end(), name) != existing_names.end()) {
+      if (std::find(existing_names.begin(), existing_names.end(), name) !=
+          existing_names.end()) {
         throw std::invalid_argument("Argument name already exists: " + name);
       }
     }
     if (m_subcommands.count(name)) {
-      throw std::invalid_argument("Argument name conflicts with subcommand: " + name);
+      throw std::invalid_argument("Argument name conflicts with subcommand: " +
+                                  name);
     }
   }
 }
 
 void ArgumentParser::printHelp() const {
   std::cout << "Usage: " << m_program_name << " [options]";
-  
+
   // 显示所有位置参数
   for (const auto& arg : m_args) {
     if (arg->getType() == ArgumentType::Positional) {
@@ -218,7 +228,7 @@ void ArgumentParser::printHelp() const {
       }
     }
   }
-  
+
   // 显示子命令
   if (!m_subcommands.empty()) {
     std::cout << " {";
@@ -230,14 +240,14 @@ void ArgumentParser::printHelp() const {
     }
     std::cout << "}";
   }
-  
+
   std::cout << "\n";
-  
+
   // 显示程序描述
   if (!m_description.empty()) {
     std::cout << "\n" << m_description << "\n";
   }
-  
+
   // 显示位置参数
   bool has_positional = false;
   for (const auto& arg : m_args) {
@@ -262,47 +272,47 @@ void ArgumentParser::printHelp() const {
       std::cout << "\n";
     }
   }
-  
+
   // 显示选项参数
   std::cout << "\nOptions:\n";
-  
+
   // 如果启用了自动 help 且用户没有自定义，先打印 -h, --help
   if (m_add_help && !hasArgument("-h") && !hasArgument("--help")) {
     std::cout << "  -h, --help\tshow this help message and exit\n";
   }
-  
+
   for (const auto& arg : m_args) {
     // 跳过位置参数（已经在上面显示了）
     if (arg->getType() == ArgumentType::Positional) {
       continue;
     }
-    
+
     std::cout << "  ";
     const auto& names = arg->getNames();
     for (size_t i = 0; i < names.size(); ++i) {
       if (i > 0) std::cout << ", ";
       std::cout << names[i];
     }
-    
+
     // 显示描述
     std::string desc = arg->getDescription();
     if (!desc.empty()) {
       std::cout << "\t" << desc;
     }
-    
+
     // 显示默认值
     if (arg->hasDefaultValue()) {
       std::cout << " (default: <set>)";
     }
-    
+
     // 显示是否必需
     if (arg->isRequired()) {
       std::cout << " [required]";
     }
-    
+
     std::cout << "\n";
   }
-  
+
   // 显示子命令
   if (!m_subcommands.empty()) {
     std::cout << "\nSubcommands:\n";
@@ -313,3 +323,6 @@ void ArgumentParser::printHelp() const {
     }
   }
 }
+
+}  // namespace argparse
+}  // namespace dry

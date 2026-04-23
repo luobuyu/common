@@ -1,5 +1,6 @@
 #include "log.h"
 
+namespace dry {
 namespace logger {
 
 // =============================================================================
@@ -99,3 +100,4 @@ void AsyncLogger::bgLogLoop() {
 }
 
 }  // namespace logger
+}  // namespace dry

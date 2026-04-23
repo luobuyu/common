@@ -1,7 +1,11 @@
 #pragma once
 
-#include "argument.h"
 #include <optional>
+
+#include "argument.h"
+
+namespace dry {
+namespace argparse {
 
 class FlagArgument : public Argument {
  public:
@@ -35,8 +39,9 @@ class FlagArgument : public Argument {
 
   // 重写多态方法
   // FlagArgument 不需要额外参数，忽略 args 和 current_index
-  size_t parse(const std::vector<std::string>& args, size_t current_index = 0) override;
-  
+  size_t parse(const std::vector<std::string>& args,
+               size_t current_index = 0) override;
+
   // 判断命令行参数是否匹配此标志参数
   bool matches(const std::string& arg) const override;
 
@@ -44,7 +49,10 @@ class FlagArgument : public Argument {
   void validateNames() const override;
 
  private:
-  bool m_flag;     // 存储标志参数的状态，true表示启用，false表示禁用
-  std::optional<bool> m_default_flag; // 默认值（使用 optional 判断是否设置）
+  bool m_flag;  // 存储标志参数的状态，true表示启用，false表示禁用
+  std::optional<bool> m_default_flag;  // 默认值（使用 optional 判断是否设置）
   std::function<bool(bool)> m_validator;  // 验证器
 };
+
+}  // namespace argparse
+}  // namespace dry

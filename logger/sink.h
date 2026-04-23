@@ -8,6 +8,7 @@
 #include "log_event.h"
 #include "log_format.h"
 
+namespace dry {
 namespace logger {
 // 基础日志落盘类。
 class LogSink {
@@ -49,5 +50,6 @@ class StdoutSink : public LogSink {
  private:
 };
 }  // namespace logger
+}  // namespace dry
 
 #endif

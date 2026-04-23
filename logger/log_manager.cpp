@@ -4,6 +4,7 @@
 #include <csignal>
 #include <iostream>
 
+namespace dry {
 namespace logger {
 
 LogManager& LogManager::getInstance() {
@@ -97,3 +98,4 @@ LogManager::~LogManager() {
 }
 
 }  // namespace logger
+}  // namespace dry
