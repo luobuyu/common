@@ -9,6 +9,7 @@
 
 #include "log.h"
 
+namespace dry {
 namespace logger {
 
 /**
@@ -100,5 +101,6 @@ class LogManager {
 };
 
 }  // namespace logger
+}  // namespace dry
 
 #endif

@@ -2,6 +2,7 @@
 
 #include <unistd.h>
 
+namespace dry {
 namespace logger {
 
 const std::string &levelToString(LogLevel level) {
@@ -52,3 +53,4 @@ std::ostream &operator<<(std::ostream &os, const logger::LogEvent &log_event) {
   return os;
 }
 };  // namespace logger
+}  // namespace dry

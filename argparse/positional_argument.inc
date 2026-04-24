@@ -3,6 +3,9 @@
 #include "../dry_core/dry_string.h"
 #include "positional_argument.h"
 
+namespace dry {
+namespace argparse {
+
 // 构造函数1: 绑定 vector<T>
 template <typename T>
 PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
@@ -112,3 +115,6 @@ void PositionalArgument<T>::validateNames() const {
     }
   }
 }
+
+}  // namespace argparse
+}  // namespace dry

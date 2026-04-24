@@ -9,6 +9,9 @@
 #include "option_argument.h"
 #include "positional_argument.h"
 
+namespace dry {
+namespace argparse {
+
 /**
  * 使用时需要先创建 ArgumentParser 对象
  * 然后通过 addFlagArgument、addOptionArgument、addPositionalArgument
@@ -17,8 +20,7 @@
 class ArgumentParser {
  public:
   ArgumentParser(const std::string& program_name,
-                 const std::string& description = "",
-                 bool add_help = true);
+                 const std::string& description = "", bool add_help = true);
   // 解析命令行参数
   // 返回值：true 表示正常解析完成，false 表示遇到 --help 请求（已打印帮助信息）
   // 抛出异常：std::runtime_error (解析错误)
@@ -29,7 +31,8 @@ class ArgumentParser {
   // 添加参数的高级接口
   // FlagArgument: 支持外部绑定
   FlagArgument& addFlagArgument(const std::vector<std::string>& names,
-                                bool& target, const std::string& description = "",
+                                bool& target,
+                                const std::string& description = "",
                                 bool required = false,
                                 std::function<void()> callback = nullptr);
   // 添加参数的高级接口
@@ -41,20 +44,19 @@ class ArgumentParser {
 
   // OptionArgument: 不绑定(使用默认参数会有歧义,所以单独声明)
   template <typename T>
-  OptionArgument<T>& addOptionArgument(
-      const std::vector<std::string>& names,
-      const std::string& description = "");
+  OptionArgument<T>& addOptionArgument(const std::vector<std::string>& names,
+                                       const std::string& description = "");
   // OptionArgument: 绑定单个值
   template <typename T>
-  OptionArgument<T>& addOptionArgument(
-      const std::vector<std::string>& names, T& target,
-      const std::string& description = "");
+  OptionArgument<T>& addOptionArgument(const std::vector<std::string>& names,
+                                       T& target,
+                                       const std::string& description = "");
 
   // OptionArgument: 绑定 vector
   template <typename T>
-  OptionArgument<T>& addOptionArgument(
-      const std::vector<std::string>& names, std::vector<T>& target,
-      const std::string& description = "");
+  OptionArgument<T>& addOptionArgument(const std::vector<std::string>& names,
+                                       std::vector<T>& target,
+                                       const std::string& description = "");
 
   // PositionalArgument: 不绑定
   template <typename T>
@@ -95,6 +97,9 @@ class ArgumentParser {
   std::unordered_map<std::string, std::unique_ptr<ArgumentParser>>
       m_subcommands;  // 子命令 [command name -> ArgumentParser]
 };
+
+}  // namespace argparse
+}  // namespace dry
 
 // 包含模板函数实现
 #include "argument_parser.inc"

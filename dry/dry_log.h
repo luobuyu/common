@@ -14,9 +14,11 @@
 #include "../logger/log_manager.h"
 
 // 前向声明，避免在头文件中 include config.h（只有 .cpp 中需要）
+namespace dry {
 namespace config {
 class Config;
-}
+}  // namespace config
+}  // namespace dry
 
 namespace dry {
 
@@ -58,11 +60,11 @@ void openLog(config::Config& conf);
  */
 #define LOG_FMT(level, fmt, ...)                                         \
   do {                                                                   \
-    auto& _log_mgr = logger::LogManager::getInstance();                  \
+    auto& _log_mgr = dry::logger::LogManager::getInstance();             \
     if (_log_mgr.isOpen() && _log_mgr.shouldLog(level)) {                \
-      _log_mgr.getLogger()->log(logger::LogEvent(                        \
+      _log_mgr.getLogger()->log(dry::logger::LogEvent(                   \
           level, _log_mgr.getModuleName(), __FILE__, __func__, __LINE__, \
-          logger::formatString(fmt, ##__VA_ARGS__)));                    \
+          dry::logger::formatString(fmt, ##__VA_ARGS__)));               \
     }                                                                    \
   } while (0)
 
@@ -75,10 +77,14 @@ void openLog(config::Config& conf);
 ///   LOG_ERROR("connect failed, ret=%d", ret);
 /// @endcode
 /// @{
-#define LOG_DEBUG(fmt, ...) LOG_FMT(logger::LogLevel::DEBUG, fmt, ##__VA_ARGS__)
-#define LOG_INFO(fmt, ...) LOG_FMT(logger::LogLevel::INFO, fmt, ##__VA_ARGS__)
-#define LOG_WARN(fmt, ...) LOG_FMT(logger::LogLevel::WARN, fmt, ##__VA_ARGS__)
-#define LOG_ERROR(fmt, ...) LOG_FMT(logger::LogLevel::ERROR, fmt, ##__VA_ARGS__)
+#define LOG_DEBUG(fmt, ...) \
+  LOG_FMT(dry::logger::LogLevel::DEBUG, fmt, ##__VA_ARGS__)
+#define LOG_INFO(fmt, ...) \
+  LOG_FMT(dry::logger::LogLevel::INFO, fmt, ##__VA_ARGS__)
+#define LOG_WARN(fmt, ...) \
+  LOG_FMT(dry::logger::LogLevel::WARN, fmt, ##__VA_ARGS__)
+#define LOG_ERROR(fmt, ...) \
+  LOG_FMT(dry::logger::LogLevel::ERROR, fmt, ##__VA_ARGS__)
 /// @}
 
 #endif

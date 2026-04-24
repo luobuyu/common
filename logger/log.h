@@ -15,6 +15,7 @@
 #include <fmt/printf.h>
 #endif
 
+namespace dry {
 namespace logger {
 
 // =============================================================================
@@ -166,5 +167,6 @@ class AsyncLogger : public Logger {
 };
 
 }  // namespace logger
+}  // namespace dry
 
 #endif

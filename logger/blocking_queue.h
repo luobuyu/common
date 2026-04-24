@@ -6,6 +6,7 @@
 #include <mutex>
 #include <vector>
 
+namespace dry {
 namespace logger {
 template <class T>
 class CircleQueue {
@@ -67,6 +68,7 @@ class BlockingQueue {
   std::atomic_bool m_is_stopping;
 };
 }  // namespace logger
+}  // namespace dry
 
 #include "blocking_queue.inc"
 #endif

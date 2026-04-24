@@ -1,6 +1,9 @@
 #include "../dry_core/dry_string.h"
 #include "option_argument.h"
 
+namespace dry {
+namespace argparse {
+
 // 构造函数1: 绑定 vector<T>
 template <typename T>
 OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
@@ -139,3 +142,6 @@ void OptionArgument<T>::validateNames() const {
     }
   }
 }
+
+}  // namespace argparse
+}  // namespace dry

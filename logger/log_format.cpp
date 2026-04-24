@@ -1,6 +1,7 @@
 #include "log_format.h"
 
 #include <unordered_set>
+namespace dry {
 namespace logger {
 
 logger::LoggerFormat::LoggerFormat(std::string pattern)
@@ -167,3 +168,4 @@ bool logger::FormatItemFactory::canCreate(const char &key) {
   return keys.find(key) != keys.end();
 }
 };  // namespace logger
+}  // namespace dry

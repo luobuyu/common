@@ -1,6 +1,7 @@
 #include "sink.h"
 
 #include <filesystem>
+namespace dry {
 namespace logger {
 logger::FileSink::FileSink(std::string file_path, uint32_t max_size,
                            dry::clock::duration rotate_interval)
@@ -60,3 +61,4 @@ void StdoutSink::sink(const logger::LogEvent &log_event,
 
 void StdoutSink::flush() { std::cout.flush(); }
 };  // namespace logger
+}  // namespace dry

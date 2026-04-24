@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 
+namespace dry {
+namespace argparse {
+
 // 参数类型枚举
 enum class ArgumentType {
   Flag,       // 标志参数（如 -v, --verbose）
@@ -12,7 +15,7 @@ enum class ArgumentType {
 };
 
 class Argument {
-public:
+ public:
   // 构造函数（不带 required 和 callback 参数，避免隐式转换问题）
   // 使用链式调用 .required() 和 .callback() 来设置
   Argument(const std::vector<std::string>& names,
@@ -42,10 +45,12 @@ public:
   virtual void validateNames() const = 0;
 
   // 不同子类的实现:
-  //   - FlagArgument/OptionArgument: 检查 arg 以 '-' 开头，是否在 m_names 中（精确匹配）
-  //   - PositionalArgument: 检查 arg 是否不以 '-' 开头（任何非选项都可能是位置参数）
+  //   - FlagArgument/OptionArgument: 检查 arg 以 '-' 开头，是否在 m_names
+  //   中（精确匹配）
+  //   - PositionalArgument: 检查 arg 是否不以 '-'
+  //   开头（任何非选项都可能是位置参数）
   virtual bool matches(const std::string& arg) const = 0;
-  
+
   // 解析命令行参数
   // 参数:
   //   args: 完整的命令行参数列表
@@ -54,7 +59,8 @@ public:
   //   - FlagArgument: 返回 1（消耗标志参数本身）
   //   - OptionArgument: 返回 1 + 消耗的值的个数
   //   - PositionalArgument: 返回实际消耗的参数数量
-  virtual size_t parse(const std::vector<std::string>& args, size_t current_index) = 0;
+  virtual size_t parse(const std::vector<std::string>& args,
+                       size_t current_index) = 0;
 
   // 检查是否设置了默认值（子类应重写此方法）
   virtual bool hasDefaultValue() const { return false; }
@@ -80,9 +86,13 @@ public:
  protected:
   ArgumentType m_type;               // 参数类型
   std::vector<std::string> m_names;  // 存储命令行参数的名称以及别名 --help, -h
-  std::string m_description;         // 参数的描述信息
-  bool m_required;                   // 参数是否必填
-  bool m_parsed;                     // 是否已被解析
+  std::string m_description;  // 参数的描述信息
+  bool m_required;            // 参数是否必填
+  bool m_parsed;              // 是否已被解析
   std::function<void()> m_callback;  // 参数被成功解析时，会自动调用这个函数
-  std::function<void()> m_sync_to_target; // 用于将解析出的变量同步到绑定的外部变量
+  std::function<void()>
+      m_sync_to_target;  // 用于将解析出的变量同步到绑定的外部变量
 };
+
+}  // namespace argparse
+}  // namespace dry

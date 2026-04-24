@@ -1,18 +1,22 @@
 #pragma once
-#include "multi_argument.h"
 #include <cctype>
+
+#include "multi_argument.h"
+
+namespace dry {
+namespace argparse {
 
 // 判断字符串是否看起来像一个选项参数（以 '-' 开头，且不是负数）
 inline bool isOptionString(const std::string& str) {
   if (str.size() < 2 || str[0] != '-') {
     return false;
   }
-  
+
   // 长选项: --xxx
   if (str[1] == '-') {
     return true;
   }
-  
+
   // 检查是否为负数（短选项或负数）
   // 如果第二个字符是数字，可能是负数 -123
   if (std::isdigit(static_cast<unsigned char>(str[1]))) {
@@ -28,7 +32,7 @@ inline bool isOptionString(const std::string& str) {
       return false;  // 数字溢出，当作数字处理
     }
   }
-  
+
   // -x 形式：是短选项
   return true;
 }
@@ -47,7 +51,7 @@ class OptionArgument : public MultiArgument<T> {
   // 构造函数3: 不绑定
   OptionArgument(const std::vector<std::string>& names,
                  const std::string& description = "");
-  
+
   // 链式调用
   OptionArgument<T>& value(const T& value);
   OptionArgument<T>& description(const std::string& description);
@@ -66,5 +70,8 @@ class OptionArgument : public MultiArgument<T> {
   // 验证 option 参数名称（必须以 '-' 开头）
   void validateNames() const override;
 };
+
+}  // namespace argparse
+}  // namespace dry
 
 #include "option_argument.inc"

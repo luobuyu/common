@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+namespace dry {
 namespace config {
 
 class Config {
@@ -41,5 +42,6 @@ class Config {
   std::unordered_map<std::string, Section> m_sections;
 };
 };  // namespace config
+}  // namespace dry
 
 #endif
