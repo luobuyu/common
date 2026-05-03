@@ -28,7 +28,7 @@ struct LogEvent {
                                   const logger::LogEvent &log_event);
   LogEvent() = default;
 
-  dry::clock::time_point m_timestamp;
+  std::chrono::system_clock::time_point m_timestamp;
   logger::LogLevel m_log_level;
   std::string_view m_module_name;
   uint32_t m_process_id;
