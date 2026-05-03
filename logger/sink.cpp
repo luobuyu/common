@@ -4,12 +4,12 @@
 namespace dry {
 namespace logger {
 logger::FileSink::FileSink(std::string file_path, uint32_t max_size,
-                           dry::clock::duration rotate_interval)
+                           std::chrono::system_clock::duration rotate_interval)
     : m_file_path(std::move(file_path)),
       m_no(0),
       m_max_size(max_size),
       m_rotate_interval(rotate_interval),
-      m_next_start(dry::clock::now() + m_rotate_interval) {}
+      m_next_start(std::chrono::system_clock::now() + m_rotate_interval) {}
 void FileSink::sink(const logger::LogEvent &log_event,
                     LoggerFormat::LoggerFormatPtr &log_format) {
   bool create_new_file = !m_ofs.is_open();

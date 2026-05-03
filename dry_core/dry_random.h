@@ -8,8 +8,8 @@ namespace dry {
 class Random {
  public:
   static std::default_random_engine &getRandomEngine() {
-    static std::default_random_engine gen(
-        static_cast<unsigned>(dry::clock::now().time_since_epoch().count()));
+    static std::default_random_engine gen(static_cast<unsigned>(
+        std::chrono::steady_clock::now().time_since_epoch().count()));
     return gen;
   }
   static void setSeed(unsigned int seed) { getRandomEngine().seed(seed); }

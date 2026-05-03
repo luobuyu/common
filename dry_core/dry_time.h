@@ -1,15 +1,29 @@
 #ifndef DRY_TIME_H
 #define DRY_TIME_H
 #include <chrono>
+#include <cstdint>
 #include <ctime>
 #include <string>
 namespace dry {
-using clock = std::chrono::system_clock;
+
+// 获取单调时钟的当前时间戳，不受系统时间修改影响，用于定时器等场景
+// 默认返回毫秒，可通过模板参数指定精度，如 GetNow<std::chrono::microseconds>()
+template <typename Duration = std::chrono::milliseconds>
+inline int64_t GetNow() {
+  return std::chrono::duration_cast<Duration>(
+             std::chrono::steady_clock::now().time_since_epoch())
+      .count();
+}
+
+// 常用精度的简洁别名
+inline int64_t GetNowS() { return GetNow<std::chrono::seconds>(); }
+inline int64_t GetNowMs() { return GetNow<std::chrono::milliseconds>(); }
+inline int64_t GetNowUs() { return GetNow<std::chrono::microseconds>(); }
 
 inline std::string getTime(std::string format) {
-  auto now = clock::now();
+  auto now = std::chrono::system_clock::now();
   // 获取当前时间
-  std::time_t t = clock::to_time_t(now);
+  std::time_t t = std::chrono::system_clock::to_time_t(now);
 
   // 将时间转换为本地时间（线程安全）
   std::tm local_time;
@@ -23,10 +37,10 @@ inline std::string getTime(std::string format) {
   return std::string(date_buffer);
 }
 
-inline std::string getTime(const clock::time_point& t,
+inline std::string getTime(const std::chrono::system_clock::time_point& t,
                            const std::string& format) {
   // 将时间转换为本地时间（线程安全）
-  std::time_t t_time_t = clock::to_time_t(t);
+  std::time_t t_time_t = std::chrono::system_clock::to_time_t(t);
   std::tm local_time;
   localtime_r(&t_time_t, &local_time);
 
@@ -39,7 +53,7 @@ inline std::string getTime(const clock::time_point& t,
 }
 
 // 带毫秒的时间格式化，在 getTime 结果后追加 .毫秒
-inline std::string getTimeWithMs(const clock::time_point& t,
+inline std::string getTimeWithMs(const std::chrono::system_clock::time_point& t,
                                  const std::string& format) {
   std::string result = getTime(t, format);
   auto epoch = t.time_since_epoch();
@@ -53,23 +67,24 @@ inline std::string getTimeWithMs(const clock::time_point& t,
 
 class Timer {
  private:
-  using TimePoint = clock::time_point;
+  using SteadyClock = std::chrono::steady_clock;
+  using TimePoint = SteadyClock::time_point;
   TimePoint startTime, endTime;
   long long timeout;
 
  public:
-  Timer() : startTime(clock::now()) {}
+  Timer() : startTime(SteadyClock::now()) {}
   Timer(long long secTimeout) {
     timeout = secTimeout;
     setTimer(secTimeout);
   }
   void setTimer(long long secTimeout) {
-    startTime = clock::now();
+    startTime = SteadyClock::now();
     endTime = startTime + std::chrono::seconds(secTimeout);
   }
-  bool isTimeout() { return endTime < clock::now(); }
+  bool isTimeout() { return endTime < SteadyClock::now(); }
   std::chrono::duration<double> getDuration() {
-    return clock::now() - startTime;
+    return SteadyClock::now() - startTime;
   }
   double getDurationS() {
     return std::chrono::duration<double>(getDuration()).count();

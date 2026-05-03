@@ -31,7 +31,7 @@ const std::string &levelToString(LogLevel level) {
 LogEvent::LogEvent(logger::LogLevel log_level, std::string_view module_name,
                    std::string_view file_name, std::string_view function_name,
                    uint32_t line_id, std::string log_msg)
-    : m_timestamp(dry::clock::now()),
+    : m_timestamp(std::chrono::system_clock::now()),
       m_log_level(log_level),
       m_module_name(module_name),
       m_process_id(getpid()),
