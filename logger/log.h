@@ -23,8 +23,18 @@ namespace logger {
 // =============================================================================
 
 /**
+ * @brief 格式化字符串工具函数（无参版本）
+ * @details 无格式化参数时直接拷贝字符串，避免调用 snprintf
+ *          触发 clang/gcc 的 -Wformat-security 告警。
+ * @param str 字符串内容（可能含 % 但无对应参数，按字面量原样输出）
+ */
+inline std::string formatString(const char *str) {
+  return std::string(str ? str : "");
+}
+
+/**
  * @brief 格式化字符串工具函数
- * @tparam Args 可变参数类型
+ * @tparam Args 可变参数类型（至少一个）
  * @param str 格式化字符串
  * @param args 参数列表
  * @return 格式化后的字符串（自动截断超长内容）
