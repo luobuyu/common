@@ -16,7 +16,7 @@ bool Config::initConfig(const std::string &path) {
   // parser config
   std::string line, cur_section;
   while (std::getline(ifs, line)) {
-    line = dry::stringTrim(line);
+    line = std::string(dry::trim(line));
 
     // 忽略空行或注释行
     if (line.empty() || line.front() == '#' || line.front() == ';') continue;
@@ -24,7 +24,7 @@ bool Config::initConfig(const std::string &path) {
     // 检查是否是section
     if (line.front() == '[' && line.back() == ']') {
       cur_section = line.substr(1, line.size() - 2);
-      cur_section = dry::stringTrim(cur_section);
+      cur_section = std::string(dry::trim(cur_section));
       m_sections[cur_section] = Section();
     }
     // 解析键值对
@@ -34,8 +34,8 @@ bool Config::initConfig(const std::string &path) {
         std::cerr << "can't parser config line: " << line << std::endl;
         return false;
       }
-      std::string key = dry::stringTrim(line.substr(0, index));
-      std::string val = dry::stringTrim(line.substr(index + 1));
+      std::string key(dry::trim(line.substr(0, index)));
+      std::string val(dry::trim(line.substr(index + 1)));
       if (key.empty() || val.empty()) {
         std::cerr << "can't parser config line: " << line << std::endl;
         return false;
