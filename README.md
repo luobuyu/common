@@ -31,11 +31,11 @@ config   log_format / log_event
 
 头文件位于 `dry_core/` 目录，提供 header-only 的常用工具：
 
-| 头文件         | 命名空间 | 功能                                                                           |
-| -------------- | -------- | ------------------------------------------------------------------------------ |
-| `dry_string.h` | `dry`    | 字符串工具：`strTo<T>()` 类型转换、`stringSplit()` 分割、`stringTrim()` 去空白 |
-| `dry_time.h`   | `dry`    | 时间工具：`getTime()` 格式化时间、`getTimeWithMs()` 带毫秒、`Timer` 计时器类   |
-| `dry_random.h` | `dry`    | 随机数工具：`Random::rand()` 支持整数/浮点/权重采样                            |
+| 头文件         | 命名空间 | 功能                                                                         |
+| -------------- | -------- | ---------------------------------------------------------------------------- |
+| `dry_string.h` | `dry`    | 字符串工具：`strTo<T>()` 类型转换、`stringSplit()` 分割、`trim()` 去空白     |
+| `dry_time.h`   | `dry`    | 时间工具：`getTime()` 格式化时间、`getTimeWithMs()` 带毫秒、`Timer` 计时器类 |
+| `dry_random.h` | `dry`    | 随机数工具：`Random::rand()` 支持整数/浮点/权重采样                          |
 
 **使用示例：**
 

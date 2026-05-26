@@ -2,3 +2,5 @@ build/
 .cache/
 .vscode/
 .DS_Store
+.claude
+.codegraph

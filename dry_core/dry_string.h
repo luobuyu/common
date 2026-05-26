@@ -1,81 +1,63 @@
 #ifndef DRY_STRING_H
 #define DRY_STRING_H
 #include <charconv>
+#include <optional>
 #include <sstream>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
 #include <vector>
 namespace dry {
 
-// 通用类型转换：将字符串转换为指定类型（失败抛异常）
+// 严格类型转换：将字符串转换为指定类型，返回 std::optional
+// 要求整个字符串都被消费（不允许部分匹配，如 "42abc" → nullopt）
 // 数值类型走 std::from_chars（零分配、零 locale 依赖，性能最优）
 // 非数值类型回退到 istringstream
-template <typename T>
-T strTo(std::string_view str) {
-  if constexpr (std::is_arithmetic_v<T> && !std::is_same_v<T, bool>) {
-    T value{};
-    auto [ptr, ec] =
-        std::from_chars(str.data(), str.data() + str.size(), value);
-    if (ec != std::errc{}) {
-      throw std::runtime_error("Failed to convert string to target type: " +
-                               std::string(str));
-    }
-    return value;
-  } else {
-    std::istringstream iss{std::string(str)};
-    T value;
-    if (!(iss >> value)) {
-      throw std::runtime_error("Failed to convert string to target type: " +
-                               std::string(str));
-    }
-    return value;
-  }
-}
-
-// std::string 特化 - 直接返回
-template <>
-inline std::string strTo<std::string>(std::string_view str) {
-  return std::string(str);
-}
-
-// bool 特化 - 支持 "true", "false", "1", "0"
-template <>
-inline bool strTo<bool>(std::string_view str) {
-  if (str == "true" || str == "1") return true;
-  if (str == "false" || str == "0") return false;
-  throw std::runtime_error("Invalid boolean value: " + std::string(str));
-}
-
-// 不抛异常版本：转换失败/字符串为空时返回 default_value
-// 推荐在解析外部输入（HTTP header、query 参数等）时使用
 // base 参数仅对整数类型生效（默认十进制；HTTP chunked size 等场景可传 16）
 template <typename T>
-T strToOr(std::string_view str, T default_value = T{}, int base = 10) noexcept {
-  if (str.empty()) return default_value;
+std::optional<T> strTo(std::string_view str, int base = 10) noexcept {
+  if (str.empty()) return std::nullopt;
   if constexpr (std::is_integral_v<T> && !std::is_same_v<T, bool>) {
     T value{};
     auto [ptr, ec] =
         std::from_chars(str.data(), str.data() + str.size(), value, base);
-    return ec == std::errc{} ? value : default_value;
+    // 必须无错误 且 消费了全部字符
+    if (ec != std::errc{} || ptr != str.data() + str.size()) {
+      return std::nullopt;
+    }
+    return value;
   } else if constexpr (std::is_floating_point_v<T>) {
     T value{};
     auto [ptr, ec] =
         std::from_chars(str.data(), str.data() + str.size(), value);
-    return ec == std::errc{} ? value : default_value;
+    if (ec != std::errc{} || ptr != str.data() + str.size()) {
+      return std::nullopt;
+    }
+    return value;
   } else if constexpr (std::is_same_v<T, bool>) {
     if (str == "true" || str == "1") return true;
     if (str == "false" || str == "0") return false;
-    return default_value;
+    return std::nullopt;
   } else if constexpr (std::is_same_v<T, std::string>) {
     return std::string(str);
   } else {
     std::istringstream iss{std::string(str)};
     T value;
-    if (!(iss >> value)) return default_value;
+    if (!(iss >> value)) return std::nullopt;
+    // 检查是否还有剩余字符（跳过尾部空白）
+    char c;
+    if (iss >> c) return std::nullopt;  // 还有未消费的非空白字符
     return value;
   }
+}
+
+// 默认值版本：转换失败/字符串为空时返回 default_value
+// 内部调用 strTo，同样是严格模式（要求消费全部字符）
+// 推荐在解析外部输入且只需要兜底值的场景使用（如 query 参数、Range 头等）
+// base 参数仅对整数类型生效（默认十进制；HTTP chunked size 等场景可传 16）
+template <typename T>
+T strToOr(std::string_view str, T default_value = T{}, int base = 10) noexcept {
+  return strTo<T>(str, base).value_or(default_value);
 }
 
 // split
@@ -142,11 +124,22 @@ inline std::string stringJoin(const std::vector<std::string> &parts,
   return result;
 }
 
-inline std::string stringTrim(const std::string &str) {
-  size_t first = str.find_first_not_of(" \t");
-  if (first == std::string::npos) return "";
-  size_t last = str.find_last_not_of(" \t");
-  return str.substr(first, last - first + 1);
+// trimView：去除前后 SP/HTAB，返回 string_view（零拷贝）
+// 注意：返回的 string_view 生命周期依赖于传入的 sv 所指向的内存，
+// 调用方需确保底层数据在使用期间存活（勿对临时 string 的返回值持有 view）
+inline std::string_view trimView(std::string_view sv) {
+  while (!sv.empty() && (sv.front() == ' ' || sv.front() == '\t')) {
+    sv.remove_prefix(1);
+  }
+  while (!sv.empty() && (sv.back() == ' ' || sv.back() == '\t')) {
+    sv.remove_suffix(1);
+  }
+  return sv;
+}
+
+// trim：去除前后 SP/HTAB，返回 std::string（安全拷贝，可对临时对象使用）
+inline std::string trim(std::string_view sv) {
+  return std::string(trimView(sv));
 }
 
 // 字符串转小写
