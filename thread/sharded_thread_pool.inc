@@ -2,7 +2,7 @@
 
 #include <future>
 
-#include "common/thread/sharded_thread_pool.h"
+#include "thread/sharded_thread_pool.h"
 
 namespace dry {
 namespace thread {

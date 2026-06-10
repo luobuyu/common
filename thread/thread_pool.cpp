@@ -1,4 +1,4 @@
-#include "common/thread/thread_pool.h"
+#include "thread/thread_pool.h"
 
 namespace dry {
 namespace thread {

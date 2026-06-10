@@ -5,7 +5,7 @@
 #include <memory>
 #include <unordered_map>
 
-#include "common/dry_core/dry_time.h"
+#include "dry_core/dry_time.h"
 
 namespace dry {
 
