@@ -7,7 +7,7 @@
 #include <thread>
 #include <vector>
 
-#include "common/thread/thread_pool.h"
+#include "thread/thread_pool.h"
 
 namespace dry {
 namespace thread {
@@ -67,4 +67,4 @@ class ShardedThreadPool {
 }  // namespace thread
 }  // namespace dry
 
-#include "common/thread/sharded_thread_pool.inc"
+#include "thread/sharded_thread_pool.inc"

@@ -3,7 +3,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "common/dry_core/dry_string.h"
+#include "dry_core/dry_string.h"
 
 namespace dry {
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "common/thread/batch_task_pool.h"
+#include "thread/batch_task_pool.h"
 
 namespace dry {
 namespace thread {

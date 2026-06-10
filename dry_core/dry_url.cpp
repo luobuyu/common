@@ -1,8 +1,8 @@
-#include "common/dry_core/dry_url.h"
+#include "dry_core/dry_url.h"
 
 #include <cctype>
 
-#include "common/dry_core/dry_string.h"
+#include "dry_core/dry_string.h"
 
 namespace dry {
 
