@@ -11,8 +11,7 @@
 #include "log_format.h"
 #include "sink.h"
 #ifdef FMT_FOUND
-#include <fmt/core.h>
-#include <fmt/printf.h>
+#include <fmt/format.h>
 #endif
 
 namespace dry {
@@ -33,41 +32,23 @@ inline std::string formatString(const char *str) {
 }
 
 /**
- * @brief 格式化字符串工具函数
- * @tparam Args 可变参数类型（至少一个）
- * @param str 格式化字符串
- * @param args 参数列表
- * @return 格式化后的字符串（自动截断超长内容）
+ * @brief 格式化字符串工具函数（{} 风格，fmt::format）
+ * @details 供 LOG_* 宏使用。需要 fmt 库（FMT_FOUND）。
+ *          支持全部 fmt 格式说明：{:.2f} {:>10} {:<5} {:x} 等。
+ * @code
+ *   formatString("id={}, name={}", 42, "tom");
+ *   formatString("price={:.2f}", 3.14159);   // → "price=3.14"
+ * @endcode
  */
 template <typename... Args>
 std::string formatString(const char *str, Args &&...args) {
-  static constexpr int MAX_SIZE = 4096;  // 最大长度限制
-  static const std::string truncation_message = " ... It's longer than " +
-                                                std::to_string(MAX_SIZE) +
-                                                ", so it's truncated.";
-
 #ifdef FMT_FOUND
-  std::string result = fmt::sprintf(str, std::forward<Args>(args)...);
-  if (result.length() > MAX_SIZE) {
-    result.resize(MAX_SIZE);
-    result += truncation_message;
-  }
-  return result;
+  return fmt::format(fmt::runtime(str), std::forward<Args>(args)...);
 #else
-  // 栈上 buffer 优先，绝大多数日志一次 snprintf 搞定
-  char stack_buf[MAX_SIZE + 1];
-  int size = snprintf(stack_buf, sizeof(stack_buf), str, args...);
-  if (size < 0) return "";
-
-  if (size < static_cast<int>(sizeof(stack_buf))) {
-    // 未截断，直接从栈 buffer 构造 string
-    return std::string(stack_buf, size);
-  }
-
-  // 超长：stack_buf 中已有 MAX_SIZE 字节的有效内容，拼上截断提示
-  std::string result(stack_buf, MAX_SIZE);
-  result += truncation_message;
-  return result;
+  static_assert(sizeof...(Args) < 0,
+                "LOG_* requires the fmt library. "
+                "Install fmt or upgrade to C++20 for std::format.");
+  return {};
 #endif
 }
 

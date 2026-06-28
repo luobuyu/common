@@ -55,8 +55,10 @@ void openLog(config::Config& conf);
 // =============================================================================
 
 /**
- * @internal 内部实现宏，请勿直接调用，应使用
+ * @internal 内部骨架宏（扩展接口），请勿直接调用，应使用
  * LOG_DEBUG/LOG_INFO/LOG_WARN/LOG_ERROR
+ * @details {} 风格（fmt::format），需 fmt 库（FMT_FOUND）。
+ *          保留此骨架便于后续注入上下文/默认参数等扩展。
  */
 #define LOG_FMT(level, fmt, ...)                                         \
   do {                                                                   \
@@ -68,13 +70,13 @@ void openLog(config::Config& conf);
     }                                                                    \
   } while (0)
 
-/// @name 日志输出宏
-/// @brief 格式化输出日志，语法兼容 printf
+/// @name 日志输出宏（{} 风格，fmt::format）
+/// @brief 格式化输出日志，语法兼容 fmt / std::format
 /// @code
-///   LOG_DEBUG("user_id=%d, name=%s", uid, name.c_str());
-///   LOG_INFO("server started on port %d", port);
-///   LOG_WARN("retry count exceeded: %d", retry);
-///   LOG_ERROR("connect failed, ret=%d", ret);
+///   LOG_DEBUG("user_id={}, name={}", uid, name);
+///   LOG_INFO("server started on port {}", port);
+///   LOG_WARN("retry count exceeded: {}", retry);
+///   LOG_ERROR("connect failed, ret={}", ret);
 /// @endcode
 /// @{
 #define LOG_DEBUG(fmt, ...) \
