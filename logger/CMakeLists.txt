@@ -1,17 +1,14 @@
-# 查找 fmt 库
-find_package(fmt QUIET)
-
 add_library(logger log.cpp log_manager.cpp sink.cpp log_event.cpp log_format.cpp)
 
 target_include_directories(logger PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 target_link_libraries(logger PUBLIC dry_core)
-if(fmt_FOUND)
-    message(STATUS "fmt library found")
-    # 定义宏以便在代码中使用
+# fmt：由顶层 CMakeLists 提供 fmt::fmt target（本地已装 or third_party fallback）
+if(TARGET fmt::fmt)
+    message(STATUS "fmt library found (FMT_FOUND enabled, LOGF_* available)")
     target_compile_definitions(logger PUBLIC FMT_FOUND)
-    target_link_libraries(logger PUBLIC fmt)
+    target_link_libraries(logger PUBLIC fmt::fmt)
 else()
-    message(STATUS "fmt library not found")
+    message(STATUS "fmt library not found (LOGF_* disabled, LOG_* falls back to snprintf)")
 endif()
 if(UNIX AND NOT APPLE)
     find_package(Threads REQUIRED)

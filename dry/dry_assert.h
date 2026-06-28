@@ -33,7 +33,7 @@
 #define DRY_ASSERT(expr, fmt, ...)                                 \
   do {                                                             \
     if (!(expr)) {                                                 \
-      LOG_ERROR("ASSERT FAILED: %s | " fmt, #expr, ##__VA_ARGS__); \
+      LOG_ERROR("ASSERT FAILED: {} | " fmt, #expr, ##__VA_ARGS__); \
       assert(false && #expr);                                      \
     }                                                              \
   } while (0)

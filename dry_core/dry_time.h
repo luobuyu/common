@@ -73,7 +73,7 @@ class Timer {
   long long timeout;
 
  public:
-  Timer() : startTime(SteadyClock::now()) {}
+  Timer() : startTime(SteadyClock::now()), endTime(startTime), timeout(0) {}
   Timer(long long secTimeout) {
     timeout = secTimeout;
     setTimer(secTimeout);
@@ -89,11 +89,11 @@ class Timer {
   double getDurationS() {
     return std::chrono::duration<double>(getDuration()).count();
   }
-  double getDurationMs() {
+  int64_t getDurationMs() {
     return std::chrono::duration_cast<std::chrono::milliseconds>(getDuration())
         .count();
   }
-  double getDurationUs() {
+  int64_t getDurationUs() {
     return std::chrono::duration_cast<std::chrono::microseconds>(getDuration())
         .count();
   }
