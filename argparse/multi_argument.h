@@ -37,33 +37,33 @@ class MultiArgument : public Argument {
   MultiArgument(const ArgumentType& type, const std::vector<std::string>& names,
                 const std::string& description = "");
   // 值操作
-  const std::vector<T>& getValues() const;
-  void addValue(const T& value);
-  void setValues(const std::vector<T>& values);
-  void clearValues();
-  size_t valueCount() const;
+  const std::vector<T>& GetValues() const;
+  void AddValue(const T& value);
+  void SetValues(const std::vector<T>& values);
+  void ClearValues();
+  size_t ValueCount() const;
 
   // 默认值设置（统一使用 std::optional<std::vector<T>>）
-  MultiArgument<T>& defaultValue(const T& value);  // 单个默认值
-  MultiArgument<T>& defaultValues(const std::vector<T>& values);  // 多个默认值
-  bool hasDefaultValue() const override;  // 重写基类虚方法
-  const std::vector<T>& getDefaultValues() const;
+  MultiArgument<T>& DefaultValue(const T& value);  // 单个默认值
+  MultiArgument<T>& DefaultValues(const std::vector<T>& values);  // 多个默认值
+  bool HasDefaultValue() const override;  // 重写基类虚方法
+  const std::vector<T>& GetDefaultValues() const;
 
   // Expected 参数数量控制
   MultiArgument<T>& expected(int count);  // 精确数量或特殊值（整数）
   MultiArgument<T>& expected(ExpectedCount count);  // 枚举类型：强类型安全
   MultiArgument<T>& expected(int min, int max);  // 范围控制
-  int getExpectedMin() const;
-  int getExpectedMax() const;
+  int GetExpectedMin() const;
+  int GetExpectedMax() const;
 
   // 外部变量绑定
-  MultiArgument<T>& bindTo(std::vector<T>& target);
-  MultiArgument<T>& bindTo(T& target);
+  MultiArgument<T>& BindTo(std::vector<T>& target);
+  MultiArgument<T>& BindTo(T& target);
 
   // 验证器（只保留整体验证）
   MultiArgument<T>& validator(
       std::function<bool(const std::vector<T>&)> validator);
-  bool isValid() const override;
+  bool IsValid() const override;
   // 验证并抛出异常（供 parse 时调用）
   void validate() const override;
 

@@ -75,7 +75,7 @@ inline constexpr bool kHttpHeaderValueInvalid[256] = {
 
 /// 校验 header name 是否为合法 HTTP token 字符串（RFC 7230 §3.2.6）
 /// 空字符串视为非法
-inline bool isValidHttpHeaderName(std::string_view sv) {
+inline bool IsValidHttpHeaderName(std::string_view sv) {
   if (sv.empty()) return false;
   for (char c : sv) {
     if (!kHttpHeaderNameChar[static_cast<unsigned char>(c)]) return false;
@@ -84,7 +84,7 @@ inline bool isValidHttpHeaderName(std::string_view sv) {
 }
 
 /// 校验 header value 是否包含非法字符（NULL / 裸 CR / 裸 LF / 控制字符）
-inline bool isValidHttpHeaderValue(std::string_view sv) {
+inline bool IsValidHttpHeaderValue(std::string_view sv) {
   for (char c : sv) {
     if (kHttpHeaderValueInvalid[static_cast<unsigned char>(c)]) return false;
   }
@@ -93,7 +93,7 @@ inline bool isValidHttpHeaderValue(std::string_view sv) {
 
 /// 校验 URL 是否包含控制字符（0x00-0x1F）或 DEL（0x7F）
 /// 规则简单，不需要查表
-inline bool isValidHttpUrl(std::string_view sv) {
+inline bool IsValidHttpUrl(std::string_view sv) {
   for (char c : sv) {
     auto uc = static_cast<unsigned char>(c);
     if (uc < 0x20 || uc == 0x7F) return false;
@@ -106,9 +106,9 @@ inline bool isValidHttpUrl(std::string_view sv) {
 ///   - '/' 防止路径注入（Host 被拼接到 URL 时）
 ///   - '@' 防止 userinfo 注入（如 evil@host 被误解析）
 /// Go net/http httpguts.ValidHostHeader() 做了类似校验。
-/// 注意：控制字符 / NULL / CR / LF 已由 isValidHttpHeaderValue 拦截，
+/// 注意：控制字符 / NULL / CR / LF 已由 IsValidHttpHeaderValue 拦截，
 ///       此函数仅做 Host 特有的额外校验。
-inline bool isValidHostValue(std::string_view sv) {
+inline bool IsValidHostValue(std::string_view sv) {
   for (char c : sv) {
     if (c == '/' || c == '@') return false;
   }

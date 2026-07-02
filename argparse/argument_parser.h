@@ -14,7 +14,7 @@ namespace argparse {
 
 /**
  * 使用时需要先创建 ArgumentParser 对象
- * 然后通过 addFlagArgument、addOptionArgument、addPositionalArgument
+ * 然后通过 AddFlagArgument、AddOptionArgument、AddPositionalArgument
  * 方法添加参数 最后调用 parse 方法解析命令行参数
  */
 class ArgumentParser {
@@ -26,68 +26,68 @@ class ArgumentParser {
   // 抛出异常：std::runtime_error (解析错误)
   bool parse(int argc, char** argv);
   bool parse(const std::vector<std::string>& args);
-  void printHelp() const;
+  void PrintHelp() const;
 
   // 添加参数的高级接口
   // FlagArgument: 支持外部绑定
-  FlagArgument& addFlagArgument(const std::vector<std::string>& names,
+  FlagArgument& AddFlagArgument(const std::vector<std::string>& names,
                                 bool& target,
                                 const std::string& description = "",
                                 bool required = false,
                                 std::function<void()> callback = nullptr);
   // 添加参数的高级接口
   // FlagArgument: 不支持外部绑定
-  FlagArgument& addFlagArgument(const std::vector<std::string>& names,
+  FlagArgument& AddFlagArgument(const std::vector<std::string>& names,
                                 const std::string& description = "",
                                 bool required = false,
                                 std::function<void()> callback = nullptr);
 
   // OptionArgument: 不绑定(使用默认参数会有歧义,所以单独声明)
   template <typename T>
-  OptionArgument<T>& addOptionArgument(const std::vector<std::string>& names,
+  OptionArgument<T>& AddOptionArgument(const std::vector<std::string>& names,
                                        const std::string& description = "");
   // OptionArgument: 绑定单个值
   template <typename T>
-  OptionArgument<T>& addOptionArgument(const std::vector<std::string>& names,
+  OptionArgument<T>& AddOptionArgument(const std::vector<std::string>& names,
                                        T& target,
                                        const std::string& description = "");
 
   // OptionArgument: 绑定 vector
   template <typename T>
-  OptionArgument<T>& addOptionArgument(const std::vector<std::string>& names,
+  OptionArgument<T>& AddOptionArgument(const std::vector<std::string>& names,
                                        std::vector<T>& target,
                                        const std::string& description = "");
 
   // PositionalArgument: 不绑定
   template <typename T>
-  PositionalArgument<T>& addPositionalArgument(
+  PositionalArgument<T>& AddPositionalArgument(
       const std::vector<std::string>& names,
       const std::string& description = "");
 
   // PositionalArgument: 绑定单个值
   template <typename T>
-  PositionalArgument<T>& addPositionalArgument(
+  PositionalArgument<T>& AddPositionalArgument(
       const std::vector<std::string>& names, T& target,
       const std::string& description = "");
 
   // PositionalArgument: 绑定 vector
   template <typename T>
-  PositionalArgument<T>& addPositionalArgument(
+  PositionalArgument<T>& AddPositionalArgument(
       const std::vector<std::string>& names, std::vector<T>& target,
       const std::string& description = "");
 
   // 子命令支持
-  ArgumentParser& addSubcommand(const std::string& name,
+  ArgumentParser& AddSubcommand(const std::string& name,
                                 const std::string& description = "");
 
  private:
   // 内部辅助方法：添加已创建的参数对象
-  Argument& addArgument(std::unique_ptr<Argument> argument);
-  void validateNames(const Argument& argument) const;
+  Argument& AddArgument(std::unique_ptr<Argument> argument);
+  void ValidateNames(const Argument& argument) const;
   // 检查是否已定义某个参数名
-  bool hasArgument(const std::string& name) const;
+  bool HasArgument(const std::string& name) const;
   // 检查参数名称是否与已有参数或子命令冲突
-  void checkNameConflicts(const std::vector<std::string>& names) const;
+  void CheckNameConflicts(const std::vector<std::string>& names) const;
 
   std::string m_program_name;  // 程序名称
   std::string m_description;   // 程序描述

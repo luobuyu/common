@@ -11,12 +11,12 @@ Logger::Logger(std::vector<LogSink::LogSinkPtr> sinks,
                LoggerFormat::LoggerFormatPtr fmt)
     : m_log_sinks(std::move(sinks)), m_log_format(std::move(fmt)) {}
 
-void Logger::addSink(const LogSink::LogSinkPtr &log_sink) {
+void Logger::AddSink(const LogSink::LogSinkPtr &log_sink) {
   std::lock_guard<std::mutex> lock(m_sink_mtx);
   m_log_sinks.emplace_back(log_sink);
 }
 
-const std::vector<LogSink::LogSinkPtr> &Logger::getLogSinks() const {
+const std::vector<LogSink::LogSinkPtr> &Logger::GetLogSinks() const {
   return m_log_sinks;
 }
 
@@ -49,26 +49,26 @@ AsyncLogger::AsyncLogger(std::vector<LogSink::LogSinkPtr> sinks,
                          LoggerFormat::LoggerFormatPtr fmt, int queue_size,
                          std::chrono::milliseconds flush_interval)
     : Logger(std::move(sinks), std::move(fmt)) {
-  startBgThread(queue_size, flush_interval);
+  StartBgThread(queue_size, flush_interval);
 }
 
-void AsyncLogger::startBgThread(int queue_size,
+void AsyncLogger::StartBgThread(int queue_size,
                                 std::chrono::milliseconds flush_interval) {
   m_logs.resize(queue_size);
   m_flush_interval = flush_interval;
-  m_async_thread = std::thread(&AsyncLogger::bgLogLoop, this);
+  m_async_thread = std::thread(&AsyncLogger::BgLogLoop, this);
 }
 
-void AsyncLogger::beforeExit() {
+void AsyncLogger::BeforeExit() {
   m_logs.stop();
   if (m_async_thread.joinable()) m_async_thread.join();
 }
 
-AsyncLogger::~AsyncLogger() { beforeExit(); }
+AsyncLogger::~AsyncLogger() { BeforeExit(); }
 
 void AsyncLogger::log(LogEvent log_event) { m_logs.push(std::move(log_event)); }
 
-void AsyncLogger::bgLogLoop() {
+void AsyncLogger::BgLogLoop() {
   static constexpr std::size_t kBatchSize = 64;  // 每批最多弹出条数
   std::vector<LogEvent> batch;
   batch.reserve(kBatchSize);
@@ -76,7 +76,7 @@ void AsyncLogger::bgLogLoop() {
   while (true) {
     batch.clear();
     std::size_t n =
-        m_logs.batchPopWithTimeout(batch, kBatchSize, m_flush_interval);
+        m_logs.BatchPopWithTimeout(batch, kBatchSize, m_flush_interval);
 
     if (n > 0) {
       // 批量写入所有 sink
@@ -92,7 +92,7 @@ void AsyncLogger::bgLogLoop() {
       for (auto &sink : m_log_sinks) {
         sink->flush();
       }
-      if (m_logs.isStopping()) {
+      if (m_logs.IsStopping()) {
         break;
       }
     }

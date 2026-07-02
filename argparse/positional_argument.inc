@@ -12,7 +12,7 @@ PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
                                           std::vector<T>& target,
                                           const std::string& description)
     : MultiArgument<T>(ArgumentType::Positional, names, description) {
-  this->bindTo(target);
+  this->BindTo(target);
 }
 
 // 构造函数2: 绑定单个 T
@@ -21,7 +21,7 @@ PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
                                           T& target,
                                           const std::string& description)
     : MultiArgument<T>(ArgumentType::Positional, names, description) {
-  this->bindTo(target);
+  this->BindTo(target);
 }
 
 // 构造函数3: 不绑定
@@ -35,7 +35,7 @@ template <typename T>
 size_t PositionalArgument<T>::parse(const std::vector<std::string>& args,
                                     size_t current_index) {
   size_t consumed = 0;
-  int max_count = this->getExpectedMax();
+  int max_count = this->GetExpectedMax();
   bool terminated_by_dashdash = false;
 
   // 贪婪消耗参数，直到：
@@ -44,7 +44,7 @@ size_t PositionalArgument<T>::parse(const std::vector<std::string>& args,
   // 3. 遇到 "--" 终止符
   // 4. 用完所有参数
   for (size_t i = current_index;
-       i < args.size() && this->valueCount() < max_count; ++i) {
+       i < args.size() && this->ValueCount() < max_count; ++i) {
     const std::string& arg = args[i];
     // 如果遇到 "--"，表示用户想提前结束当前位置参数的收集
     if (arg == "--") {
@@ -55,20 +55,20 @@ size_t PositionalArgument<T>::parse(const std::vector<std::string>& args,
     if (!matches(arg)) {
       break;
     }
-    this->addValue(dry::strTo<T>(arg));
+    this->AddValue(dry::StrTo<T>(arg));
     consumed++;
   }
 
   // 检查是否满足最小期望数量
-  int min_count = this->getExpectedMin();
-  if (this->valueCount() < min_count) {
+  int min_count = this->GetExpectedMin();
+  if (this->ValueCount() < min_count) {
     throw std::runtime_error("Positional argument expects at least " +
                              std::to_string(min_count) + " value(s), got " +
-                             std::to_string(this->valueCount()));
+                             std::to_string(this->ValueCount()));
   }
 
   // 标记为已解析
-  this->setParsed(true);
+  this->SetParsed(true);
 
   // 同步到外部变量 (如果绑定了)
   if (this->m_sync_to_target) {
@@ -97,8 +97,8 @@ bool PositionalArgument<T>::matches(const std::string& arg) const {
 
 // 验证名称
 template <typename T>
-void PositionalArgument<T>::validateNames() const {
-  const auto& names = this->getNames();
+void PositionalArgument<T>::ValidateNames() const {
+  const auto& names = this->GetNames();
 
   if (names.empty()) {
     throw std::invalid_argument(

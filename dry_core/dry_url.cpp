@@ -7,12 +7,12 @@
 namespace dry {
 
 /// 安全的端口解析（不抛异常，范围校验 0~65535）
-uint16_t safeParsePort(std::string_view port_str) {
-  return strTo<uint16_t>(port_str).value_or(0);
+uint16_t SafeParsePort(std::string_view port_str) {
+  return StrTo<uint16_t>(port_str).value_or(0);
 }
 /// 解析 authority 部分：[userinfo@]host[:port][/path][?query]
-/// @note 内部辅助函数，由 parseUrl 调用
-static void parseAuthority(std::string_view authority, UrlComponents& result) {
+/// @note 内部辅助函数，由 ParseUrl 调用
+static void ParseAuthority(std::string_view authority, UrlComponents& result) {
   if (authority.empty()) {
     result.path = "/";
     return;
@@ -88,7 +88,7 @@ static void parseAuthority(std::string_view authority, UrlComponents& result) {
     if (bracket_end + 1 < host_part.size() &&
         host_part[bracket_end + 1] == ':') {
       result.port =
-          safeParsePort(std::string_view(host_part).substr(bracket_end + 2));
+          SafeParsePort(std::string_view(host_part).substr(bracket_end + 2));
     }
   } else {
     // IPv4 / hostname
@@ -105,7 +105,7 @@ static void parseAuthority(std::string_view authority, UrlComponents& result) {
       if (all_digits && colon + 1 < host_part.size()) {
         result.host = host_part.substr(0, colon);
         result.port =
-            safeParsePort(std::string_view(host_part).substr(colon + 1));
+            SafeParsePort(std::string_view(host_part).substr(colon + 1));
       } else {
         // colon 后面不是纯数字，整个当 host（可能是 IPv6 裸地址）
         result.host = host_part;
@@ -122,7 +122,7 @@ static void parseAuthority(std::string_view authority, UrlComponents& result) {
 }
 
 /// RFC 3986 §5.2.4 相对路径解析（dot-segment 移除）
-std::string resolveRelativePath(std::string_view relative,
+std::string ResolveRelativePath(std::string_view relative,
                                 std::string_view base_path) {
   // 先分离 query string（避免 query 中的 ".." 等干扰路径解析）（漏洞 B）
   std::string path_part(relative);
@@ -215,7 +215,7 @@ std::string resolveRelativePath(std::string_view relative,
 }
 
 /// 解析 URL（支持绝对 URL、相对路径、protocol-relative）
-UrlComponents parseUrl(std::string_view location, std::string_view base_path) {
+UrlComponents ParseUrl(std::string_view location, std::string_view base_path) {
   UrlComponents result;
   if (location.empty()) {
     result.valid = false;
@@ -265,7 +265,7 @@ UrlComponents parseUrl(std::string_view location, std::string_view base_path) {
 
   // 2b. protocol-relative（以 "//" 开头）
   if (loc.size() >= 2 && loc[0] == '/' && loc[1] == '/') {
-    parseAuthority(std::string_view(loc).substr(2), result);
+    ParseAuthority(std::string_view(loc).substr(2), result);
     return result;
   }
 
@@ -276,7 +276,7 @@ UrlComponents parseUrl(std::string_view location, std::string_view base_path) {
   size_t colon_pos = loc.find(':');
   if (colon_pos == std::string::npos || colon_pos == 0) {
     // 无 scheme → 相对路径（漏洞 #7 修复：正确解析相对路径）
-    result.path = resolveRelativePath(loc, base_path);
+    result.path = ResolveRelativePath(loc, base_path);
     return result;
   }
 
@@ -299,7 +299,7 @@ UrlComponents parseUrl(std::string_view location, std::string_view base_path) {
   if (!valid_scheme || loc.size() < colon_pos + 3 ||
       loc[colon_pos + 1] != '/' || loc[colon_pos + 2] != '/') {
     // 不是合法的 scheme://... → 当作相对路径
-    result.path = resolveRelativePath(loc, base_path);
+    result.path = ResolveRelativePath(loc, base_path);
     return result;
   }
 
@@ -317,22 +317,22 @@ UrlComponents parseUrl(std::string_view location, std::string_view base_path) {
     return result;
   }
 
-  parseAuthority(std::string_view(loc).substr(colon_pos + 3), result);
+  ParseAuthority(std::string_view(loc).substr(colon_pos + 3), result);
   return result;
 }
 
-/// 判断两个 URL 是否同源（scheme + host + effectivePort 均相同）
+/// 判断两个 URL 是否同源（scheme + host + EffectivePort 均相同）
 /// @param origin 当前连接的 origin（scheme/host/port）
 /// @param target 目标 URL（如 Location 头解析结果）
 /// @return true 表示同源，可以跟随重定向
 /// @note 纯函数，无状态
 /// @note 如果 target 是相对路径（host 为空），视为同源
 /// @note 如果 target.valid == false，视为不同源（不跟随）
-bool isSameOrigin(const UrlComponents& origin, const UrlComponents& target) {
+bool IsSameOrigin(const UrlComponents& origin, const UrlComponents& target) {
   if (!target.valid) {
     return false;
   }
-  if (target.isRelative()) {
+  if (target.IsRelative()) {
     return true;  // 相对路径一定同源
   }
 
@@ -344,13 +344,13 @@ bool isSameOrigin(const UrlComponents& origin, const UrlComponents& target) {
   // port 比较（考虑默认端口推断）
   // 如果 target.scheme 为空（protocol-relative），继承 origin 的 scheme
   // 来推断端口
-  uint16_t target_port = target.effectivePort();
+  uint16_t target_port = target.EffectivePort();
   if (target_port == 0 && target.scheme.empty()) {
     // protocol-relative URL，用 origin 的端口作为默认值
-    target_port = origin.effectivePort();
+    target_port = origin.EffectivePort();
   }
 
-  return origin.effectivePort() == target_port;
+  return origin.EffectivePort() == target_port;
 }
 
 }  // namespace dry

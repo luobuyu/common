@@ -84,7 +84,7 @@ void test_flag_basic() {
 
   ArgumentParser parser("test", "测试程序", false);
   bool verbose = false;
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
 
   ASSERT_TRUE(parser.parse({"--verbose"}));
   ASSERT_TRUE(verbose);
@@ -97,7 +97,7 @@ void test_flag_short_name() {
 
   ArgumentParser parser("test", "测试程序", false);
   bool verbose = false;
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
 
   ASSERT_TRUE(parser.parse({"-v"}));
   ASSERT_TRUE(verbose);
@@ -110,7 +110,7 @@ void test_flag_not_set() {
 
   ArgumentParser parser("test", "测试程序", false);
   bool verbose = false;
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
 
   ASSERT_TRUE(parser.parse({}));
   ASSERT_FALSE(verbose);
@@ -123,8 +123,8 @@ void test_flag_default_value() {
 
   ArgumentParser parser("test", "测试程序", false);
   bool verbose = true;  // 默认为 true
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式")
-      .defaultValue(true);
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式")
+      .DefaultValue(true);
 
   ASSERT_TRUE(parser.parse({}));
   ASSERT_TRUE(verbose);  // 保持默认值
@@ -137,7 +137,7 @@ void test_flag_callback() {
 
   ArgumentParser parser("test", "测试程序", false);
   int callback_count = 0;
-  parser.addFlagArgument({"-v", "--verbose"}, "详细模式", false,
+  parser.AddFlagArgument({"-v", "--verbose"}, "详细模式", false,
                          [&callback_count]() { callback_count++; });
 
   ASSERT_TRUE(parser.parse({"--verbose"}));
@@ -153,7 +153,7 @@ void test_option_basic() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::string output;
-  parser.addOptionArgument<std::string>({"-o", "--output"}, output, "输出文件");
+  parser.AddOptionArgument<std::string>({"-o", "--output"}, output, "输出文件");
 
   ASSERT_TRUE(parser.parse({"-o", "test.txt"}));
   ASSERT_EQ(output, "test.txt");
@@ -166,7 +166,7 @@ void test_option_long_name() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::string output;
-  parser.addOptionArgument<std::string>({"-o", "--output"}, output, "输出文件");
+  parser.AddOptionArgument<std::string>({"-o", "--output"}, output, "输出文件");
 
   ASSERT_TRUE(parser.parse({"--output", "result.txt"}));
   ASSERT_EQ(output, "result.txt");
@@ -179,7 +179,7 @@ void test_option_int() {
 
   ArgumentParser parser("test", "测试程序", false);
   int count;
-  parser.addOptionArgument<int>({"-c", "--count"}, count, "数量");
+  parser.AddOptionArgument<int>({"-c", "--count"}, count, "数量");
 
   ASSERT_TRUE(parser.parse({"-c", "42"}));
   ASSERT_EQ(count, 42);
@@ -192,7 +192,7 @@ void test_option_negative_number() {
 
   ArgumentParser parser("test", "测试程序", false);
   int value;
-  parser.addOptionArgument<int>({"-n", "--number"}, value, "数值");
+  parser.AddOptionArgument<int>({"-n", "--number"}, value, "数值");
 
   ASSERT_TRUE(parser.parse({"-n", "-100"}));
   ASSERT_EQ(value, -100);
@@ -205,8 +205,8 @@ void test_option_default_value() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::string output;
-  parser.addOptionArgument<std::string>({"-o", "--output"}, output, "输出文件")
-      .defaultValue("default.txt");
+  parser.AddOptionArgument<std::string>({"-o", "--output"}, output, "输出文件")
+      .DefaultValue("default.txt");
 
   ASSERT_TRUE(parser.parse({}));
   ASSERT_EQ(output, "default.txt");
@@ -220,7 +220,7 @@ void test_option_callback() {
   ArgumentParser parser("test", "测试程序", false);
   std::string output;
   int callback_count = 0;
-  parser.addOptionArgument<std::string>({"-o", "--output"}, output, "输出文件")
+  parser.AddOptionArgument<std::string>({"-o", "--output"}, output, "输出文件")
       .callback([&callback_count]() { callback_count++; });
 
   ASSERT_TRUE(parser.parse({"-o", "test.txt"}));
@@ -234,7 +234,7 @@ void test_option_required_missing() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::string output;
-  parser.addOptionArgument<std::string>({"-o", "--output"}, output, "输出文件")
+  parser.AddOptionArgument<std::string>({"-o", "--output"}, output, "输出文件")
       .required();
 
   ASSERT_THROWS(parser.parse({}));
@@ -247,7 +247,7 @@ void test_option_missing_value() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::string output;
-  parser.addOptionArgument<std::string>({"-o", "--output"}, output, "输出文件");
+  parser.AddOptionArgument<std::string>({"-o", "--output"}, output, "输出文件");
 
   // -o 后面没有值，应该报错
   ASSERT_THROWS(parser.parse({"-o"}));
@@ -262,7 +262,7 @@ void test_option_nargs_exact() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::vector<std::string> files;
-  parser.addOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
+  parser.AddOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
       .expected(3);
 
   ASSERT_TRUE(parser.parse({"-f", "a.txt", "b.txt", "c.txt"}));
@@ -279,7 +279,7 @@ void test_option_nargs_exact_insufficient() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::vector<std::string> files;
-  parser.addOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
+  parser.AddOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
       .expected(3);
 
   // 只提供了2个，需要3个
@@ -293,7 +293,7 @@ void test_option_nargs_range() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::vector<std::string> files;
-  parser.addOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
+  parser.AddOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
       .expected(1, 3);
 
   ASSERT_TRUE(parser.parse({"-f", "a.txt", "b.txt"}));
@@ -307,7 +307,7 @@ void test_option_nargs_range_0_1() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::vector<std::string> topic;
-  parser.addOptionArgument<std::string>({"--help-topic"}, topic, "帮助主题")
+  parser.AddOptionArgument<std::string>({"--help-topic"}, topic, "帮助主题")
       .expected(0, 1);
 
   // 不带参数
@@ -322,7 +322,7 @@ void test_option_nargs_range_0_1_with_value() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::vector<std::string> topic;
-  parser.addOptionArgument<std::string>({"--help-topic"}, topic, "帮助主题")
+  parser.AddOptionArgument<std::string>({"--help-topic"}, topic, "帮助主题")
       .expected(0, 1);
 
   // 带参数
@@ -338,7 +338,7 @@ void test_option_nargs_unlimited() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::vector<std::string> files;
-  parser.addOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
+  parser.AddOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
       .expected(MultiArgument<std::string>::ExpectedCount::Unlimited);
 
   ASSERT_TRUE(parser.parse({"-f", "a.txt", "b.txt", "c.txt", "d.txt"}));
@@ -352,7 +352,7 @@ void test_option_nargs_unlimited_empty() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::vector<std::string> files;
-  parser.addOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
+  parser.AddOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
       .expected(MultiArgument<std::string>::ExpectedCount::Unlimited);
 
   // nargs='*' 允许0个参数
@@ -367,7 +367,7 @@ void test_option_nargs_at_least_one() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::vector<std::string> files;
-  parser.addOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
+  parser.AddOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
       .expected(MultiArgument<std::string>::ExpectedCount::AtLeastOne);
 
   ASSERT_TRUE(parser.parse({"-f", "a.txt", "b.txt"}));
@@ -381,7 +381,7 @@ void test_option_nargs_at_least_one_empty() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::vector<std::string> files;
-  parser.addOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
+  parser.AddOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
       .expected(MultiArgument<std::string>::ExpectedCount::AtLeastOne);
 
   // nargs='+' 不允许0个参数
@@ -397,7 +397,7 @@ void test_positional_basic() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::string input;
-  parser.addPositionalArgument<std::string>({"input"}, input, "输入文件");
+  parser.AddPositionalArgument<std::string>({"input"}, input, "输入文件");
 
   ASSERT_TRUE(parser.parse({"input.txt"}));
   ASSERT_EQ(input, "input.txt");
@@ -410,8 +410,8 @@ void test_positional_multiple() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::string input, output;
-  parser.addPositionalArgument<std::string>({"input"}, input, "输入文件");
-  parser.addPositionalArgument<std::string>({"output"}, output, "输出文件");
+  parser.AddPositionalArgument<std::string>({"input"}, input, "输入文件");
+  parser.AddPositionalArgument<std::string>({"output"}, output, "输出文件");
 
   ASSERT_TRUE(parser.parse({"in.txt", "out.txt"}));
   ASSERT_EQ(input, "in.txt");
@@ -426,8 +426,8 @@ void test_positional_with_option() {
   ArgumentParser parser("test", "测试程序", false);
   std::string input;
   bool verbose = false;
-  parser.addPositionalArgument<std::string>({"input"}, input, "输入文件");
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  parser.AddPositionalArgument<std::string>({"input"}, input, "输入文件");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
 
   ASSERT_TRUE(parser.parse({"-v", "input.txt"}));
   ASSERT_EQ(input, "input.txt");
@@ -441,7 +441,7 @@ void test_positional_nargs_unlimited() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::vector<std::string> files;
-  parser.addPositionalArgument<std::string>({"files"}, files, "文件列表")
+  parser.AddPositionalArgument<std::string>({"files"}, files, "文件列表")
       .expected(MultiArgument<std::string>::ExpectedCount::Unlimited);
 
   ASSERT_TRUE(parser.parse({"a.txt", "b.txt", "c.txt"}));
@@ -491,7 +491,7 @@ void test_user_defined_help_flag() {
 
   ArgumentParser parser("test", "测试程序", true);  // 启用自动 help
   bool help_flag = false;
-  parser.addFlagArgument({"-h", "--help"}, help_flag, "自定义帮助");
+  parser.AddFlagArgument({"-h", "--help"}, help_flag, "自定义帮助");
 
   // 用户定义了 --help，自动 help 应该让路
   ASSERT_TRUE(parser.parse({"--help"}));
@@ -505,7 +505,7 @@ void test_user_defined_help_option() {
 
   ArgumentParser parser("test", "测试程序", true);
   std::vector<std::string> help_topic;
-  parser.addOptionArgument<std::string>({"--help"}, help_topic, "显示帮助")
+  parser.AddOptionArgument<std::string>({"--help"}, help_topic, "显示帮助")
       .expected(0, 1);
 
   // 用户定义了 --help，自动 help 让路
@@ -521,7 +521,7 @@ void test_user_defined_help_option_no_value() {
 
   ArgumentParser parser("test", "测试程序", true);
   std::vector<std::string> help_topic;
-  parser.addOptionArgument<std::string>({"--help"}, help_topic, "显示帮助")
+  parser.AddOptionArgument<std::string>({"--help"}, help_topic, "显示帮助")
       .expected(0, 1);
 
   // --help 不带参数，因为 nargs=[0,1]，所以合法
@@ -537,10 +537,10 @@ void test_subcommand_basic() {
   TEST_CASE("子命令基本功能");
 
   ArgumentParser parser("git", "Git 命令", false);
-  auto& clone = parser.addSubcommand("clone", "克隆仓库");
+  auto& clone = parser.AddSubcommand("clone", "克隆仓库");
 
   std::string url;
-  clone.addPositionalArgument<std::string>({"url"}, url, "仓库地址");
+  clone.AddPositionalArgument<std::string>({"url"}, url, "仓库地址");
 
   ASSERT_TRUE(parser.parse({"clone", "https://github.com/test/repo.git"}));
   ASSERT_EQ(url, "https://github.com/test/repo.git");
@@ -552,10 +552,10 @@ void test_subcommand_with_options() {
   TEST_CASE("子命令带选项");
 
   ArgumentParser parser("git", "Git 命令", false);
-  auto& commit = parser.addSubcommand("commit", "提交");
+  auto& commit = parser.AddSubcommand("commit", "提交");
 
   std::string message;
-  commit.addOptionArgument<std::string>({"-m", "--message"}, message,
+  commit.AddOptionArgument<std::string>({"-m", "--message"}, message,
                                         "提交信息");
 
   ASSERT_TRUE(parser.parse({"commit", "-m", "Initial commit"}));
@@ -582,7 +582,7 @@ void test_invalid_flag_name() {
   ArgumentParser parser("test", "测试程序", false);
 
   // Flag 名称必须以 - 开头
-  ASSERT_THROWS(parser.addFlagArgument({"verbose"}, "详细模式"));
+  ASSERT_THROWS(parser.AddFlagArgument({"verbose"}, "详细模式"));
 
   TEST_PASSED();
 }
@@ -591,12 +591,12 @@ void test_duplicate_argument_name() {
   TEST_CASE("重复的参数名称");
 
   ArgumentParser parser("test", "测试程序", false);
-  parser.addFlagArgument({"-v", "--verbose"}, "详细模式");
+  parser.AddFlagArgument({"-v", "--verbose"}, "详细模式");
 
   // 尝试添加同名参数，应该抛出异常
-  ASSERT_THROWS(parser.addFlagArgument({"-v"}, "另一个 verbose"));
-  ASSERT_THROWS(parser.addFlagArgument({"--verbose"}, "另一个 verbose"));
-  ASSERT_THROWS(parser.addOptionArgument<std::string>({"-v"}, "同名选项"));
+  ASSERT_THROWS(parser.AddFlagArgument({"-v"}, "另一个 verbose"));
+  ASSERT_THROWS(parser.AddFlagArgument({"--verbose"}, "另一个 verbose"));
+  ASSERT_THROWS(parser.AddOptionArgument<std::string>({"-v"}, "同名选项"));
 
   TEST_PASSED();
 }
@@ -606,7 +606,7 @@ void test_empty_subcommand_name() {
 
   ArgumentParser parser("test", "测试程序", false);
 
-  ASSERT_THROWS(parser.addSubcommand("", "空名称"));
+  ASSERT_THROWS(parser.AddSubcommand("", "空名称"));
 
   TEST_PASSED();
 }
@@ -616,7 +616,7 @@ void test_subcommand_starts_with_dash() {
 
   ArgumentParser parser("test", "测试程序", false);
 
-  ASSERT_THROWS(parser.addSubcommand("-cmd", "非法名称"));
+  ASSERT_THROWS(parser.AddSubcommand("-cmd", "非法名称"));
 
   TEST_PASSED();
 }
@@ -633,11 +633,11 @@ void test_mixed_arguments() {
   int count = 0;
   std::string input;
 
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
-  parser.addOptionArgument<std::string>({"-o", "--output"}, output, "输出文件")
-      .defaultValue("out.txt");
-  parser.addOptionArgument<int>({"-c", "--count"}, count, "计数");
-  parser.addPositionalArgument<std::string>({"input"}, input, "输入文件");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  parser.AddOptionArgument<std::string>({"-o", "--output"}, output, "输出文件")
+      .DefaultValue("out.txt");
+  parser.AddOptionArgument<int>({"-c", "--count"}, count, "计数");
+  parser.AddPositionalArgument<std::string>({"input"}, input, "输入文件");
 
   ASSERT_TRUE(parser.parse({"-v", "-c", "10", "input.txt"}));
   ASSERT_TRUE(verbose);
@@ -655,19 +655,19 @@ void test_mixed_with_subcommand() {
 
   // 全局选项
   bool global_verbose = false;
-  parser.addFlagArgument({"-v", "--verbose"}, global_verbose, "全局详细模式");
+  parser.AddFlagArgument({"-v", "--verbose"}, global_verbose, "全局详细模式");
 
   // clone 子命令
-  auto& clone = parser.addSubcommand("clone", "克隆仓库");
+  auto& clone = parser.AddSubcommand("clone", "克隆仓库");
   std::string url;
   std::string branch;
   int depth = 0;
   bool shallow = false;
-  clone.addPositionalArgument<std::string>({"url"}, url, "仓库地址");
-  clone.addOptionArgument<std::string>({"-b", "--branch"}, branch, "分支名")
-      .defaultValue("main");
-  clone.addOptionArgument<int>({"--depth"}, depth, "克隆深度");
-  clone.addFlagArgument({"--shallow"}, shallow, "浅克隆");
+  clone.AddPositionalArgument<std::string>({"url"}, url, "仓库地址");
+  clone.AddOptionArgument<std::string>({"-b", "--branch"}, branch, "分支名")
+      .DefaultValue("main");
+  clone.AddOptionArgument<int>({"--depth"}, depth, "克隆深度");
+  clone.AddFlagArgument({"--shallow"}, shallow, "浅克隆");
 
   ASSERT_TRUE(parser.parse({"clone", "-b", "develop", "--depth", "1",
                             "--shallow", "https://github.com/test/repo.git"}));
@@ -684,9 +684,9 @@ void test_mixed_with_help_and_subcommand() {
 
   ArgumentParser parser("myapp", "应用程序", true);  // 启用自动 help
 
-  auto& sub = parser.addSubcommand("run", "运行");
+  auto& sub = parser.AddSubcommand("run", "运行");
   std::string config;
-  sub.addOptionArgument<std::string>({"-c", "--config"}, config, "配置文件");
+  sub.AddOptionArgument<std::string>({"-c", "--config"}, config, "配置文件");
 
   // 主命令 --help 应该触发自动 help
   ASSERT_FALSE(parser.parse({"--help"}));
@@ -701,13 +701,13 @@ void test_mixed_with_user_help_and_subcommand() {
 
   // 用户自定义 --help 为 nargs [0,1]
   std::vector<std::string> help_topic;
-  parser.addOptionArgument<std::string>({"--help"}, help_topic, "显示帮助")
+  parser.AddOptionArgument<std::string>({"--help"}, help_topic, "显示帮助")
       .expected(0, 1);
 
   // 添加子命令
-  auto& install = parser.addSubcommand("install", "安装");
+  auto& install = parser.AddSubcommand("install", "安装");
   std::string package;
-  install.addPositionalArgument<std::string>({"package"}, package, "包名");
+  install.AddPositionalArgument<std::string>({"package"}, package, "包名");
 
   // 测试 --help 带主题
   ASSERT_TRUE(parser.parse({"--help", "install"}));
@@ -722,9 +722,9 @@ void test_mixed_subcommand_help() {
 
   ArgumentParser parser("git", "Git 命令", true);  // 启用自动 help
 
-  auto& commit = parser.addSubcommand("commit", "提交");
+  auto& commit = parser.AddSubcommand("commit", "提交");
   std::string message;
-  commit.addOptionArgument<std::string>({"-m", "--message"}, message,
+  commit.AddOptionArgument<std::string>({"-m", "--message"}, message,
                                         "提交信息");
 
   // 子命令后面跟 --help 应该显示子命令的帮助
@@ -740,33 +740,33 @@ void test_mixed_all_types() {
 
   // 用户自定义 help，覆盖自动 help
   bool show_help = false;
-  parser.addFlagArgument({"-h", "--help"}, show_help, "显示帮助");
+  parser.AddFlagArgument({"-h", "--help"}, show_help, "显示帮助");
 
   // 全局 flag
   bool verbose = false;
   bool debug = false;
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
-  parser.addFlagArgument({"-d", "--debug"}, debug, "调试模式");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  parser.AddFlagArgument({"-d", "--debug"}, debug, "调试模式");
 
   // 全局 option
   std::string config;
   int jobs = 1;
-  parser.addOptionArgument<std::string>({"-c", "--config"}, config, "配置文件")
-      .defaultValue("config.yaml");
-  parser.addOptionArgument<int>({"-j", "--jobs"}, jobs, "并行数");
+  parser.AddOptionArgument<std::string>({"-c", "--config"}, config, "配置文件")
+      .DefaultValue("config.yaml");
+  parser.AddOptionArgument<int>({"-j", "--jobs"}, jobs, "并行数");
 
   // 全局 multi-option
   std::vector<std::string> includes;
   parser
-      .addOptionArgument<std::string>({"-I", "--include"}, includes, "包含目录")
+      .AddOptionArgument<std::string>({"-I", "--include"}, includes, "包含目录")
       .expected(MultiArgument<std::string>::ExpectedCount::Unlimited);
 
   // 子命令 build
-  auto& build = parser.addSubcommand("build", "构建项目");
+  auto& build = parser.AddSubcommand("build", "构建项目");
   std::string target;
   bool release = false;
-  build.addPositionalArgument<std::string>({"target"}, target, "构建目标");
-  build.addFlagArgument({"-r", "--release"}, release, "Release 模式");
+  build.AddPositionalArgument<std::string>({"target"}, target, "构建目标");
+  build.AddFlagArgument({"-r", "--release"}, release, "Release 模式");
 
   // 解析复杂命令行
   // 注意：子命令必须放在第一个位置，全局参数在子命令之后由子命令解析器处理
@@ -786,23 +786,23 @@ void test_mixed_multiple_subcommands() {
   ArgumentParser parser("pkg", "包管理器", false);
 
   // install 子命令
-  auto& install = parser.addSubcommand("install", "安装包");
+  auto& install = parser.AddSubcommand("install", "安装包");
   std::string install_pkg;
   bool global = false;
-  install.addPositionalArgument<std::string>({"package"}, install_pkg, "包名");
-  install.addFlagArgument({"-g", "--global"}, global, "全局安装");
+  install.AddPositionalArgument<std::string>({"package"}, install_pkg, "包名");
+  install.AddFlagArgument({"-g", "--global"}, global, "全局安装");
 
   // remove 子命令
-  auto& remove = parser.addSubcommand("remove", "移除包");
+  auto& remove = parser.AddSubcommand("remove", "移除包");
   std::string remove_pkg;
   bool force = false;
-  remove.addPositionalArgument<std::string>({"package"}, remove_pkg, "包名");
-  remove.addFlagArgument({"-f", "--force"}, force, "强制移除");
+  remove.AddPositionalArgument<std::string>({"package"}, remove_pkg, "包名");
+  remove.AddFlagArgument({"-f", "--force"}, force, "强制移除");
 
   // list 子命令
-  auto& list = parser.addSubcommand("list", "列出包");
+  auto& list = parser.AddSubcommand("list", "列出包");
   bool all = false;
-  list.addFlagArgument({"-a", "--all"}, all, "显示所有");
+  list.AddFlagArgument({"-a", "--all"}, all, "显示所有");
 
   // 测试 install 子命令
   ASSERT_TRUE(parser.parse({"install", "-g", "lodash"}));
@@ -818,13 +818,13 @@ void test_mixed_nargs_and_positional() {
   ArgumentParser parser("cp", "复制文件", false);
 
   bool recursive = false;
-  parser.addFlagArgument({"-r", "--recursive"}, recursive, "递归复制");
+  parser.AddFlagArgument({"-r", "--recursive"}, recursive, "递归复制");
 
   // 单值位置参数可以正常工作
   std::string source;
   std::string dest;
-  parser.addPositionalArgument<std::string>({"source"}, source, "源文件");
-  parser.addPositionalArgument<std::string>({"dest"}, dest, "目标");
+  parser.AddPositionalArgument<std::string>({"source"}, source, "源文件");
+  parser.AddPositionalArgument<std::string>({"dest"}, dest, "目标");
 
   ASSERT_TRUE(parser.parse({"-r", "file.txt", "backup/"}));
   ASSERT_TRUE(recursive);
@@ -841,11 +841,11 @@ void test_mixed_callback_chain() {
 
   std::vector<std::string> execution_order;
 
-  parser.addFlagArgument({"-a"}, "选项A", false,
+  parser.AddFlagArgument({"-a"}, "选项A", false,
                          [&]() { execution_order.push_back("a"); });
-  parser.addFlagArgument({"-b"}, "选项B", false,
+  parser.AddFlagArgument({"-b"}, "选项B", false,
                          [&]() { execution_order.push_back("b"); });
-  parser.addFlagArgument({"-c"}, "选项C", false,
+  parser.AddFlagArgument({"-c"}, "选项C", false,
                          [&]() { execution_order.push_back("c"); });
 
   ASSERT_TRUE(parser.parse({"-a", "-c", "-b"}));
@@ -867,9 +867,9 @@ void test_option_stops_at_next_option() {
   std::vector<std::string> files;
   bool verbose = false;
 
-  parser.addOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
+  parser.AddOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
       .expected(MultiArgument<std::string>::ExpectedCount::Unlimited);
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
 
   ASSERT_TRUE(parser.parse({"-f", "a.txt", "b.txt", "-v"}));
   ASSERT_EQ(files.size(), 2u);  // 遇到 -v 停止
@@ -886,9 +886,9 @@ void test_double_dash_separator() {
   std::vector<std::string> files;
   bool verbose = false;
 
-  parser.addOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
+  parser.AddOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
       .expected(MultiArgument<std::string>::ExpectedCount::Unlimited);
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
 
   // -- 后面的内容不再被 -f 消费
   ASSERT_TRUE(parser.parse({"-f", "a.txt", "b.txt", "--", "-v"}));
@@ -912,9 +912,9 @@ void test_mixed_order_positional_first() {
   int count = 0;
   std::string input;
 
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
-  parser.addOptionArgument<int>({"-c", "--count"}, count, "计数");
-  parser.addPositionalArgument<std::string>({"input"}, input, "输入文件");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  parser.AddOptionArgument<int>({"-c", "--count"}, count, "计数");
+  parser.AddPositionalArgument<std::string>({"input"}, input, "输入文件");
 
   ASSERT_TRUE(parser.parse({"input.txt", "-v", "-c", "10"}));
   ASSERT_EQ(input, "input.txt");
@@ -933,9 +933,9 @@ void test_mixed_order_positional_middle() {
   int count = 0;
   std::string input;
 
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
-  parser.addOptionArgument<int>({"-c", "--count"}, count, "计数");
-  parser.addPositionalArgument<std::string>({"input"}, input, "输入文件");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  parser.AddOptionArgument<int>({"-c", "--count"}, count, "计数");
+  parser.AddPositionalArgument<std::string>({"input"}, input, "输入文件");
 
   ASSERT_TRUE(parser.parse({"-v", "input.txt", "-c", "10"}));
   ASSERT_EQ(input, "input.txt");
@@ -956,11 +956,11 @@ void test_mixed_order_flags_scattered() {
   std::string output;
   std::string input;
 
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
-  parser.addFlagArgument({"-d", "--debug"}, debug, "调试模式");
-  parser.addFlagArgument({"-f", "--force"}, force, "强制模式");
-  parser.addOptionArgument<std::string>({"-o", "--output"}, output, "输出文件");
-  parser.addPositionalArgument<std::string>({"input"}, input, "输入文件");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  parser.AddFlagArgument({"-d", "--debug"}, debug, "调试模式");
+  parser.AddFlagArgument({"-f", "--force"}, force, "强制模式");
+  parser.AddOptionArgument<std::string>({"-o", "--output"}, output, "输出文件");
+  parser.AddPositionalArgument<std::string>({"input"}, input, "输入文件");
 
   ASSERT_TRUE(parser.parse({"-v", "-o", "out.txt", "-d", "input.txt", "-f"}));
   ASSERT_TRUE(verbose);
@@ -983,10 +983,10 @@ void test_mixed_multiple_options_interleaved() {
   std::string city;
   double score = 0.0;
 
-  parser.addOptionArgument<std::string>({"-n", "--name"}, name, "姓名");
-  parser.addOptionArgument<int>({"-a", "--age"}, age, "年龄");
-  parser.addOptionArgument<std::string>({"-c", "--city"}, city, "城市");
-  parser.addOptionArgument<double>({"-s", "--score"}, score, "分数");
+  parser.AddOptionArgument<std::string>({"-n", "--name"}, name, "姓名");
+  parser.AddOptionArgument<int>({"-a", "--age"}, age, "年龄");
+  parser.AddOptionArgument<std::string>({"-c", "--city"}, city, "城市");
+  parser.AddOptionArgument<double>({"-s", "--score"}, score, "分数");
 
   ASSERT_TRUE(
       parser.parse({"-n", "Alice", "-s", "95.5", "-a", "25", "-c", "Beijing"}));
@@ -1008,10 +1008,10 @@ void test_mixed_options_with_multiple_positional() {
   bool verbose = false;
   int level = 0;
 
-  parser.addPositionalArgument<std::string>({"input"}, input, "输入文件");
-  parser.addPositionalArgument<std::string>({"output"}, output, "输出文件");
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
-  parser.addOptionArgument<int>({"-l", "--level"}, level, "级别");
+  parser.AddPositionalArgument<std::string>({"input"}, input, "输入文件");
+  parser.AddPositionalArgument<std::string>({"output"}, output, "输出文件");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  parser.AddOptionArgument<int>({"-l", "--level"}, level, "级别");
 
   ASSERT_TRUE(parser.parse({"-v", "in.txt", "-l", "3", "out.txt"}));
   ASSERT_EQ(input, "in.txt");
@@ -1031,11 +1031,11 @@ void test_mixed_global_option_before_subcommand() {
   // 注意：按照 git/docker/kubectl 等主流CLI工具的惯例，
   // 子命令应该出现在第一位，全局参数不支持在子命令前
 
-  auto& clone = parser.addSubcommand("clone", "克隆仓库");
+  auto& clone = parser.AddSubcommand("clone", "克隆仓库");
   std::string url;
   bool verbose = false;
-  clone.addPositionalArgument<std::string>({"url"}, url, "仓库地址");
-  clone.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  clone.AddPositionalArgument<std::string>({"url"}, url, "仓库地址");
+  clone.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
 
   // 子命令在第一位，选项在后面
   ASSERT_TRUE(
@@ -1052,7 +1052,7 @@ void test_mixed_subcommand_with_multiple_global_options() {
   ArgumentParser parser("app", "应用程序", false);
 
   // 按照主流CLI惯例，子命令在第一位，选项属于子命令
-  auto& run = parser.addSubcommand("run", "运行");
+  auto& run = parser.AddSubcommand("run", "运行");
 
   bool verbose = false;
   std::string config;
@@ -1060,12 +1060,12 @@ void test_mixed_subcommand_with_multiple_global_options() {
   std::string target;
   bool daemon = false;
 
-  run.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
-  run.addOptionArgument<std::string>({"-c", "--config"}, config, "配置文件")
-      .defaultValue("app.yaml");
-  run.addOptionArgument<int>({"--log-level"}, log_level, "日志级别");
-  run.addPositionalArgument<std::string>({"target"}, target, "目标");
-  run.addFlagArgument({"-d", "--daemon"}, daemon, "后台运行");
+  run.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  run.AddOptionArgument<std::string>({"-c", "--config"}, config, "配置文件")
+      .DefaultValue("app.yaml");
+  run.AddOptionArgument<int>({"--log-level"}, log_level, "日志级别");
+  run.AddPositionalArgument<std::string>({"target"}, target, "目标");
+  run.AddFlagArgument({"-d", "--daemon"}, daemon, "后台运行");
 
   ASSERT_TRUE(parser.parse({"run", "-v", "--log-level", "2", "-d", "myapp"}));
   ASSERT_TRUE(verbose);
@@ -1086,10 +1086,10 @@ void test_mixed_nargs_unlimited_with_flag() {
   bool verbose = false;
   bool recursive = false;
 
-  parser.addOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
+  parser.AddOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
       .expected(MultiArgument<std::string>::ExpectedCount::Unlimited);
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
-  parser.addFlagArgument({"-r", "--recursive"}, recursive, "递归");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  parser.AddFlagArgument({"-r", "--recursive"}, recursive, "递归");
 
   ASSERT_TRUE(parser.parse({"-v", "-f", "a.txt", "b.txt", "c.txt", "-r"}));
   ASSERT_TRUE(verbose);
@@ -1111,10 +1111,10 @@ void test_mixed_nargs_at_least_one_with_option() {
   std::string output;
   int count = 0;
 
-  parser.addOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
+  parser.AddOptionArgument<std::string>({"-f", "--files"}, files, "文件列表")
       .expected(MultiArgument<std::string>::ExpectedCount::AtLeastOne);
-  parser.addOptionArgument<std::string>({"-o", "--output"}, output, "输出");
-  parser.addOptionArgument<int>({"-c", "--count"}, count, "计数");
+  parser.AddOptionArgument<std::string>({"-o", "--output"}, output, "输出");
+  parser.AddOptionArgument<int>({"-c", "--count"}, count, "计数");
 
   ASSERT_TRUE(
       parser.parse({"-c", "5", "-f", "x.txt", "y.txt", "-o", "result.txt"}));
@@ -1134,10 +1134,10 @@ void test_mixed_nargs_range_with_positional() {
   std::string input;
   std::string output;
 
-  parser.addOptionArgument<std::string>({"-t", "--tags"}, tags, "标签")
+  parser.AddOptionArgument<std::string>({"-t", "--tags"}, tags, "标签")
       .expected(1, 3);
-  parser.addPositionalArgument<std::string>({"input"}, input, "输入");
-  parser.addPositionalArgument<std::string>({"output"}, output, "输出");
+  parser.AddPositionalArgument<std::string>({"input"}, input, "输入");
+  parser.AddPositionalArgument<std::string>({"output"}, output, "输出");
 
   // 使用 -- 提前结束 -t 的参数收集，让 out.txt 能被位置参数 output 捕获
   ASSERT_TRUE(parser.parse({"in.txt", "-t", "tag1", "tag2", "--", "out.txt"}));
@@ -1159,11 +1159,11 @@ void test_mixed_multiple_nargs_options() {
   std::vector<std::string> excludes;
   std::vector<int> numbers;
 
-  parser.addOptionArgument<std::string>({"-I", "--include"}, includes, "包含")
+  parser.AddOptionArgument<std::string>({"-I", "--include"}, includes, "包含")
       .expected(MultiArgument<std::string>::ExpectedCount::Unlimited);
-  parser.addOptionArgument<std::string>({"-E", "--exclude"}, excludes, "排除")
+  parser.AddOptionArgument<std::string>({"-E", "--exclude"}, excludes, "排除")
       .expected(1, 3);
-  parser.addOptionArgument<int>({"-n", "--numbers"}, numbers, "数字")
+  parser.AddOptionArgument<int>({"-n", "--numbers"}, numbers, "数字")
       .expected(2);
 
   ASSERT_TRUE(
@@ -1189,16 +1189,16 @@ void test_mixed_multiple_defaults() {
   double ratio = 0.0;
   std::string input;
 
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式")
-      .defaultValue(true);
-  parser.addOptionArgument<std::string>({"-o", "--output"}, output, "输出文件")
-      .defaultValue("default_output.txt");
-  parser.addOptionArgument<int>({"-c", "--count"}, count, "计数")
-      .defaultValue(100);
-  parser.addOptionArgument<double>({"-r", "--ratio"}, ratio, "比率")
-      .defaultValue(0.5);
-  parser.addPositionalArgument<std::string>({"input"}, input, "输入文件")
-      .defaultValue("default_input.txt");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式")
+      .DefaultValue(true);
+  parser.AddOptionArgument<std::string>({"-o", "--output"}, output, "输出文件")
+      .DefaultValue("default_output.txt");
+  parser.AddOptionArgument<int>({"-c", "--count"}, count, "计数")
+      .DefaultValue(100);
+  parser.AddOptionArgument<double>({"-r", "--ratio"}, ratio, "比率")
+      .DefaultValue(0.5);
+  parser.AddPositionalArgument<std::string>({"input"}, input, "输入文件")
+      .DefaultValue("default_input.txt");
 
   // 什么都不传，全部使用默认值
   ASSERT_TRUE(parser.parse({}));
@@ -1220,11 +1220,11 @@ void test_mixed_partial_defaults() {
   int age = 0;
   std::string city;
 
-  parser.addOptionArgument<std::string>({"-n", "--name"}, name, "姓名")
-      .defaultValue("Unknown");
-  parser.addOptionArgument<int>({"-a", "--age"}, age, "年龄").defaultValue(18);
-  parser.addOptionArgument<std::string>({"-c", "--city"}, city, "城市")
-      .defaultValue("Beijing");
+  parser.AddOptionArgument<std::string>({"-n", "--name"}, name, "姓名")
+      .DefaultValue("Unknown");
+  parser.AddOptionArgument<int>({"-a", "--age"}, age, "年龄").DefaultValue(18);
+  parser.AddOptionArgument<std::string>({"-c", "--city"}, city, "城市")
+      .DefaultValue("Beijing");
 
   // 只覆盖 age，其他用默认值
   ASSERT_TRUE(parser.parse({"-a", "30"}));
@@ -1243,8 +1243,8 @@ void test_mixed_help_with_other_args_before() {
 
   bool verbose = false;
   std::string output;
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
-  parser.addOptionArgument<std::string>({"-o", "--output"}, output, "输出");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  parser.AddOptionArgument<std::string>({"-o", "--output"}, output, "输出");
 
   // -v 后跟 --help
   bool result = parser.parse({"-v", "--help"});
@@ -1260,16 +1260,16 @@ void test_mixed_user_help_with_subcommand_and_args() {
 
   // 用户自定义 --help 为 nargs [0,1]
   std::vector<std::string> help_topic;
-  parser.addOptionArgument<std::string>({"--help"}, help_topic, "显示帮助")
+  parser.AddOptionArgument<std::string>({"--help"}, help_topic, "显示帮助")
       .expected(0, 1);
 
   bool verbose = false;
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
 
   // 添加子命令
-  auto& build = parser.addSubcommand("build", "构建");
+  auto& build = parser.AddSubcommand("build", "构建");
   std::string target;
-  build.addPositionalArgument<std::string>({"target"}, target, "目标");
+  build.AddPositionalArgument<std::string>({"target"}, target, "目标");
 
   // 测试: --help topic + 其他参数
   ASSERT_TRUE(parser.parse({"-v", "--help", "build"}));
@@ -1291,10 +1291,10 @@ void test_mixed_positional_after_all_options() {
   std::string input;
   std::string output;
 
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
-  parser.addOptionArgument<std::string>({"-f", "--format"}, format, "格式");
-  parser.addPositionalArgument<std::string>({"input"}, input, "输入");
-  parser.addPositionalArgument<std::string>({"output"}, output, "输出");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  parser.AddOptionArgument<std::string>({"-f", "--format"}, format, "格式");
+  parser.AddPositionalArgument<std::string>({"input"}, input, "输入");
+  parser.AddPositionalArgument<std::string>({"output"}, output, "输出");
 
   ASSERT_TRUE(parser.parse({"-v", "-f", "json", "in.txt", "out.txt"}));
   ASSERT_TRUE(verbose);
@@ -1315,10 +1315,10 @@ void test_mixed_positional_between_options() {
   std::string input;
   std::string output;
 
-  parser.addFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
-  parser.addOptionArgument<std::string>({"-f", "--format"}, format, "格式");
-  parser.addPositionalArgument<std::string>({"input"}, input, "输入");
-  parser.addPositionalArgument<std::string>({"output"}, output, "输出");
+  parser.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  parser.AddOptionArgument<std::string>({"-f", "--format"}, format, "格式");
+  parser.AddPositionalArgument<std::string>({"input"}, input, "输入");
+  parser.AddPositionalArgument<std::string>({"output"}, output, "输出");
 
   ASSERT_TRUE(parser.parse({"-v", "in.txt", "-f", "xml", "out.txt"}));
   ASSERT_TRUE(verbose);
@@ -1335,7 +1335,7 @@ void test_mixed_subcommand_all_types() {
 
   ArgumentParser parser("docker", "Docker 命令", false);
 
-  auto& run = parser.addSubcommand("run", "运行容器");
+  auto& run = parser.AddSubcommand("run", "运行容器");
 
   bool detach = false;
   bool rm = false;
@@ -1345,14 +1345,14 @@ void test_mixed_subcommand_all_types() {
   std::string image;
   std::vector<std::string> cmd;
 
-  run.addFlagArgument({"-d", "--detach"}, detach, "后台运行");
-  run.addFlagArgument({"--rm"}, rm, "退出时删除");
-  run.addOptionArgument<std::string>({"--name"}, name, "容器名");
-  run.addOptionArgument<std::string>({"-e", "--env"}, env, "环境变量")
+  run.AddFlagArgument({"-d", "--detach"}, detach, "后台运行");
+  run.AddFlagArgument({"--rm"}, rm, "退出时删除");
+  run.AddOptionArgument<std::string>({"--name"}, name, "容器名");
+  run.AddOptionArgument<std::string>({"-e", "--env"}, env, "环境变量")
       .expected(MultiArgument<std::string>::ExpectedCount::Unlimited);
-  run.addOptionArgument<std::string>({"-p", "--publish"}, ports, "端口映射")
+  run.AddOptionArgument<std::string>({"-p", "--publish"}, ports, "端口映射")
       .expected(MultiArgument<std::string>::ExpectedCount::Unlimited);
-  run.addPositionalArgument<std::string>({"image"}, image, "镜像名");
+  run.AddPositionalArgument<std::string>({"image"}, image, "镜像名");
 
   // 注意：-e 有 Unlimited 期望值，会贪婪消费，需要用 -- 分隔选项和位置参数
   // 或者每个 -e 只跟一个值
@@ -1387,7 +1387,7 @@ void test_mixed_nested_subcommands() {
 
   ArgumentParser parser("kubectl", "Kubernetes 命令", false);
 
-  auto& get = parser.addSubcommand("get", "获取资源");
+  auto& get = parser.AddSubcommand("get", "获取资源");
 
   std::string resource_type;
   std::string resource_name;
@@ -1395,13 +1395,13 @@ void test_mixed_nested_subcommands() {
   std::string output;
   bool watch = false;
 
-  get.addPositionalArgument<std::string>({"type"}, resource_type, "资源类型");
-  get.addPositionalArgument<std::string>({"name"}, resource_name, "资源名")
-      .defaultValue("");
-  get.addOptionArgument<std::string>({"-n", "--namespace"}, ns, "命名空间")
-      .defaultValue("default");
-  get.addOptionArgument<std::string>({"-o", "--output"}, output, "输出格式");
-  get.addFlagArgument({"-w", "--watch"}, watch, "监听变化");
+  get.AddPositionalArgument<std::string>({"type"}, resource_type, "资源类型");
+  get.AddPositionalArgument<std::string>({"name"}, resource_name, "资源名")
+      .DefaultValue("");
+  get.AddOptionArgument<std::string>({"-n", "--namespace"}, ns, "命名空间")
+      .DefaultValue("default");
+  get.AddOptionArgument<std::string>({"-o", "--output"}, output, "输出格式");
+  get.AddFlagArgument({"-w", "--watch"}, watch, "监听变化");
 
   ASSERT_TRUE(
       parser.parse({"get", "-n", "kube-system", "-w", "pods", "-o", "wide"}));
@@ -1420,7 +1420,7 @@ void test_mixed_empty_string_value() {
   ArgumentParser parser("test", "测试程序", false);
 
   std::string value;
-  parser.addOptionArgument<std::string>({"-v", "--value"}, value, "值");
+  parser.AddOptionArgument<std::string>({"-v", "--value"}, value, "值");
 
   // 空字符串作为值
   ASSERT_TRUE(parser.parse({"-v", ""}));
@@ -1437,8 +1437,8 @@ void test_mixed_value_looks_like_option() {
   int min_val = 0;
   int max_val = 0;
 
-  parser.addOptionArgument<int>({"--min"}, min_val, "最小值");
-  parser.addOptionArgument<int>({"--max"}, max_val, "最大值");
+  parser.AddOptionArgument<int>({"--min"}, min_val, "最小值");
+  parser.AddOptionArgument<int>({"--max"}, max_val, "最大值");
 
   ASSERT_TRUE(parser.parse({"--min", "-10", "--max", "100"}));
   ASSERT_EQ(min_val, -10);
@@ -1457,7 +1457,7 @@ void test_mixed_long_option_with_equals() {
   // 示例（如果实现）：
   // ArgumentParser parser("test", "测试程序", false);
   // std::string output;
-  // parser.addOptionArgument<std::string>({"--output"}, output, "输出");
+  // parser.AddOptionArgument<std::string>({"--output"}, output, "输出");
   // ASSERT_TRUE(parser.parse({"--output=file.txt"}));
   // ASSERT_EQ(output, "file.txt");
 
@@ -1474,9 +1474,9 @@ void test_mixed_combined_short_flags() {
   // 示例（如果实现）：
   // ArgumentParser parser("test", "测试程序", false);
   // bool a = false, b = false, c = false;
-  // parser.addFlagArgument({"-a"}, a, "选项A");
-  // parser.addFlagArgument({"-b"}, b, "选项B");
-  // parser.addFlagArgument({"-c"}, c, "选项C");
+  // parser.AddFlagArgument({"-a"}, a, "选项A");
+  // parser.AddFlagArgument({"-b"}, b, "选项B");
+  // parser.AddFlagArgument({"-c"}, c, "选项C");
   // ASSERT_TRUE(parser.parse({"-abc"}));
   // ASSERT_TRUE(a && b && c);
 
@@ -1492,8 +1492,8 @@ void test_mixed_callback_not_called_for_default() {
   int callback_count = 0;
   std::string value;
 
-  parser.addOptionArgument<std::string>({"-v", "--value"}, value, "值")
-      .defaultValue("default")
+  parser.AddOptionArgument<std::string>({"-v", "--value"}, value, "值")
+      .DefaultValue("default")
       .callback([&callback_count]() { callback_count++; });
 
   // 不传值，使用默认值，回调不应触发
@@ -1512,8 +1512,8 @@ void test_mixed_callback_called_for_explicit_value() {
   int callback_count = 0;
   std::string value;
 
-  parser.addOptionArgument<std::string>({"-v", "--value"}, value, "值")
-      .defaultValue("default")
+  parser.AddOptionArgument<std::string>({"-v", "--value"}, value, "值")
+      .DefaultValue("default")
       .callback([&callback_count]() { callback_count++; });
 
   // 传值，回调应触发
@@ -1535,11 +1535,11 @@ void test_mixed_multiple_callbacks_order() {
   int count = 0;
   bool flag = false;
 
-  parser.addOptionArgument<std::string>({"-n", "--name"}, name, "名称")
+  parser.AddOptionArgument<std::string>({"-n", "--name"}, name, "名称")
       .callback([&order]() { order.push_back("name"); });
-  parser.addOptionArgument<int>({"-c", "--count"}, count, "计数")
+  parser.AddOptionArgument<int>({"-c", "--count"}, count, "计数")
       .callback([&order]() { order.push_back("count"); });
-  parser.addFlagArgument({"-f", "--flag"}, flag, "标志").callback([&order]() {
+  parser.AddFlagArgument({"-f", "--flag"}, flag, "标志").callback([&order]() {
     order.push_back("flag");
   });
 
@@ -1567,12 +1567,12 @@ void test_mixed_various_types() {
   std::string string_val;
   bool bool_val = false;
 
-  parser.addOptionArgument<int>({"--int"}, int_val, "整数");
-  parser.addOptionArgument<long>({"--long"}, long_val, "长整数");
-  parser.addOptionArgument<float>({"--float"}, float_val, "浮点数");
-  parser.addOptionArgument<double>({"--double"}, double_val, "双精度");
-  parser.addOptionArgument<std::string>({"--string"}, string_val, "字符串");
-  parser.addFlagArgument({"--bool"}, bool_val, "布尔值");
+  parser.AddOptionArgument<int>({"--int"}, int_val, "整数");
+  parser.AddOptionArgument<long>({"--long"}, long_val, "长整数");
+  parser.AddOptionArgument<float>({"--float"}, float_val, "浮点数");
+  parser.AddOptionArgument<double>({"--double"}, double_val, "双精度");
+  parser.AddOptionArgument<std::string>({"--string"}, string_val, "字符串");
+  parser.AddFlagArgument({"--bool"}, bool_val, "布尔值");
 
   ASSERT_TRUE(parser.parse({"--int", "42", "--long", "9876543210", "--float",
                             "3.14", "--double", "2.718281828", "--string",
@@ -1599,14 +1599,14 @@ void test_mixed_required_and_optional() {
   bool flag = false;
 
   parser
-      .addOptionArgument<std::string>({"-r", "--required"}, required_val,
+      .AddOptionArgument<std::string>({"-r", "--required"}, required_val,
                                       "必需")
       .required();
   parser
-      .addOptionArgument<std::string>({"-o", "--optional"}, optional_val,
+      .AddOptionArgument<std::string>({"-o", "--optional"}, optional_val,
                                       "可选")
-      .defaultValue("default");
-  parser.addFlagArgument({"-f", "--flag"}, flag, "标志");
+      .DefaultValue("default");
+  parser.AddFlagArgument({"-f", "--flag"}, flag, "标志");
 
   ASSERT_TRUE(parser.parse({"-r", "value", "-f"}));
   ASSERT_EQ(required_val, "value");
@@ -1626,14 +1626,14 @@ void test_mixed_required_missing_with_others_present() {
   bool flag = false;
 
   parser
-      .addOptionArgument<std::string>({"-r", "--required"}, required_val,
+      .AddOptionArgument<std::string>({"-r", "--required"}, required_val,
                                       "必需")
       .required();
   parser
-      .addOptionArgument<std::string>({"-o", "--optional"}, optional_val,
+      .AddOptionArgument<std::string>({"-o", "--optional"}, optional_val,
                                       "可选")
-      .defaultValue("default");
-  parser.addFlagArgument({"-f", "--flag"}, flag, "标志");
+      .DefaultValue("default");
+  parser.AddFlagArgument({"-f", "--flag"}, flag, "标志");
 
   // 有可选参数和 flag，但缺少必需参数
   ASSERT_THROWS(parser.parse({"-o", "value", "-f"}));
@@ -1648,7 +1648,7 @@ void test_validator() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::vector<int> numbers;
-  parser.addOptionArgument<int>({"-n", "--numbers"}, numbers, "数字列表")
+  parser.AddOptionArgument<int>({"-n", "--numbers"}, numbers, "数字列表")
       .expected(1, 5)
       .validator([](const std::vector<int>& vals) {
         for (int v : vals) {
@@ -1668,7 +1668,7 @@ void test_validator_auto_called_failure() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::vector<int> numbers;
-  parser.addOptionArgument<int>({"-n", "--numbers"}, numbers, "数字列表")
+  parser.AddOptionArgument<int>({"-n", "--numbers"}, numbers, "数字列表")
       .expected(1, 5)
       .validator([](const std::vector<int>& vals) {
         for (int v : vals) {
@@ -1688,7 +1688,7 @@ void test_validator_positional() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::string filename;
-  parser.addPositionalArgument<std::string>({"filename"}, filename, "文件名")
+  parser.AddPositionalArgument<std::string>({"filename"}, filename, "文件名")
       .validator([](const std::vector<std::string>& vals) {
         // 验证文件名必须以 .txt 结尾
         if (vals.empty()) return false;
@@ -1708,7 +1708,7 @@ void test_validator_positional_failure() {
 
   ArgumentParser parser("test", "测试程序", false);
   std::string filename;
-  parser.addPositionalArgument<std::string>({"filename"}, filename, "文件名")
+  parser.AddPositionalArgument<std::string>({"filename"}, filename, "文件名")
       .validator([](const std::vector<std::string>& vals) {
         // 验证文件名必须以 .txt 结尾
         if (vals.empty()) return false;

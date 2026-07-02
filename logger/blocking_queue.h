@@ -19,7 +19,7 @@ class CircleQueue {
   void push(T &&item);
   void push(const T &item);
   T &front();
-  void popFront();
+  void PopFront();
   void resize(int size);
 
  private:
@@ -37,10 +37,10 @@ class BlockingQueue {
   ~BlockingQueue();
   void push(T &&item);
   void push(const T &item);
-  bool tryPop(T &item);
+  bool TryPop(T &item);
   bool pop(T &item);
   // 带超时的 pop，超时返回 false 且 item 不变，队列 stop+空 时也返回 false
-  bool popWithTimeout(T &item, std::chrono::milliseconds timeout);
+  bool PopWithTimeout(T &item, std::chrono::milliseconds timeout);
 
   /**
    * @brief 带超时的批量弹出，一次加锁，等第一条到来后尽可能多弹出（最多
@@ -50,7 +50,7 @@ class BlockingQueue {
    * @param timeout 队列为空时等待第一条到来的最长时间
    * @return 实际弹出的数量，0 表示超时或队列已 stop 且为空
    */
-  std::size_t batchPopWithTimeout(std::vector<T> &out, std::size_t max_count,
+  std::size_t BatchPopWithTimeout(std::vector<T> &out, std::size_t max_count,
                                   std::chrono::milliseconds timeout);
 
   int size() const;
@@ -58,7 +58,7 @@ class BlockingQueue {
   bool empty();
 
   void stop();
-  bool isStopping() const;
+  bool IsStopping() const;
 
  private:
   logger::CircleQueue<T> m_queue;

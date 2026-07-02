@@ -10,106 +10,106 @@ namespace argparse {
 
 // OptionArgument: 不绑定
 template <typename T>
-OptionArgument<T>& ArgumentParser::addOptionArgument(
+OptionArgument<T>& ArgumentParser::AddOptionArgument(
     const std::vector<std::string>& names, const std::string& description) {
   auto arg = std::make_unique<OptionArgument<T>>(names, description);
 
   // 让子类验证自己的名称规则
-  arg->validateNames();
+  arg->ValidateNames();
 
   // 检查名称冲突
-  checkNameConflicts(names);
+  CheckNameConflicts(names);
 
   OptionArgument<T>& ref = *arg;
-  addArgument(std::move(arg));
+  AddArgument(std::move(arg));
   return ref;
 }
 
 // OptionArgument: 绑定单个值
 template <typename T>
-OptionArgument<T>& ArgumentParser::addOptionArgument(
+OptionArgument<T>& ArgumentParser::AddOptionArgument(
     const std::vector<std::string>& names, T& target,
     const std::string& description) {
   auto arg = std::make_unique<OptionArgument<T>>(names, target, description);
 
   // 让子类验证自己的名称规则
-  arg->validateNames();
+  arg->ValidateNames();
 
   // 检查名称冲突
-  checkNameConflicts(names);
+  CheckNameConflicts(names);
 
   OptionArgument<T>& ref = *arg;
-  addArgument(std::move(arg));
+  AddArgument(std::move(arg));
   return ref;
 }
 
 // OptionArgument: 绑定 vector
 template <typename T>
-OptionArgument<T>& ArgumentParser::addOptionArgument(
+OptionArgument<T>& ArgumentParser::AddOptionArgument(
     const std::vector<std::string>& names, std::vector<T>& target,
     const std::string& description) {
   auto arg = std::make_unique<OptionArgument<T>>(names, target, description);
 
   // 让子类验证自己的名称规则
-  arg->validateNames();
+  arg->ValidateNames();
 
   // 检查名称冲突
-  checkNameConflicts(names);
+  CheckNameConflicts(names);
 
   OptionArgument<T>& ref = *arg;
-  addArgument(std::move(arg));
+  AddArgument(std::move(arg));
   return ref;
 }
 
 template <typename T>
-PositionalArgument<T>& ArgumentParser::addPositionalArgument(
+PositionalArgument<T>& ArgumentParser::AddPositionalArgument(
     const std::vector<std::string>& names, const std::string& description) {
   auto arg = std::make_unique<PositionalArgument<T>>(names, description);
 
   // 让子类验证自己的名称规则
-  arg->validateNames();
+  arg->ValidateNames();
 
   // 检查名称冲突
-  checkNameConflicts(names);
+  CheckNameConflicts(names);
 
   PositionalArgument<T>& ref = *arg;
-  addArgument(std::move(arg));
+  AddArgument(std::move(arg));
   return ref;
 }
 
 template <typename T>
-PositionalArgument<T>& ArgumentParser::addPositionalArgument(
+PositionalArgument<T>& ArgumentParser::AddPositionalArgument(
     const std::vector<std::string>& names, T& target,
     const std::string& description) {
   auto arg =
       std::make_unique<PositionalArgument<T>>(names, target, description);
 
   // 让子类验证自己的名称规则
-  arg->validateNames();
+  arg->ValidateNames();
 
   // 检查名称冲突
-  checkNameConflicts(names);
+  CheckNameConflicts(names);
 
   PositionalArgument<T>& ref = *arg;
-  addArgument(std::move(arg));
+  AddArgument(std::move(arg));
   return ref;
 }
 
 template <typename T>
-PositionalArgument<T>& ArgumentParser::addPositionalArgument(
+PositionalArgument<T>& ArgumentParser::AddPositionalArgument(
     const std::vector<std::string>& names, std::vector<T>& target,
     const std::string& description) {
   auto arg =
       std::make_unique<PositionalArgument<T>>(names, target, description);
 
   // 让子类验证自己的名称规则
-  arg->validateNames();
+  arg->ValidateNames();
 
   // 检查名称冲突
-  checkNameConflicts(names);
+  CheckNameConflicts(names);
 
   PositionalArgument<T>& ref = *arg;
-  addArgument(std::move(arg));
+  AddArgument(std::move(arg));
   return ref;
 }
 

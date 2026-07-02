@@ -11,19 +11,19 @@ ArgumentParser::ArgumentParser(const std::string& program_name,
       m_description(description),
       m_add_help(add_help) {}
 
-Argument& ArgumentParser::addArgument(std::unique_ptr<Argument> argument) {
+Argument& ArgumentParser::AddArgument(std::unique_ptr<Argument> argument) {
   Argument& ref = *argument;
-  validateNames(ref);
+  ValidateNames(ref);
   m_args.emplace_back(std::move(argument));
   return ref;
 }
 
-FlagArgument& ArgumentParser::addFlagArgument(
+FlagArgument& ArgumentParser::AddFlagArgument(
     const std::vector<std::string>& names, bool& target,
     const std::string& description, bool required,
     std::function<void()> callback) {
   // 检查名称冲突
-  checkNameConflicts(names);
+  CheckNameConflicts(names);
   // 创建参数对象（使用链式调用设置 required 和 callback）
   auto arg = std::make_unique<FlagArgument>(names, target, description);
   if (required) {
@@ -33,15 +33,15 @@ FlagArgument& ArgumentParser::addFlagArgument(
     arg->callback(callback);
   }
   FlagArgument& ref = *arg;
-  addArgument(std::move(arg));
+  AddArgument(std::move(arg));
   return ref;
 }
 
-FlagArgument& ArgumentParser::addFlagArgument(
+FlagArgument& ArgumentParser::AddFlagArgument(
     const std::vector<std::string>& names, const std::string& description,
     bool required, std::function<void()> callback) {
   // 检查名称冲突
-  checkNameConflicts(names);
+  CheckNameConflicts(names);
   // 创建参数对象（使用链式调用设置 required 和 callback）
   auto arg = std::make_unique<FlagArgument>(names, description);
   if (required) {
@@ -51,11 +51,11 @@ FlagArgument& ArgumentParser::addFlagArgument(
     arg->callback(callback);
   }
   FlagArgument& ref = *arg;
-  addArgument(std::move(arg));
+  AddArgument(std::move(arg));
   return ref;
 }
 
-ArgumentParser& ArgumentParser::addSubcommand(const std::string& name,
+ArgumentParser& ArgumentParser::AddSubcommand(const std::string& name,
                                               const std::string& description) {
   // 1. 检查子命令名称不能为空（严重错误）
   if (name.empty()) {
@@ -75,7 +75,7 @@ ArgumentParser& ArgumentParser::addSubcommand(const std::string& name,
 
   // 4. 检查是否与已有参数名冲突
   for (const auto& arg : m_args) {
-    const auto& names = arg->getNames();
+    const auto& names = arg->GetNames();
     if (std::find(names.begin(), names.end(), name) != names.end()) {
       throw std::invalid_argument("Subcommand name conflicts with argument: " +
                                   name);
@@ -95,10 +95,10 @@ bool ArgumentParser::parse(int argc, char** argv) {
 bool ArgumentParser::parse(const std::vector<std::string>& args) {
   // 预扫描：检查是否有 --help 或 -h
   // 只有当启用自动 help 且用户没有自定义 -h/--help 时才触发
-  if (m_add_help && !hasArgument("-h") && !hasArgument("--help")) {
+  if (m_add_help && !HasArgument("-h") && !HasArgument("--help")) {
     for (const auto& arg : args) {
       if (arg == "-h" || arg == "--help") {
-        printHelp();
+        PrintHelp();
         return false;  // 表示遇到 help 请求，调用者自行决定是否退出
       }
     }
@@ -129,8 +129,8 @@ bool ArgumentParser::parse(const std::vector<std::string>& args) {
     Argument* first_not_parsed_pos = nullptr;
     for (const auto& argument : m_args) {
       // 位置参数单独贪婪匹配
-      if (argument->getType() == ArgumentType::Positional) {
-        if (!argument->isParsed() && first_not_parsed_pos == nullptr) {
+      if (argument->GetType() == ArgumentType::Positional) {
+        if (!argument->IsParsed() && first_not_parsed_pos == nullptr) {
           first_not_parsed_pos = argument.get();
         }
         continue;
@@ -140,7 +140,7 @@ bool ArgumentParser::parse(const std::vector<std::string>& args) {
         size_t consumed = argument->parse(args, i);
         i += consumed;  // 直接跳过消耗的参数数量
         // 找到匹配的参数，标记为已解析
-        argument->setParsed(true);
+        argument->SetParsed(true);
         matched = true;
         break;  // 找到匹配后停止遍历
       }
@@ -150,36 +150,36 @@ bool ArgumentParser::parse(const std::vector<std::string>& args) {
         size_t consumed = first_not_parsed_pos->parse(args, i);
         i += consumed;  // 位置参数直接跳过消耗的参数数量
         // 找到匹配的参数，标记为已解析
-        first_not_parsed_pos->setParsed(true);
+        first_not_parsed_pos->SetParsed(true);
       } else {
         throw std::runtime_error("Unknown argument: " + arg);
       }
     }
   }
 
-  // 为所有未被解析的参数应用默认值（syncDefaultValue 内部会检查是否有默认值）
+  // 为所有未被解析的参数应用默认值（SyncDefaultValue 内部会检查是否有默认值）
   for (const auto& argument : m_args) {
-    if (!argument->isParsed() && argument->hasDefaultValue()) {
-      argument->syncDefaultValue();
+    if (!argument->IsParsed() && argument->HasDefaultValue()) {
+      argument->SyncDefaultValue();
     }
   }
 
   // 检查必需参数是否都已解析
   for (const auto& argument : m_args) {
-    if (argument->isRequired() && !argument->isParsed()) {
+    if (argument->IsRequired() && !argument->IsParsed()) {
       throw std::runtime_error("Required argument missing: " +
-                               argument->getNames().front());
+                               argument->GetNames().front());
     }
   }
 
   return true;  // 正常解析完成
 }
 
-void ArgumentParser::validateNames(const Argument& argument) const {
-  // 遍历所有参数，调用各自的 validateNames 方法
-  argument.validateNames();
+void ArgumentParser::ValidateNames(const Argument& argument) const {
+  // 遍历所有参数，调用各自的 ValidateNames 方法
+  argument.ValidateNames();
   // 验证是否出现冲突的名字
-  for (const auto& name : argument.getNames()) {
+  for (const auto& name : argument.GetNames()) {
     if (m_subcommands.count(name)) {
       throw std::invalid_argument("Subcommand name conflicts with argument: " +
                                   name);
@@ -187,9 +187,9 @@ void ArgumentParser::validateNames(const Argument& argument) const {
   }
 }
 
-bool ArgumentParser::hasArgument(const std::string& name) const {
+bool ArgumentParser::HasArgument(const std::string& name) const {
   for (const auto& arg : m_args) {
-    const auto& names = arg->getNames();
+    const auto& names = arg->GetNames();
     if (std::find(names.begin(), names.end(), name) != names.end()) {
       return true;
     }
@@ -197,11 +197,11 @@ bool ArgumentParser::hasArgument(const std::string& name) const {
   return false;
 }
 
-void ArgumentParser::checkNameConflicts(
+void ArgumentParser::CheckNameConflicts(
     const std::vector<std::string>& names) const {
   for (const auto& name : names) {
     for (const auto& existing_arg : m_args) {
-      const auto& existing_names = existing_arg->getNames();
+      const auto& existing_names = existing_arg->GetNames();
       if (std::find(existing_names.begin(), existing_names.end(), name) !=
           existing_names.end()) {
         throw std::invalid_argument("Argument name already exists: " + name);
@@ -214,14 +214,14 @@ void ArgumentParser::checkNameConflicts(
   }
 }
 
-void ArgumentParser::printHelp() const {
+void ArgumentParser::PrintHelp() const {
   std::cout << "Usage: " << m_program_name << " [options]";
 
   // 显示所有位置参数
   for (const auto& arg : m_args) {
-    if (arg->getType() == ArgumentType::Positional) {
-      std::string name = arg->getNames().front();
-      if (arg->isRequired()) {
+    if (arg->GetType() == ArgumentType::Positional) {
+      std::string name = arg->GetNames().front();
+      if (arg->IsRequired()) {
         std::cout << " <" << name << ">";
       } else {
         std::cout << " [" << name << "]";
@@ -251,22 +251,22 @@ void ArgumentParser::printHelp() const {
   // 显示位置参数
   bool has_positional = false;
   for (const auto& arg : m_args) {
-    if (arg->getType() == ArgumentType::Positional) {
+    if (arg->GetType() == ArgumentType::Positional) {
       if (!has_positional) {
         std::cout << "\nPositional arguments:\n";
         has_positional = true;
       }
-      std::cout << "  " << arg->getNames().front();
-      std::string desc = arg->getDescription();
+      std::cout << "  " << arg->GetNames().front();
+      std::string desc = arg->GetDescription();
       if (!desc.empty()) {
         std::cout << "\t" << desc;
       }
       // 显示默认值
-      if (arg->hasDefaultValue()) {
+      if (arg->HasDefaultValue()) {
         std::cout << " (default: <set>)";
       }
       // 显示是否必需
-      if (arg->isRequired()) {
+      if (arg->IsRequired()) {
         std::cout << " [required]";
       }
       std::cout << "\n";
@@ -277,36 +277,36 @@ void ArgumentParser::printHelp() const {
   std::cout << "\nOptions:\n";
 
   // 如果启用了自动 help 且用户没有自定义，先打印 -h, --help
-  if (m_add_help && !hasArgument("-h") && !hasArgument("--help")) {
+  if (m_add_help && !HasArgument("-h") && !HasArgument("--help")) {
     std::cout << "  -h, --help\tshow this help message and exit\n";
   }
 
   for (const auto& arg : m_args) {
     // 跳过位置参数（已经在上面显示了）
-    if (arg->getType() == ArgumentType::Positional) {
+    if (arg->GetType() == ArgumentType::Positional) {
       continue;
     }
 
     std::cout << "  ";
-    const auto& names = arg->getNames();
+    const auto& names = arg->GetNames();
     for (size_t i = 0; i < names.size(); ++i) {
       if (i > 0) std::cout << ", ";
       std::cout << names[i];
     }
 
     // 显示描述
-    std::string desc = arg->getDescription();
+    std::string desc = arg->GetDescription();
     if (!desc.empty()) {
       std::cout << "\t" << desc;
     }
 
     // 显示默认值
-    if (arg->hasDefaultValue()) {
+    if (arg->HasDefaultValue()) {
       std::cout << " (default: <set>)";
     }
 
     // 显示是否必需
-    if (arg->isRequired()) {
+    if (arg->IsRequired()) {
       std::cout << " [required]";
     }
 

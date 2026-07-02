@@ -11,31 +11,31 @@ class Config {
   using Section = std::unordered_map<std::string, std::string>;
   Config() = default;
   ~Config() = default;
-  bool initConfig(const std::string &path);
+  bool InitConfig(const std::string &path);
   bool exist(const std::string &section, const std::string &key);
   bool exist(const std::string &section);
-  bool getValue(const std::string &section, const std::string &key,
+  bool GetValue(const std::string &section, const std::string &key,
                 std::string &val);
-  bool getValue(const std::string &section, const std::string &key, int &val);
-  bool getValue(const std::string &section, const std::string &key,
+  bool GetValue(const std::string &section, const std::string &key, int &val);
+  bool GetValue(const std::string &section, const std::string &key,
                 double &val);
 
-  void getValue(const std::string &section, const std::string &key,
+  void GetValue(const std::string &section, const std::string &key,
                 std::string &val, const std::string &default_value);
-  void getValue(const std::string &section, const std::string &key, int &val,
+  void GetValue(const std::string &section, const std::string &key, int &val,
                 const int &default_value);
-  void getValue(const std::string &section, const std::string &key, double &val,
+  void GetValue(const std::string &section, const std::string &key, double &val,
                 const double &default_value);
-  std::string getString(const std::string &section, const std::string &key,
+  std::string GetString(const std::string &section, const std::string &key,
                         const std::string &default_value = "");
-  int getInt(const std::string &section, const std::string &key,
+  int GetInt(const std::string &section, const std::string &key,
              const int &default_value = 0);
-  double getDouble(const std::string &section, const std::string &key,
+  double GetDouble(const std::string &section, const std::string &key,
                    const double &default_value = 0.0);
-  std::unordered_map<std::string, Section> getSections();
-  std::vector<std::string> getSectionNames();
-  Section getSectionKVs(const std::string &section);
-  void setValue(const std::string &section, const std::string &key,
+  std::unordered_map<std::string, Section> GetSections();
+  std::vector<std::string> GetSectionNames();
+  Section GetSectionKVs(const std::string &section);
+  void SetValue(const std::string &section, const std::string &key,
                 const std::string &val);
 
  private:

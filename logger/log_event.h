@@ -14,7 +14,7 @@ enum LogLevel {
   ERROR = 4,
   OFF = 5  // don't print log
 };
-const std::string &levelToString(LogLevel level);
+const std::string &LevelToString(LogLevel level);
 
 // 单条日志的具体需要包含哪些内容
 // 2024-10-04 12:34:56.789 [INFO] [ThreadID: 12345] [AuthModule] main.cpp:42

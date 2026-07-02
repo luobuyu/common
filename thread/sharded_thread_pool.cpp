@@ -26,25 +26,25 @@ void ShardedThreadPool::stop() {
 }
 
 /// 获取所有 shard 的总队列长度
-size_t ShardedThreadPool::totalQueueSize() const {
+size_t ShardedThreadPool::TotalQueueSize() const {
   size_t total = 0;
   for (const auto& shard : m_shards) {
-    total += shard->getQueueSize();
+    total += shard->GetQueueSize();
   }
   return total;
 }
 
 /// 设置最大排队等待时间（毫秒），传递给所有子 shard
-void ShardedThreadPool::setMaxWaitTimeMs(uint64_t max_wait_time_ms) {
+void ShardedThreadPool::SetMaxWaitTimeMs(uint64_t max_wait_time_ms) {
   for (auto& shard : m_shards) {
-    shard->setMaxWaitTimeMs(max_wait_time_ms);
+    shard->SetMaxWaitTimeMs(max_wait_time_ms);
   }
 }
 
-ShardedThreadPool::Stats ShardedThreadPool::getStats() const {
+ShardedThreadPool::Stats ShardedThreadPool::GetStats() const {
   Stats stats;
   for (const auto& shard : m_shards) {
-    stats += shard->getStats();
+    stats += shard->GetStats();
   }
   return stats;
 }

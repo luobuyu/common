@@ -10,7 +10,7 @@ namespace dry {
 /// 根据文件路径或扩展名获取对应的 MIME 类型
 /// @param path 文件路径或扩展名（如 "index.html" 或 ".html"）
 /// @return 对应的 MIME 类型字符串，未知类型返回 "application/octet-stream"
-inline std::string getMimeType(const std::string& path) {
+inline std::string GetMimeType(const std::string& path) {
   static const std::unordered_map<std::string, std::string> mime_types = {
       // 文本类型
       {".html", "text/html"},
@@ -95,7 +95,7 @@ inline std::string getMimeType(const std::string& path) {
     return "application/octet-stream";
   }
 
-  std::string ext = dry::toLower(path.substr(dot_pos));
+  std::string ext = dry::ToLower(path.substr(dot_pos));
 
   auto it = mime_types.find(ext);
   if (it != mime_types.end()) {
@@ -107,7 +107,7 @@ inline std::string getMimeType(const std::string& path) {
 /// 判断 MIME 类型是否为文本类型（可用于决定是否添加 charset=utf-8）
 /// @param mime_type MIME 类型字符串
 /// @return 是否为文本类型
-inline bool isTextMime(const std::string& mime_type) {
+inline bool IsTextMime(const std::string& mime_type) {
   // text/* 开头的都是文本类型
   if (mime_type.compare(0, 5, "text/") == 0) {
     return true;
@@ -123,7 +123,7 @@ inline bool isTextMime(const std::string& mime_type) {
 /// 根据 MIME 类型反向查找扩展名
 /// @param mime_type MIME 类型字符串
 /// @return 对应的扩展名（含点号），未知类型返回 ".bin"
-inline std::string getExtension(const std::string& mime_type) {
+inline std::string GetExtension(const std::string& mime_type) {
   static const std::unordered_map<std::string, std::string> ext_map = {
       {"text/html", ".html"},        {"text/css", ".css"},
       {"text/plain", ".txt"},        {"text/csv", ".csv"},

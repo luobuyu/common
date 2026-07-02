@@ -14,22 +14,22 @@ FlagArgument::FlagArgument(const std::vector<std::string>& names,
 FlagArgument::FlagArgument(const std::vector<std::string>& names, bool& target,
                            const std::string& description)
     : Argument(ArgumentType::Flag, names, description), m_flag(false) {
-  bindTo(target);
+  BindTo(target);
 }
 
-bool FlagArgument::getFlag() const {
+bool FlagArgument::GetFlag() const {
   // 简化逻辑:
   // - 如果被解析过(m_parsed=true)，返回 m_flag
   // - 否则返回默认值（如果有），或者 false
-  if (isParsed()) {
+  if (IsParsed()) {
     return m_flag;
   }
   return m_default_flag.value_or(false);
 }
 
-void FlagArgument::setFlag(bool value) {
+void FlagArgument::SetFlag(bool value) {
   m_flag = value;
-  setParsed(true);  // 标记为已解析
+  SetParsed(true);  // 标记为已解析
 
   // 同步到外部变量 (如果绑定了)
   if (m_sync_to_target) {
@@ -42,38 +42,38 @@ void FlagArgument::setFlag(bool value) {
   }
 }
 
-void FlagArgument::setDefaultValue(bool value) { m_default_flag = value; }
+void FlagArgument::SetDefaultValue(bool value) { m_default_flag = value; }
 
-bool FlagArgument::getDefaultValue() const {
+bool FlagArgument::GetDefaultValue() const {
   return m_default_flag.value_or(false);
 }
 
-bool FlagArgument::hasDefaultValue() const {
+bool FlagArgument::HasDefaultValue() const {
   return m_default_flag.has_value();
 }
 
 FlagArgument& FlagArgument::description(const std::string& description) {
-  setDescription(description);
+  SetDescription(description);
   return *this;
 }
 
 FlagArgument& FlagArgument::required() {
-  setRequired(true);
+  SetRequired(true);
   return *this;
 }
 
-FlagArgument& FlagArgument::defaultValue(bool value) {
-  setDefaultValue(value);
+FlagArgument& FlagArgument::DefaultValue(bool value) {
+  SetDefaultValue(value);
   return *this;
 }
 
 FlagArgument& FlagArgument::callback(std::function<void()> callback) {
-  setCallback(callback);
+  SetCallback(callback);
   return *this;
 }
 
-FlagArgument& FlagArgument::bindTo(bool& target) {
-  m_sync_to_target = [&target, this]() { target = this->getFlag(); };
+FlagArgument& FlagArgument::BindTo(bool& target) {
+  m_sync_to_target = [&target, this]() { target = this->GetFlag(); };
   return *this;
 }
 
@@ -82,24 +82,24 @@ FlagArgument& FlagArgument::validator(std::function<bool(bool)> validator) {
   return *this;
 }
 
-bool FlagArgument::isValid() const {
+bool FlagArgument::IsValid() const {
   // 如果没有设置验证器，默认验证通过
   if (!m_validator) {
     return true;
   }
-  return m_validator(getFlag());
+  return m_validator(GetFlag());
 }
 
 void FlagArgument::validate() const {
-  if (!isValid()) {
-    std::string name = getNames().empty() ? "unknown" : getNames()[0];
+  if (!IsValid()) {
+    std::string name = GetNames().empty() ? "unknown" : GetNames()[0];
     throw std::invalid_argument("Validation failed for flag argument: " + name);
   }
 }
 
 size_t FlagArgument::parse(const std::vector<std::string>& args,
                            size_t current_index) {
-  setFlag(true);
+  SetFlag(true);
   validate();  // 解析后自动验证
   return 1;    // 消耗了标志参数本身
 }
@@ -109,12 +109,12 @@ bool FlagArgument::matches(const std::string& arg) const {
   if (arg.empty() || arg[0] != '-') {
     return false;  // 不是选项参数
   }
-  const auto& names = getNames();
+  const auto& names = GetNames();
   return std::find(names.begin(), names.end(), arg) != names.end();
 }
 
-void FlagArgument::validateNames() const {
-  const auto& names = getNames();
+void FlagArgument::ValidateNames() const {
+  const auto& names = GetNames();
 
   if (names.empty()) {
     throw std::invalid_argument("Flag argument must have at least one name");

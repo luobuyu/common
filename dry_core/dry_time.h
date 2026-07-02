@@ -20,7 +20,7 @@ inline int64_t GetNowS() { return GetNow<std::chrono::seconds>(); }
 inline int64_t GetNowMs() { return GetNow<std::chrono::milliseconds>(); }
 inline int64_t GetNowUs() { return GetNow<std::chrono::microseconds>(); }
 
-inline std::string getTime(std::string format) {
+inline std::string GetTime(std::string format) {
   auto now = std::chrono::system_clock::now();
   // 获取当前时间
   std::time_t t = std::chrono::system_clock::to_time_t(now);
@@ -37,7 +37,7 @@ inline std::string getTime(std::string format) {
   return std::string(date_buffer);
 }
 
-inline std::string getTime(const std::chrono::system_clock::time_point& t,
+inline std::string GetTime(const std::chrono::system_clock::time_point& t,
                            const std::string& format) {
   // 将时间转换为本地时间（线程安全）
   std::time_t t_time_t = std::chrono::system_clock::to_time_t(t);
@@ -52,10 +52,10 @@ inline std::string getTime(const std::chrono::system_clock::time_point& t,
   return std::string(date_buffer);
 }
 
-// 带毫秒的时间格式化，在 getTime 结果后追加 .毫秒
-inline std::string getTimeWithMs(const std::chrono::system_clock::time_point& t,
+// 带毫秒的时间格式化，在 GetTime 结果后追加 .毫秒
+inline std::string GetTimeWithMs(const std::chrono::system_clock::time_point& t,
                                  const std::string& format) {
-  std::string result = getTime(t, format);
+  std::string result = GetTime(t, format);
   auto epoch = t.time_since_epoch();
   auto millis =
       std::chrono::duration_cast<std::chrono::milliseconds>(epoch).count() %
@@ -69,36 +69,36 @@ class Timer {
  private:
   using SteadyClock = std::chrono::steady_clock;
   using TimePoint = SteadyClock::time_point;
-  TimePoint startTime, endTime;
+  TimePoint StartTime, EndTime;
   long long timeout;
 
  public:
-  Timer() : startTime(SteadyClock::now()), endTime(startTime), timeout(0) {}
+  Timer() : StartTime(SteadyClock::now()), EndTime(StartTime), timeout(0) {}
   Timer(long long secTimeout) {
     timeout = secTimeout;
-    setTimer(secTimeout);
+    SetTimer(secTimeout);
   }
-  void setTimer(long long secTimeout) {
-    startTime = SteadyClock::now();
-    endTime = startTime + std::chrono::seconds(secTimeout);
+  void SetTimer(long long secTimeout) {
+    StartTime = SteadyClock::now();
+    EndTime = StartTime + std::chrono::seconds(secTimeout);
   }
-  bool isTimeout() { return endTime < SteadyClock::now(); }
-  std::chrono::duration<double> getDuration() {
-    return SteadyClock::now() - startTime;
+  bool IsTimeout() { return EndTime < SteadyClock::now(); }
+  std::chrono::duration<double> GetDuration() {
+    return SteadyClock::now() - StartTime;
   }
-  double getDurationS() {
-    return std::chrono::duration<double>(getDuration()).count();
+  double GetDurationS() {
+    return std::chrono::duration<double>(GetDuration()).count();
   }
-  int64_t getDurationMs() {
-    return std::chrono::duration_cast<std::chrono::milliseconds>(getDuration())
+  int64_t GetDurationMs() {
+    return std::chrono::duration_cast<std::chrono::milliseconds>(GetDuration())
         .count();
   }
-  int64_t getDurationUs() {
-    return std::chrono::duration_cast<std::chrono::microseconds>(getDuration())
+  int64_t GetDurationUs() {
+    return std::chrono::duration_cast<std::chrono::microseconds>(GetDuration())
         .count();
   }
 
-  long long getTimeout() { return timeout; }
+  long long GetTimeout() { return timeout; }
 };
 
 }  // namespace dry

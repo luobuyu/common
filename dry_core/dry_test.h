@@ -90,12 +90,12 @@ class TestRegistry {
     return reg;
   }
 
-  void addTest(const std::string& suite, const std::string& name,
+  void AddTest(const std::string& suite, const std::string& name,
                std::function<void()> func) {
     m_tests.push_back({suite, name, std::move(func)});
   }
 
-  int runAll() {
+  int RunAll() {
     int passed = 0;
     int total = 0;
     for (auto& test : m_tests) {
@@ -131,7 +131,7 @@ class Register {
  public:
   Register(const std::string& suite, const std::string& name,
            std::function<void()> func) {
-    TestRegistry::instance().addTest(suite, name, std::move(func));
+    TestRegistry::instance().AddTest(suite, name, std::move(func));
   }
 };
 

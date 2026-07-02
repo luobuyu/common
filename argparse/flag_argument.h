@@ -16,25 +16,25 @@ class FlagArgument : public Argument {
   FlagArgument(const std::vector<std::string>& names, bool& target,
                const std::string& description = "");
 
-  bool getFlag() const;
-  void setFlag(bool value);
-  void setDefaultValue(bool value);
-  bool getDefaultValue() const;
+  bool GetFlag() const;
+  void SetFlag(bool value);
+  void SetDefaultValue(bool value);
+  bool GetDefaultValue() const;
 
   // 重写检查是否设置了默认值
-  bool hasDefaultValue() const override;
+  bool HasDefaultValue() const override;
 
   // 链式调用
   FlagArgument& description(const std::string& description);
   FlagArgument& required();
-  FlagArgument& defaultValue(bool value);
+  FlagArgument& DefaultValue(bool value);
   FlagArgument& callback(std::function<void()> callback);
-  FlagArgument& bindTo(bool& target);
+  FlagArgument& BindTo(bool& target);
 
   // 验证器（对布尔值进行验证）
   FlagArgument& validator(std::function<bool(bool)> validator);
   // 重写基类验证器接口
-  bool isValid() const override;
+  bool IsValid() const override;
   void validate() const override;
 
   // 重写多态方法
@@ -46,7 +46,7 @@ class FlagArgument : public Argument {
   bool matches(const std::string& arg) const override;
 
   // 验证 flag 参数名称（必须以 '-' 开头）
-  void validateNames() const override;
+  void ValidateNames() const override;
 
  private:
   bool m_flag;  // 存储标志参数的状态，true表示启用，false表示禁用

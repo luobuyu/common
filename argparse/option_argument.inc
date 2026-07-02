@@ -10,7 +10,7 @@ OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
                                   std::vector<T>& target,
                                   const std::string& description)
     : MultiArgument<T>(ArgumentType::Option, names, description) {
-  this->bindTo(target);
+  this->BindTo(target);
 }
 
 // 构造函数2: 绑定单个 T
@@ -18,7 +18,7 @@ template <typename T>
 OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
                                   T& target, const std::string& description)
     : MultiArgument<T>(ArgumentType::Option, names, description) {
-  this->bindTo(target);
+  this->BindTo(target);
 }
 
 // 构造函数3: 不绑定
@@ -30,29 +30,29 @@ OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
 // 获取和设置值
 template <typename T>
 OptionArgument<T>& OptionArgument<T>::value(const T& value) {
-  this->clearValues();
-  this->addValue(value);
+  this->ClearValues();
+  this->AddValue(value);
   return *this;
 }
 template <typename T>
 OptionArgument<T>& OptionArgument<T>::description(
     const std::string& description) {
-  this->setDescription(description);
+  this->SetDescription(description);
   return *this;
 }
 template <typename T>
 OptionArgument<T>& OptionArgument<T>::required() {
-  this->setRequired(true);
+  this->SetRequired(true);
   return *this;
 }
 template <typename T>
-OptionArgument<T>& OptionArgument<T>::defaultValue(const T& value) {
-  MultiArgument<T>::defaultValue(value);  // 显式调用父类方法，避免递归
+OptionArgument<T>& OptionArgument<T>::DefaultValue(const T& value) {
+  MultiArgument<T>::DefaultValue(value);  // 显式调用父类方法，避免递归
   return *this;
 }
 template <typename T>
 OptionArgument<T>& OptionArgument<T>::callback(std::function<void()> callback) {
-  this->setCallback(callback);
+  this->SetCallback(callback);
   return *this;
 }
 
@@ -62,7 +62,7 @@ size_t OptionArgument<T>::parse(const std::vector<std::string>& args,
                                 size_t current_index) {
   // OptionArgument 解析逻辑：消耗后续参数直到遇到下一个选项或达到上限
   size_t consumed = 0;
-  int max_count = this->getExpectedMax();
+  int max_count = this->GetExpectedMax();
   bool terminated_by_dashdash = false;
 
   // 从 current_index + 1 开始逐个消耗参数
@@ -75,23 +75,23 @@ size_t OptionArgument<T>::parse(const std::vector<std::string>& args,
       break;
     }
     // 如果遇到选项参数，停止消耗
-    if (isOptionString(next_arg)) {
+    if (IsOptionString(next_arg)) {
       break;
     }
-    this->addValue(dry::strTo<T>(next_arg));
+    this->AddValue(dry::StrTo<T>(next_arg));
     consumed++;
   }
 
   // 检查是否满足最小期望数量
-  int min_count = this->getExpectedMin();
-  if (this->valueCount() < min_count) {
+  int min_count = this->GetExpectedMin();
+  if (this->ValueCount() < min_count) {
     throw std::runtime_error("Option " + args[current_index] +
                              " requires at least " + std::to_string(min_count) +
                              " value(s), got " + std::to_string(consumed));
   }
 
   // 标记为已解析
-  this->setParsed(true);
+  this->SetParsed(true);
 
   // 同步到外部变量 (如果绑定了)
   if (this->m_sync_to_target) {
@@ -117,14 +117,14 @@ bool OptionArgument<T>::matches(const std::string& arg) const {
     return false;  // 不是选项参数
   }
   // 检查 arg 是否在名称列表中
-  const auto& names = this->getNames();
+  const auto& names = this->GetNames();
   return std::find(names.begin(), names.end(), arg) != names.end();
 }
 
 // 验证名称
 template <typename T>
-void OptionArgument<T>::validateNames() const {
-  const auto& names = this->getNames();
+void OptionArgument<T>::ValidateNames() const {
+  const auto& names = this->GetNames();
 
   if (names.empty()) {
     throw std::invalid_argument("Option argument must have at least one name");

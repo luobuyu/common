@@ -25,22 +25,22 @@ void FileSink::sink(const logger::LogEvent &log_event,
   }
   // 如果需要打开新文件
   if (create_new_file) {
-    openNewFile();
+    OpenNewFile();
   }
   // 判断文件大小
   if (m_ofs.tellp() > m_max_size) {
     m_no++;
-    openNewFile();
+    OpenNewFile();
   }
   log_format->format(m_ofs, log_event);
 }
 
-void FileSink::openNewFile() {
+void FileSink::OpenNewFile() {
   if (m_ofs.is_open()) {
     m_ofs.flush();
     m_ofs.close();
   }
-  std::string date = dry::getTime(m_next_start - m_rotate_interval, "%Y%m%d%H");
+  std::string date = dry::GetTime(m_next_start - m_rotate_interval, "%Y%m%d%H");
   std::filesystem::path file_name = date + "-" + std::to_string(m_no) + ".log";
   std::filesystem::path file_full_name = m_file_path / file_name;
   // 确保日志目录存在

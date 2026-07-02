@@ -28,7 +28,7 @@ namespace dry {
  * @details 一行代码搞定日志初始化。支持通过配置项 logger.async
  * 选择同步/异步，默认异步。
  */
-void initLogger(config::Config& conf);
+void InitLogger(config::Config& conf);
 
 /**
  * @brief 快速初始化日志系统（不需要配置文件）
@@ -39,14 +39,14 @@ void initLogger(config::Config& conf);
  * @param enable_stdout 是否输出到控制台
  * @param type 日志器类型，默认异步
  */
-void initLogger(const std::string& module_name, int level = 2,
+void InitLogger(const std::string& module_name, int level = 2,
                 const std::string& log_path = "../log",
                 bool enable_stdout = true,
                 logger::LogManager::LoggerType type =
                     logger::LogManager::LoggerType::ASYNC);
 
 /// 向后兼容的函数名
-void openLog(config::Config& conf);
+void OpenLog(config::Config& conf);
 
 }  // namespace dry
 
@@ -62,11 +62,11 @@ void openLog(config::Config& conf);
  */
 #define LOG_FMT(level, fmt, ...)                                         \
   do {                                                                   \
-    auto& _log_mgr = dry::logger::LogManager::getInstance();             \
-    if (_log_mgr.isOpen() && _log_mgr.shouldLog(level)) {                \
-      _log_mgr.getLogger()->log(dry::logger::LogEvent(                   \
-          level, _log_mgr.getModuleName(), __FILE__, __func__, __LINE__, \
-          dry::logger::formatString(fmt, ##__VA_ARGS__)));               \
+    auto& _log_mgr = dry::logger::LogManager::GetInstance();             \
+    if (_log_mgr.IsOpen() && _log_mgr.ShouldLog(level)) {                \
+      _log_mgr.GetLogger()->log(dry::logger::LogEvent(                   \
+          level, _log_mgr.GetModuleName(), __FILE__, __func__, __LINE__, \
+          dry::logger::FormatString(fmt, ##__VA_ARGS__)));               \
     }                                                                    \
   } while (0)
 

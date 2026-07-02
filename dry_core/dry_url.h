@@ -11,10 +11,10 @@ namespace dry {
 /// @param str 待解码的 URL 编码字符串（接受 std::string / const char* /
 ///        std::string_view，均可零拷贝传入）
 /// @return 解码后的字符串
-inline std::string urlDecode(std::string_view str) {
+inline std::string UrlDecode(std::string_view str) {
   // 单字符 hex 转 0~15，非法返回 -1。比 sscanf("%2x") 快 5~10 倍，
   // 且不依赖 c_str() 的 null 终止——string_view 不保证以 \0 结尾。
-  auto fromHex = [](char c) -> int {
+  auto FromHex = [](char c) -> int {
     if (c >= '0' && c <= '9') {
       return c - '0';
     }
@@ -32,8 +32,8 @@ inline std::string urlDecode(std::string_view str) {
     if (str[i] == '+') {
       decoded += ' ';
     } else if (str[i] == '%' && i + 2 < str.size()) {
-      int h = fromHex(str[i + 1]);
-      int l = fromHex(str[i + 2]);
+      int h = FromHex(str[i + 1]);
+      int l = FromHex(str[i + 2]);
       if (h >= 0 && l >= 0) {
         char decoded_char = static_cast<char>((h << 4) | l);
         if (decoded_char == '\0') {
@@ -57,7 +57,7 @@ inline std::string urlDecode(std::string_view str) {
 /// URL 编码：将特殊字符转换为 %XX 格式
 /// @param str 待编码的原始字符串
 /// @return 编码后的 URL 安全字符串
-inline std::string urlEncode(const std::string& str) {
+inline std::string UrlEncode(const std::string& str) {
   std::string encoded;
   encoded.reserve(str.size() * 3);  // 最坏情况每个字符变3字节
   for (unsigned char c : str) {
@@ -86,16 +86,16 @@ struct UrlComponents {
   bool valid{true};  // 解析是否成功（false 表示 URL 格式非法或不支持的 scheme）
 
   /// 返回完整的 path+query（用于发送请求和循环检测）
-  std::string fullPath() const { return path + query; }
+  std::string FullPath() const { return path + query; }
 
   /// 是否为相对路径（host 为空且解析成功）
-  bool isRelative() const { return host.empty() && valid; }
+  bool IsRelative() const { return host.empty() && valid; }
 
   /// 是否为绝对 URL（host 非空且解析成功）
-  bool isAbsolute() const { return !host.empty() && valid; }
+  bool IsAbsolute() const { return !host.empty() && valid; }
 
   /// 获取有效端口（未指定时根据 scheme 推断默认值）
-  uint16_t effectivePort() const {
+  uint16_t EffectivePort() const {
     if (port != 0) {
       return port;
     }
@@ -114,26 +114,26 @@ struct UrlComponents {
 /// @param base_path 当前请求的 path（用于解析无前导 / 的相对路径），可为空
 /// @return 解析后的 URL 组成部分，解析失败时 valid=false
 /// @note 纯函数，无状态，可在任何上下文中调用
-UrlComponents parseUrl(std::string_view location,
+UrlComponents ParseUrl(std::string_view location,
                        std::string_view base_path = "");
 
 /// 安全端口解析（不抛异常，范围校验 0~65535）
 /// @return 解析成功返回端口号，失败返回 0
-uint16_t safeParsePort(std::string_view port_str);
+uint16_t SafeParsePort(std::string_view port_str);
 
 /// RFC 3986 §5.2.4 相对路径解析（dot-segment 移除）
 /// @param relative  相对路径（可含 query，如 "../v2/users?page=1"）
 /// @param base_path 当前请求的 path（用于确定目录基准）
 /// @return 解析后的绝对路径（含 query）
-std::string resolveRelativePath(std::string_view relative,
+std::string ResolveRelativePath(std::string_view relative,
                                 std::string_view base_path);
 
-/// 判断两个 URL 是否同源（scheme + host + effectivePort 均相同）
+/// 判断两个 URL 是否同源（scheme + host + EffectivePort 均相同）
 /// @param origin 当前连接的 origin（scheme/host/port）
 /// @param target 目标 URL（如 Location 头解析结果）
 /// @return true 表示同源，可以跟随重定向
 /// @note 纯函数，无状态
 /// @note 如果 target 是相对路径（host 为空），视为同源
 /// @note 如果 target.valid == false，视为不同源（不跟随）
-bool isSameOrigin(const UrlComponents& origin, const UrlComponents& target);
+bool IsSameOrigin(const UrlComponents& origin, const UrlComponents& target);
 }  // namespace dry

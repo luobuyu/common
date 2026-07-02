@@ -25,24 +25,24 @@ class Argument {
   virtual ~Argument() = default;
 
   // setter
-  void setDescription(const std::string& description);
-  void setRequired(bool required);
-  void setParsed(bool parsed);
-  void setCallback(std::function<void()> callback);
+  void SetDescription(const std::string& description);
+  void SetRequired(bool required);
+  void SetParsed(bool parsed);
+  void SetCallback(std::function<void()> callback);
 
   // 链式调用
   Argument& description(const std::string& description);
   Argument& required();
   Argument& callback(std::function<void()> callback);
 
-  const std::vector<std::string>& getNames() const;
-  const std::string& getDescription() const;
-  bool isRequired() const;
-  bool isParsed() const;
-  ArgumentType getType() const;
+  const std::vector<std::string>& GetNames() const;
+  const std::string& GetDescription() const;
+  bool IsRequired() const;
+  bool IsParsed() const;
+  ArgumentType GetType() const;
 
   // 验证参数名称是否合法（由子类实现具体规则）
-  virtual void validateNames() const = 0;
+  virtual void ValidateNames() const = 0;
 
   // 不同子类的实现:
   //   - FlagArgument/OptionArgument: 检查 arg 以 '-' 开头，是否在 m_names
@@ -63,13 +63,13 @@ class Argument {
                        size_t current_index) = 0;
 
   // 检查是否设置了默认值（子类应重写此方法）
-  virtual bool hasDefaultValue() const { return false; }
+  virtual bool HasDefaultValue() const { return false; }
 
   // 将默认值同步到绑定的外部变量（对于未被解析的参数）
-  // 内部会检查 hasDefaultValue，只有设置了默认值时才执行同步
+  // 内部会检查 HasDefaultValue，只有设置了默认值时才执行同步
   // 默认实现调用 m_sync_to_target（如果有的话）
-  virtual void syncDefaultValue() {
-    if (hasDefaultValue() && m_sync_to_target) {
+  virtual void SyncDefaultValue() {
+    if (HasDefaultValue() && m_sync_to_target) {
       m_sync_to_target();
     }
   }
@@ -77,10 +77,10 @@ class Argument {
   // ========== 验证器接口 ==========
   // 检查参数值是否有效（由子类实现具体验证逻辑）
   // 返回 true 表示验证通过，false 表示验证失败
-  virtual bool isValid() const = 0;
+  virtual bool IsValid() const = 0;
 
   // 验证参数值，如果无效则抛出异常
-  // 默认实现：调用 isValid()，失败时抛出 std::invalid_argument
+  // 默认实现：调用 IsValid()，失败时抛出 std::invalid_argument
   virtual void validate() const = 0;
 
  protected:

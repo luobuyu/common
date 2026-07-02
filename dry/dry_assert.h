@@ -10,9 +10,9 @@
  *   - Release 模式（NDEBUG）：完全消除，零开销
  *
  * @code
- *   DRY_ASSERT(isLoopInThisThread(),
+ *   DRY_ASSERT(IsLoopInThisThread(),
  *              "must be called in EventLoop thread, current=%d, expected=%d",
- *              dry::getThreadId(), m_thread_id);
+ *              dry::GetThreadId(), m_thread_id);
  * @endcode
  */
 

@@ -7,7 +7,7 @@
 namespace dry {
 namespace config {
 
-bool Config::initConfig(const std::string &path) {
+bool Config::InitConfig(const std::string &path) {
   std::ifstream ifs(path, std::ios::in);
   if (!ifs.is_open()) {
     std::cerr << "can't open config file " << path << std::endl;
@@ -59,26 +59,26 @@ bool Config::exist(const std::string &section) {
   return m_sections.find(section) != m_sections.end();
 }
 
-bool Config::getValue(const std::string &section, const std::string &key,
+bool Config::GetValue(const std::string &section, const std::string &key,
                       std::string &val) {
   if (!exist(section, key)) return false;
   val = m_sections[section][key];
   return true;
 }
-bool Config::getValue(const std::string &section, const std::string &key,
+bool Config::GetValue(const std::string &section, const std::string &key,
                       int &val) {
   if (!exist(section, key)) return false;
   val = std::stoi(m_sections[section][key]);
   return true;
 }
-bool Config::getValue(const std::string &section, const std::string &key,
+bool Config::GetValue(const std::string &section, const std::string &key,
                       double &val) {
   if (!exist(section, key)) return false;
   val = std::stod(m_sections[section][key]);
   return true;
 }
 
-void Config::getValue(const std::string &section, const std::string &key,
+void Config::GetValue(const std::string &section, const std::string &key,
                       std::string &val, const std::string &default_value) {
   if (!exist(section, key)) {
     val = default_value;
@@ -87,7 +87,7 @@ void Config::getValue(const std::string &section, const std::string &key,
   val = m_sections[section][key];
 }
 
-void Config::getValue(const std::string &section, const std::string &key,
+void Config::GetValue(const std::string &section, const std::string &key,
                       int &val, const int &default_value) {
   if (!exist(section, key)) {
     val = default_value;
@@ -95,7 +95,7 @@ void Config::getValue(const std::string &section, const std::string &key,
   }
   val = std::stoi(m_sections[section][key]);
 }
-void Config::getValue(const std::string &section, const std::string &key,
+void Config::GetValue(const std::string &section, const std::string &key,
                       double &val, const double &default_value) {
   if (!exist(section, key)) {
     val = default_value;
@@ -104,43 +104,43 @@ void Config::getValue(const std::string &section, const std::string &key,
   val = std::stod(m_sections[section][key]);
 }
 
-std::string Config::getString(const std::string &section,
+std::string Config::GetString(const std::string &section,
                               const std::string &key,
                               const std::string &default_value) {
   std::string value;
-  getValue(section, key, value, default_value);
+  GetValue(section, key, value, default_value);
   return value;
 }
-int Config::getInt(const std::string &section, const std::string &key,
+int Config::GetInt(const std::string &section, const std::string &key,
                    const int &default_value) {
   int value;
-  getValue(section, key, value, default_value);
+  GetValue(section, key, value, default_value);
   return value;
 }
-double Config::getDouble(const std::string &section, const std::string &key,
+double Config::GetDouble(const std::string &section, const std::string &key,
                          const double &default_value) {
   double value;
-  getValue(section, key, value, default_value);
+  GetValue(section, key, value, default_value);
   return value;
 }
 
-std::unordered_map<std::string, Config::Section> Config::getSections() {
+std::unordered_map<std::string, Config::Section> Config::GetSections() {
   return m_sections;
 }
-std::vector<std::string> Config::getSectionNames() {
+std::vector<std::string> Config::GetSectionNames() {
   std::vector<std::string> sections;
   for (auto &[section, kvs] : m_sections) sections.emplace_back(section);
   return sections;
 }
 
-Config::Section Config::getSectionKVs(const std::string &section) {
+Config::Section Config::GetSectionKVs(const std::string &section) {
   if (m_sections.find(section) == m_sections.end()) {
     return {};
   } else {
     return m_sections[section];
   }
 }
-void Config::setValue(const std::string &section, const std::string &key,
+void Config::SetValue(const std::string &section, const std::string &key,
                       const std::string &val) {
   m_sections[section][key] = val;
 }

@@ -30,7 +30,7 @@ class PositionalArgument : public MultiArgument<T> {
   bool matches(const std::string& arg) const override;
 
   // 验证 positional 参数名称（不能以 '-' 开头）
-  void validateNames() const override;
+  void ValidateNames() const override;
 };
 
 }  // namespace argparse

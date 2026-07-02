@@ -6,16 +6,16 @@ namespace logger {
 
 logger::LoggerFormat::LoggerFormat(std::string pattern)
     : m_pattern(std::move(pattern)) {
-  parserPattern();
+  ParserPattern();
 }
-void logger::FormatItem::setFmt(const std::string &fmt) {}
-std::string logger::FormatItem::getFmt() { return std::string(); }
-void logger::LoggerFormat::parserPattern() {
+void logger::FormatItem::SetFmt(const std::string &fmt) {}
+std::string logger::FormatItem::GetFmt() { return std::string(); }
+void logger::LoggerFormat::ParserPattern() {
   bool is_pre_other = false;
   for (int i = 0; i < m_pattern.size();) {
     if (m_pattern[i] == '%') {
       if (i + 1 < m_pattern.size() &&
-          FormatItemFactory::canCreate(m_pattern[i + 1])) {
+          FormatItemFactory::CanCreate(m_pattern[i + 1])) {
         if (m_pattern[i + 1] == 'd') {
           if (i + 2 < m_pattern.size() && m_pattern[i + 2] == '{') {
             size_t index1 = i + 2;
@@ -26,16 +26,16 @@ void logger::LoggerFormat::parserPattern() {
             }
             std::string val = m_pattern.substr(index1 + 1, index2 - 1 - index1);
             m_format_items.emplace_back(
-                FormatItemFactory::createFormatItem(m_pattern[i + 1], val));
+                FormatItemFactory::CreateFormatItem(m_pattern[i + 1], val));
             i = index2 + 1;
           } else {
-            m_format_items.emplace_back(FormatItemFactory::createFormatItem(
+            m_format_items.emplace_back(FormatItemFactory::CreateFormatItem(
                 m_pattern[i + 1], std::string()));
             i = i + 2;
           }
         } else {
           m_format_items.emplace_back(
-              FormatItemFactory::createFormatItem(m_pattern[i + 1]));
+              FormatItemFactory::CreateFormatItem(m_pattern[i + 1]));
           i = i + 2;
         }
         is_pre_other = false;
@@ -46,11 +46,11 @@ void logger::LoggerFormat::parserPattern() {
             (pos == std::string::npos) ? m_pattern.size() - 1 : pos - 1;
         std::string val = m_pattern.substr(i, index - i + 1);
         if (is_pre_other)
-          m_format_items.back()->setFmt(
-              std::move(m_format_items.back()->getFmt() + val));
+          m_format_items.back()->SetFmt(
+              std::move(m_format_items.back()->GetFmt() + val));
         else
           m_format_items.emplace_back(
-              FormatItemFactory::createFormatItem('%', val));
+              FormatItemFactory::CreateFormatItem('%', val));
         i = index + 1;
         is_pre_other = true;
       }
@@ -61,11 +61,11 @@ void logger::LoggerFormat::parserPattern() {
           (pos == std::string::npos) ? m_pattern.size() - 1 : pos - 1;
       std::string val = m_pattern.substr(i, index - i + 1);
       if (is_pre_other)
-        m_format_items.back()->setFmt(
-            std::move(m_format_items.back()->getFmt() + val));
+        m_format_items.back()->SetFmt(
+            std::move(m_format_items.back()->GetFmt() + val));
       else
         m_format_items.emplace_back(
-            FormatItemFactory::createFormatItem('%', val));
+            FormatItemFactory::CreateFormatItem('%', val));
       i = index + 1;
       is_pre_other = true;
     }
@@ -76,22 +76,22 @@ void LoggerFormat::format(std::ostream &os, const logger::LogEvent &log_msg) {
     fmt->format(os, log_msg);
   }
 }
-void LoggerFormat::setPattern(const std::string &pattern) {
+void LoggerFormat::SetPattern(const std::string &pattern) {
   m_format_items.clear();
   m_pattern = pattern;
-  parserPattern();
+  ParserPattern();
 }
 logger::DateFormatItem::DateFormatItem(std::string time_fmt)
     : m_time_fmt(std::move(time_fmt)) {}
 void DateFormatItem::format(std::ostream &os, const logger::LogEvent &log_msg) {
-  os << dry::getTimeWithMs(log_msg.m_timestamp, m_time_fmt);
+  os << dry::GetTimeWithMs(log_msg.m_timestamp, m_time_fmt);
 }
 void TabFormatItem::format(std::ostream &os, const logger::LogEvent &log_msg) {
   os << " ";
 }
 void logger::LevelFormatItem::format(std::ostream &os,
                                      const logger::LogEvent &log_msg) {
-  os << levelToString(log_msg.m_log_level);
+  os << LevelToString(log_msg.m_log_level);
 }
 void ProcessIdFormatItem::format(std::ostream &os,
                                  const logger::LogEvent &log_msg) {
@@ -135,11 +135,11 @@ void OtherFormatItem::format(std::ostream &os,
                              const logger::LogEvent &log_msg) {
   os << m_other_fmt;
 }
-void logger::OtherFormatItem::setFmt(const std::string &fmt) {
+void logger::OtherFormatItem::SetFmt(const std::string &fmt) {
   m_other_fmt = fmt;
 }
-std::string logger::OtherFormatItem::getFmt() { return m_other_fmt; }
-std::shared_ptr<FormatItem> logger::FormatItemFactory::createFormatItem(
+std::string logger::OtherFormatItem::GetFmt() { return m_other_fmt; }
+std::shared_ptr<FormatItem> logger::FormatItemFactory::CreateFormatItem(
     const char &key, const std::string &val) {
   // "%d", "%T", "%L", "%p", "%t", "%c", "%M", "%F", "%f", "%l", "%m", "%n"
   if (key == 'd') {
@@ -162,7 +162,7 @@ std::shared_ptr<FormatItem> logger::FormatItemFactory::createFormatItem(
   if (key == 'n') return std::make_shared<NewLineFormatItem>();
   return std::make_shared<OtherFormatItem>(val);
 }
-bool logger::FormatItemFactory::canCreate(const char &key) {
+bool logger::FormatItemFactory::CanCreate(const char &key) {
   static std::unordered_set<char> keys = {'d', 'T', 'L', 'p', 't', 'c',
                                           'M', 'F', 'f', 'l', 'm', 'n'};
   return keys.find(key) != keys.end();

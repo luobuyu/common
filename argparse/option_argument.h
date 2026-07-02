@@ -7,7 +7,7 @@ namespace dry {
 namespace argparse {
 
 // 判断字符串是否看起来像一个选项参数（以 '-' 开头，且不是负数）
-inline bool isOptionString(const std::string& str) {
+inline bool IsOptionString(const std::string& str) {
   if (str.size() < 2 || str[0] != '-') {
     return false;
   }
@@ -56,7 +56,7 @@ class OptionArgument : public MultiArgument<T> {
   OptionArgument<T>& value(const T& value);
   OptionArgument<T>& description(const std::string& description);
   OptionArgument<T>& required();
-  OptionArgument<T>& defaultValue(const T& value);
+  OptionArgument<T>& DefaultValue(const T& value);
   OptionArgument<T>& callback(std::function<void()> callback);
 
   // 重写多态方法
@@ -68,7 +68,7 @@ class OptionArgument : public MultiArgument<T> {
   bool matches(const std::string& arg) const override;
 
   // 验证 option 参数名称（必须以 '-' 开头）
-  void validateNames() const override;
+  void ValidateNames() const override;
 };
 
 }  // namespace argparse

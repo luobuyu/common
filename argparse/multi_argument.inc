@@ -16,7 +16,7 @@ MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
       m_expected_min(1),  // 默认至少需要1个值
       m_expected_max(1)   // 默认最多1个值
 {
-  bindTo(target);
+  BindTo(target);
 }
 
 template <typename T>
@@ -28,7 +28,7 @@ MultiArgument<T>::MultiArgument(const ArgumentType& type,
       m_expected_min(1),  // 默认至少需要1个值
       m_expected_max(1)   // 默认最多1个值
 {
-  bindTo(target);
+  BindTo(target);
 }
 
 template <typename T>
@@ -38,7 +38,7 @@ MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
       m_expected_min(1),  // 默认至少需要1个值
       m_expected_max(1)   // 默认最多1个值
 {
-  bindTo(target);
+  BindTo(target);
 }
 
 template <typename T>
@@ -49,7 +49,7 @@ MultiArgument<T>::MultiArgument(const ArgumentType& type,
       m_expected_min(1),  // 默认至少需要1个值
       m_expected_max(1)   // 默认最多1个值
 {
-  bindTo(target);
+  BindTo(target);
 }
 
 template <typename T>
@@ -71,7 +71,7 @@ MultiArgument<T>::MultiArgument(const ArgumentType& type,
 
 // 值操作实现
 template <typename T>
-const std::vector<T>& MultiArgument<T>::getValues() const {
+const std::vector<T>& MultiArgument<T>::GetValues() const {
   if (!m_values.empty()) {
     return m_values;
   }
@@ -83,46 +83,46 @@ const std::vector<T>& MultiArgument<T>::getValues() const {
 }
 
 template <typename T>
-void MultiArgument<T>::addValue(const T& value) {
+void MultiArgument<T>::AddValue(const T& value) {
   m_values.emplace_back(value);
 }
 
 template <typename T>
-void MultiArgument<T>::setValues(const std::vector<T>& values) {
+void MultiArgument<T>::SetValues(const std::vector<T>& values) {
   m_values = values;
 }
 
 template <typename T>
-void MultiArgument<T>::clearValues() {
+void MultiArgument<T>::ClearValues() {
   m_values.clear();
 }
 
 template <typename T>
-size_t MultiArgument<T>::valueCount() const {
+size_t MultiArgument<T>::ValueCount() const {
   return m_values.size();
 }
 
 // 默认值设置实现
 template <typename T>
-MultiArgument<T>& MultiArgument<T>::defaultValue(const T& value) {
+MultiArgument<T>& MultiArgument<T>::DefaultValue(const T& value) {
   m_default_values = std::vector<T>{value};
   return *this;
 }
 
 template <typename T>
-MultiArgument<T>& MultiArgument<T>::defaultValues(
+MultiArgument<T>& MultiArgument<T>::DefaultValues(
     const std::vector<T>& values) {
   m_default_values = values;
   return *this;
 }
 
 template <typename T>
-bool MultiArgument<T>::hasDefaultValue() const {
+bool MultiArgument<T>::HasDefaultValue() const {
   return m_default_values.has_value();
 }
 
 template <typename T>
-const std::vector<T>& MultiArgument<T>::getDefaultValues() const {
+const std::vector<T>& MultiArgument<T>::GetDefaultValues() const {
   if (!m_default_values.has_value()) {
     static const std::vector<T> empty;
     return empty;
@@ -170,18 +170,18 @@ MultiArgument<T>& MultiArgument<T>::expected(int min, int max) {
 }
 
 template <typename T>
-int MultiArgument<T>::getExpectedMin() const {
+int MultiArgument<T>::GetExpectedMin() const {
   return m_expected_min;
 }
 
 template <typename T>
-int MultiArgument<T>::getExpectedMax() const {
+int MultiArgument<T>::GetExpectedMax() const {
   return m_expected_max;
 }
 
 // 外部变量绑定实现
 template <typename T>
-MultiArgument<T>& MultiArgument<T>::bindTo(std::vector<T>& target) {
+MultiArgument<T>& MultiArgument<T>::BindTo(std::vector<T>& target) {
   m_sync_to_target = [&target, this]() {
     if (!this->m_values.empty()) {
       target = this->m_values;
@@ -193,7 +193,7 @@ MultiArgument<T>& MultiArgument<T>::bindTo(std::vector<T>& target) {
 }
 
 template <typename T>
-MultiArgument<T>& MultiArgument<T>::bindTo(T& target) {
+MultiArgument<T>& MultiArgument<T>::BindTo(T& target) {
   m_sync_to_target = [&target, this]() {
     if (!this->m_values.empty()) {
       target = this->m_values.front();  // 绑定第一个值
@@ -214,18 +214,18 @@ MultiArgument<T>& MultiArgument<T>::validator(
 }
 
 template <typename T>
-bool MultiArgument<T>::isValid() const {
+bool MultiArgument<T>::IsValid() const {
   if (!m_validator) {
     return true;  // 没有验证器，默认有效
   }
-  return m_validator(getValues());
+  return m_validator(GetValues());
 }
 
 template <typename T>
 void MultiArgument<T>::validate() const {
   if (m_validator && !m_validator(m_values)) {
     throw std::runtime_error("Validation failed for argument: " +
-                             this->getNames().front());
+                             this->GetNames().front());
   }
 }
 
@@ -233,19 +233,19 @@ void MultiArgument<T>::validate() const {
 template <typename T>
 MultiArgument<T>& MultiArgument<T>::description(
     const std::string& description) {
-  setDescription(description);
+  SetDescription(description);
   return *this;
 }
 
 template <typename T>
 MultiArgument<T>& MultiArgument<T>::required() {
-  setRequired(true);
+  SetRequired(true);
   return *this;
 }
 
 template <typename T>
 MultiArgument<T>& MultiArgument<T>::callback(std::function<void()> callback) {
-  setCallback(callback);
+  SetCallback(callback);
   return *this;
 }
 

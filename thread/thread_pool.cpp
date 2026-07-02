@@ -26,20 +26,20 @@ void ThreadPool::stop() {
   }
 }
 
-const ThreadPool::Stats& ThreadPool::getStats() const { return m_stats; }
+const ThreadPool::Stats& ThreadPool::GetStats() const { return m_stats; }
 
-void ThreadPool::setMaxWaitTimeMs(uint64_t max_wait_time_ms) {
+void ThreadPool::SetMaxWaitTimeMs(uint64_t max_wait_time_ms) {
   m_max_wait_time_ms = max_wait_time_ms;
 }
 
-uint64_t ThreadPool::getMaxWaitTimeMs() const { return m_max_wait_time_ms; }
+uint64_t ThreadPool::GetMaxWaitTimeMs() const { return m_max_wait_time_ms; }
 
-std::size_t ThreadPool::getQueueSize() const {
+std::size_t ThreadPool::GetQueueSize() const {
   std::lock_guard<std::mutex> lock(m_queue_mutex);
   return m_tasks.size();
 }
 
-std::size_t ThreadPool::getThreadCount() const { return m_workers.size(); }
+std::size_t ThreadPool::GetThreadCount() const { return m_workers.size(); }
 
 void ThreadPool::worker() {
   while (true) {

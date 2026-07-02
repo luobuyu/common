@@ -7,7 +7,7 @@
 namespace dry {
 namespace logger {
 
-LogManager& LogManager::getInstance() {
+LogManager& LogManager::GetInstance() {
   static LogManager instance;
   return instance;
 }
@@ -42,48 +42,48 @@ void LogManager::init(LogLevel log_level, std::string module_name,
     }
 
     m_is_open = true;
-    registerCoredumpHandler();
+    RegisterCoredumpHandler();
   });
 }
 
-bool LogManager::isOpen() const { return m_is_open && m_logger != nullptr; }
+bool LogManager::IsOpen() const { return m_is_open && m_logger != nullptr; }
 
-bool LogManager::shouldLog(LogLevel level) const {
+bool LogManager::ShouldLog(LogLevel level) const {
   return level >= m_log_level;
 }
 
-const std::string& LogManager::getModuleName() const { return m_module_name; }
+const std::string& LogManager::GetModuleName() const { return m_module_name; }
 
-Logger* LogManager::getLogger() const { return m_logger.get(); }
+Logger* LogManager::GetLogger() const { return m_logger.get(); }
 
-void LogManager::addSink(const LogSink::LogSinkPtr& log_sink) {
+void LogManager::AddSink(const LogSink::LogSinkPtr& log_sink) {
   if (m_logger) {
-    m_logger->addSink(log_sink);
+    m_logger->AddSink(log_sink);
   }
 }
 
-void LogManager::registerCoredumpHandler() {
+void LogManager::RegisterCoredumpHandler() {
 #if defined(__linux__) || defined(__APPLE__)
-  signal(SIGSEGV, coredumpHandler);
-  signal(SIGABRT, coredumpHandler);
-  signal(SIGTERM, coredumpHandler);
+  signal(SIGSEGV, CoredumpHandler);
+  signal(SIGABRT, CoredumpHandler);
+  signal(SIGTERM, CoredumpHandler);
   // SIGKILL 不可捕获，不注册
-  signal(SIGINT, coredumpHandler);
-  signal(SIGHUP, coredumpHandler);
+  signal(SIGINT, CoredumpHandler);
+  signal(SIGHUP, CoredumpHandler);
   // 忽略 SIGPIPE
   signal(SIGPIPE, SIG_IGN);
 #endif
 #if defined(__linux__)
-  signal(SIGSTKFLT, coredumpHandler);
+  signal(SIGSTKFLT, CoredumpHandler);
 #endif
 }
 
-void LogManager::coredumpHandler(int signal_no) {
+void LogManager::CoredumpHandler(int signal_no) {
   std::cerr << "process received invalid signal, will exit" << std::endl;
   // 尽量 flush 已有日志到磁盘
-  auto* logger = LogManager::getInstance().getLogger();
+  auto* logger = LogManager::GetInstance().GetLogger();
   if (logger != nullptr) {
-    for (auto& sink : logger->getLogSinks()) {
+    for (auto& sink : logger->GetLogSinks()) {
       sink->flush();
     }
   }
@@ -93,7 +93,7 @@ void LogManager::coredumpHandler(int signal_no) {
 
 LogManager::~LogManager() {
   if (m_logger) {
-    m_logger->beforeExit();
+    m_logger->BeforeExit();
   }
 }
 

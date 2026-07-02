@@ -42,7 +42,7 @@ T &CircleQueue<T>::front() {
 }
 
 template <class T>
-void CircleQueue<T>::popFront() {
+void CircleQueue<T>::PopFront() {
   m_head = (m_head + 1) % m_max_size;
 }
 
@@ -88,11 +88,11 @@ void BlockingQueue<T>::push(const T &item) {
   m_cond_comsumer.notify_one();
 }
 template <class T>
-bool BlockingQueue<T>::tryPop(T &item) {
+bool BlockingQueue<T>::TryPop(T &item) {
   std::lock_guard<std::mutex> lock(m_mtx);
   if (m_queue.empty()) return false;
   item = std::move(m_queue.front());
-  m_queue.popFront();
+  m_queue.PopFront();
   m_cond_producer.notify_one();
   return true;
 }
@@ -103,12 +103,12 @@ bool BlockingQueue<T>::pop(T &item) {
                        [&]() { return !m_queue.empty() || m_is_stopping; });
   if (m_is_stopping && m_queue.empty()) return false;
   item = std::move(m_queue.front());
-  m_queue.popFront();
+  m_queue.PopFront();
   m_cond_producer.notify_one();
   return true;
 }
 template <class T>
-bool BlockingQueue<T>::popWithTimeout(T &item,
+bool BlockingQueue<T>::PopWithTimeout(T &item,
                                       std::chrono::milliseconds timeout) {
   std::unique_lock<std::mutex> lock(m_mtx);
   bool got = m_cond_comsumer.wait_for(
@@ -117,7 +117,7 @@ bool BlockingQueue<T>::popWithTimeout(T &item,
   // m_is_stopping && m_queue.empty(): stop 且队列空 → 返回 false
   if (!got || (m_is_stopping && m_queue.empty())) return false;
   item = std::move(m_queue.front());
-  m_queue.popFront();
+  m_queue.PopFront();
   m_cond_producer.notify_one();
   return true;
 }
@@ -145,11 +145,11 @@ void BlockingQueue<T>::stop() {
   m_cond_producer.notify_all();  // 唤醒可能阻塞在 push 的生产者
 }
 template <class T>
-bool BlockingQueue<T>::isStopping() const {
+bool BlockingQueue<T>::IsStopping() const {
   return m_is_stopping.load();
 }
 template <class T>
-std::size_t BlockingQueue<T>::batchPopWithTimeout(
+std::size_t BlockingQueue<T>::BatchPopWithTimeout(
     std::vector<T> &out, std::size_t max_count,
     std::chrono::milliseconds timeout) {
   std::unique_lock<std::mutex> lock(m_mtx);
@@ -162,7 +162,7 @@ std::size_t BlockingQueue<T>::batchPopWithTimeout(
   std::size_t count = 0;
   while (count < max_count && !m_queue.empty()) {
     out.emplace_back(std::move(m_queue.front()));
-    m_queue.popFront();
+    m_queue.PopFront();
     ++count;
   }
   if (count > 0) {

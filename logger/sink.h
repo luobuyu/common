@@ -26,7 +26,7 @@ class FileSink : public LogSink {
  public:
   void sink(const logger::LogEvent &log_event,
             LoggerFormat::LoggerFormatPtr &log_format) override;
-  void openNewFile();
+  void OpenNewFile();
   void flush() override;
   FileSink(std::string file_path, uint32_t max_size = 10 * 1024 * 1024,
            std::chrono::system_clock::duration rotate_interval =

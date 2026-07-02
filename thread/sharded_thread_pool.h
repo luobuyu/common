@@ -28,7 +28,7 @@ class ShardedThreadPool {
   /// @param task 任务
   /// @note HttpServer 使用此接口，保证同连接的请求按顺序处理
   template <typename F, typename... Args>
-  auto submitOrdered(uint64_t key, F&& func, Args&&... args)
+  auto SubmitOrdered(uint64_t key, F&& func, Args&&... args)
       -> std::future<std::invoke_result_t<F, Args...>>;
 
   /// @brief 轮询投递：不保序，最大并发
@@ -42,21 +42,21 @@ class ShardedThreadPool {
   void stop();
 
   /// 获取 shard 数量
-  size_t shardCount() const { return m_shards.size(); }
+  size_t ShardCount() const { return m_shards.size(); }
 
   /// 获取指定 shard 的队列长度
-  size_t queueSize(size_t shard_idx) const {
-    return m_shards.at(shard_idx)->getQueueSize();
+  size_t QueueSize(size_t shard_idx) const {
+    return m_shards.at(shard_idx)->GetQueueSize();
   }
 
   /// 获取所有 shard 的总队列长度
-  size_t totalQueueSize() const;
+  size_t TotalQueueSize() const;
 
   /// 设置最大排队等待时间（毫秒），超过则丢弃任务，0 表示不限制
-  void setMaxWaitTimeMs(uint64_t max_wait_time_ms);
+  void SetMaxWaitTimeMs(uint64_t max_wait_time_ms);
 
   /// 获取所有 shard 的汇总统计信息
-  Stats getStats() const;
+  Stats GetStats() const;
 
  private:
   std::vector<std::unique_ptr<ThreadPool>> m_shards;  // 分片线程池

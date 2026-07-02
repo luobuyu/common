@@ -67,7 +67,7 @@ class ObjectPool {
   /// 3. 验证可用性，不可用则销毁并继续取下一个
   /// 4. 没有可用的空闲对象 → factory 创建新对象（不阻塞、不等待）
   Value acquire(const Key& key) {
-    cleanupIdle();
+    CleanupIdle();
 
     auto it = m_idle_map.find(key);
     if (it != m_idle_map.end()) {
@@ -133,7 +133,7 @@ class ObjectPool {
 
     // 检查全局空闲总数是否已满，满则淘汰最老的
     if (m_total_idle >= m_config.max_idle_total) {
-      evictOldest();
+      EvictOldest();
     }
 
     // 放入 deque 头部（LIFO：最近归还的最先被复用）
@@ -146,7 +146,7 @@ class ObjectPool {
   /// @return 清理的对象数量
   /// @note acquire()
   /// 内部已包含懒淘汰调用。如需主动回收（如定时器），也可外部调用。
-  size_t cleanupIdle() {
+  size_t CleanupIdle() {
     int64_t now_ms = dry::GetNowMs();
     size_t count = 0;
 
@@ -206,9 +206,9 @@ class ObjectPool {
   // ====== 状态查询 ======
 
   /// 当前空闲对象总数
-  size_t idleCount() const { return m_total_idle; }
+  size_t IdleCount() const { return m_total_idle; }
   /// 指定 key 的空闲对象数
-  size_t idleCount(const Key& key) const {
+  size_t IdleCount(const Key& key) const {
     auto it = m_idle_map.find(key);
     return it != m_idle_map.end() ? it->second.size() : 0;
   }
@@ -217,16 +217,16 @@ class ObjectPool {
 
   // ====== 配置 ======
 
-  void setMaxIdlePerKey(size_t n) { m_config.max_idle_per_key = n; }
-  void setMaxIdleTotal(size_t n) { m_config.max_idle_total = n; }
-  void setIdleTimeout(int64_t ms) { m_config.idle_timeout_ms = ms; }
-  void setConfig(Config config) { m_config = std::move(config); }
+  void SetMaxIdlePerKey(size_t n) { m_config.max_idle_per_key = n; }
+  void SetMaxIdleTotal(size_t n) { m_config.max_idle_total = n; }
+  void SetIdleTimeout(int64_t ms) { m_config.idle_timeout_ms = ms; }
+  void SetConfig(Config config) { m_config = std::move(config); }
 
  private:
   /// 淘汰全局最老的一个空闲对象（近似 LRU）
   /// 遍历 map 找第一个非空 key 的尾部元素淘汰
   /// unordered_map 的遍历顺序本身是伪随机的，提供了足够的近似随机性
-  void evictOldest() {
+  void EvictOldest() {
     for (auto it = m_idle_map.begin(); it != m_idle_map.end(); ++it) {
       if (!it->second.empty()) {
         auto& deque = it->second;

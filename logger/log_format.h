@@ -13,8 +13,8 @@ class FormatItem {
  public:
   typedef std::shared_ptr<FormatItem> FormatItemPtr;
   virtual void format(std::ostream &os, const logger::LogEvent &log_msg) = 0;
-  virtual void setFmt(const std::string &fmt);
-  virtual std::string getFmt();
+  virtual void SetFmt(const std::string &fmt);
+  virtual std::string GetFmt();
 
  private:
 };
@@ -108,8 +108,8 @@ class OtherFormatItem : public FormatItem {
  public:
   OtherFormatItem(std::string other_fmt);
   void format(std::ostream &os, const logger::LogEvent &log_msg) override;
-  void setFmt(const std::string &fmt) override;
-  std::string getFmt() override;
+  void SetFmt(const std::string &fmt) override;
+  std::string GetFmt() override;
 
  private:
   std::string m_other_fmt;
@@ -134,9 +134,9 @@ class LoggerFormat {
       std::string pattern =
           "%d{%Y-%m-%d %H:%M:%S}%T[%L]%T[%p,%t,%c]%T[%M]%T[%F:%f:%l]%T%m%n");
   ~LoggerFormat() = default;
-  void parserPattern();
+  void ParserPattern();
   void format(std::ostream &os, const logger::LogEvent &log_msg);
-  void setPattern(const std::string &pattern);
+  void SetPattern(const std::string &pattern);
 
  private:
   std::string m_pattern;
@@ -145,9 +145,9 @@ class LoggerFormat {
 
 class FormatItemFactory {
  public:
-  static std::shared_ptr<FormatItem> createFormatItem(
+  static std::shared_ptr<FormatItem> CreateFormatItem(
       const char &key, const std::string &val = std::string());
-  static bool canCreate(const char &key);
+  static bool CanCreate(const char &key);
 };
 };  // namespace logger
 }  // namespace dry

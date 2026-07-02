@@ -27,7 +27,7 @@ class LogManager {
   };
 
   /// 获取单例引用（Meyers' Singleton）
-  static LogManager& getInstance();
+  static LogManager& GetInstance();
 
   // 禁止拷贝和赋值
   LogManager(const LogManager&) = delete;
@@ -70,28 +70,28 @@ class LogManager {
                 std::chrono::milliseconds(3000));
 
   /// 日志系统是否已初始化并开启
-  bool isOpen() const;
+  bool IsOpen() const;
 
   /// 当前日志级别是否应该输出
-  bool shouldLog(LogLevel level) const;
+  bool ShouldLog(LogLevel level) const;
 
   /// 获取模块名称
-  const std::string& getModuleName() const;
+  const std::string& GetModuleName() const;
 
   /// 获取当前 Logger 实例（可能为 nullptr，未初始化时）
-  Logger* getLogger() const;
+  Logger* GetLogger() const;
 
   /// 动态添加 sink
-  void addSink(const LogSink::LogSinkPtr& log_sink);
+  void AddSink(const LogSink::LogSinkPtr& log_sink);
 
  private:
   LogManager() = default;
   ~LogManager();
 
   /// 注册 coredump 信号处理函数
-  void registerCoredumpHandler();
+  void RegisterCoredumpHandler();
   /// 信号处理回调
-  static void coredumpHandler(int signal_no);
+  static void CoredumpHandler(int signal_no);
 
   std::once_flag m_init_flag;            ///< 保证 init 只执行一次
   std::unique_ptr<Logger> m_logger;      ///< 持有的日志器实例

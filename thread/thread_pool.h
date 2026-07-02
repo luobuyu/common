@@ -25,7 +25,7 @@ class ThreadPool {
 
     Stats() = default;
 
-    // 快照拷贝构造（用于 getStats() 返回值）
+    // 快照拷贝构造（用于 GetStats() 返回值）
     Stats(const Stats& other)
         : total_submitted(
               other.total_submitted.load(std::memory_order_relaxed)),
@@ -108,11 +108,11 @@ class ThreadPool {
 
   void stop();
 
-  const Stats& getStats() const;
-  void setMaxWaitTimeMs(uint64_t max_wait_time_ms);
-  uint64_t getMaxWaitTimeMs() const;
-  std::size_t getQueueSize() const;
-  std::size_t getThreadCount() const;
+  const Stats& GetStats() const;
+  void SetMaxWaitTimeMs(uint64_t max_wait_time_ms);
+  uint64_t GetMaxWaitTimeMs() const;
+  std::size_t GetQueueSize() const;
+  std::size_t GetThreadCount() const;
 
   template <typename Func, typename... Args>
   auto submit(Func&& func, Args&&... args);

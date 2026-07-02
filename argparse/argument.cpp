@@ -21,42 +21,42 @@ Argument::Argument(const ArgumentType& type,
       m_parsed{false},
       m_callback{nullptr} {}
 
-void Argument::setDescription(const std::string& description) {
+void Argument::SetDescription(const std::string& description) {
   m_description = description;
 }
 
-void Argument::setRequired(bool required) { m_required = required; }
+void Argument::SetRequired(bool required) { m_required = required; }
 
-void Argument::setParsed(bool parsed) { m_parsed = parsed; }
+void Argument::SetParsed(bool parsed) { m_parsed = parsed; }
 
-void Argument::setCallback(std::function<void()> callback) {
+void Argument::SetCallback(std::function<void()> callback) {
   m_callback = callback;
 }
 
 Argument& Argument::description(const std::string& description) {
-  setDescription(description);
+  SetDescription(description);
   return *this;
 }
 
 Argument& Argument::required() {
-  setRequired(true);
+  SetRequired(true);
   return *this;
 }
 
 Argument& Argument::callback(std::function<void()> callback) {
-  setCallback(callback);
+  SetCallback(callback);
   return *this;
 }
 
-const std::vector<std::string>& Argument::getNames() const { return m_names; }
+const std::vector<std::string>& Argument::GetNames() const { return m_names; }
 
-const std::string& Argument::getDescription() const { return m_description; }
+const std::string& Argument::GetDescription() const { return m_description; }
 
-ArgumentType Argument::getType() const { return m_type; }
+ArgumentType Argument::GetType() const { return m_type; }
 
-bool Argument::isRequired() const { return m_required; }
+bool Argument::IsRequired() const { return m_required; }
 
-bool Argument::isParsed() const { return m_parsed; }
+bool Argument::IsParsed() const { return m_parsed; }
 
 }  // namespace argparse
 }  // namespace dry

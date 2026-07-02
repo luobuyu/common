@@ -8,7 +8,7 @@ namespace dry {
 namespace thread {
 
 template <typename F, typename... Args>
-auto ShardedThreadPool::submitOrdered(uint64_t key, F&& func, Args&&... args)
+auto ShardedThreadPool::SubmitOrdered(uint64_t key, F&& func, Args&&... args)
     -> std::future<std::invoke_result_t<F, Args...>> {
   using ReturnType = std::invoke_result_t<F, Args...>;
   if (m_stopped.load(std::memory_order_relaxed)) {

@@ -5,7 +5,7 @@
 namespace dry {
 namespace logger {
 
-const std::string &levelToString(LogLevel level) {
+const std::string &LevelToString(LogLevel level) {
   static const std::string debug_str = "DEBUG";
   static const std::string info_str = "INFO";
   static const std::string warn_str = "WARN";
@@ -43,8 +43,8 @@ LogEvent::LogEvent(logger::LogLevel log_level, std::string_view module_name,
       m_log_msg(std::move(log_msg)){};
 
 std::ostream &operator<<(std::ostream &os, const logger::LogEvent &log_event) {
-  os << dry::getTimeWithMs(log_event.m_timestamp, "%Y-%m-%d %H:%M:%S") << " ["
-     << levelToString(log_event.m_log_level) << "] "
+  os << dry::GetTimeWithMs(log_event.m_timestamp, "%Y-%m-%d %H:%M:%S") << " ["
+     << LevelToString(log_event.m_log_level) << "] "
      << "[" << std::to_string(log_event.m_process_id) << ", "
      << log_event.m_thread_id << ", " << log_event.m_coroutine_id << "] "
      << "[" << log_event.m_module_name << "] "

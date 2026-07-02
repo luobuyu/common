@@ -27,7 +27,7 @@ namespace logger {
  *          触发 clang/gcc 的 -Wformat-security 告警。
  * @param str 字符串内容（可能含 % 但无对应参数，按字面量原样输出）
  */
-inline std::string formatString(const char *str) {
+inline std::string FormatString(const char *str) {
   return std::string(str ? str : "");
 }
 
@@ -36,12 +36,12 @@ inline std::string formatString(const char *str) {
  * @details 供 LOG_* 宏使用。需要 fmt 库（FMT_FOUND）。
  *          支持全部 fmt 格式说明：{:.2f} {:>10} {:<5} {:x} 等。
  * @code
- *   formatString("id={}, name={}", 42, "tom");
- *   formatString("price={:.2f}", 3.14159);   // → "price=3.14"
+ *   FormatString("id={}, name={}", 42, "tom");
+ *   FormatString("price={:.2f}", 3.14159);   // → "price=3.14"
  * @endcode
  */
 template <typename... Args>
-std::string formatString(const char *str, Args &&...args) {
+std::string FormatString(const char *str, Args &&...args) {
 #ifdef FMT_FOUND
   return fmt::format(fmt::runtime(str), std::forward<Args>(args)...);
 #else
@@ -67,16 +67,16 @@ class Logger {
   Logger &operator=(const Logger &) = delete;
 
   /// 添加日志输出目标（线程安全）
-  void addSink(const LogSink::LogSinkPtr &log_sink);
+  void AddSink(const LogSink::LogSinkPtr &log_sink);
 
   /// 获取所有 sink
-  const std::vector<LogSink::LogSinkPtr> &getLogSinks() const;
+  const std::vector<LogSink::LogSinkPtr> &GetLogSinks() const;
 
   /// 写入一条日志（子类实现同步/异步逻辑）
   virtual void log(LogEvent log_event) = 0;
 
   /// 退出前的清理操作，子类可重写（如 AsyncLogger 需排空队列）
-  virtual void beforeExit() {}
+  virtual void BeforeExit() {}
 
   virtual ~Logger();
 
@@ -136,20 +136,20 @@ class AsyncLogger : public Logger {
    * @param queue_size 阻塞队列大小
    * @param flush_interval 定时刷盘间隔
    */
-  void startBgThread(int queue_size = 8192,
+  void StartBgThread(int queue_size = 8192,
                      std::chrono::milliseconds flush_interval =
                          std::chrono::milliseconds(3000));
 
   void log(LogEvent log_event) override;
 
   /// 退出前排空异步队列并等待消费线程结束
-  void beforeExit() override;
+  void BeforeExit() override;
 
   ~AsyncLogger();
 
  private:
   /// 后台日志消费循环
-  void bgLogLoop();
+  void BgLogLoop();
 
   std::thread m_async_thread;
   BlockingQueue<LogEvent> m_logs;
