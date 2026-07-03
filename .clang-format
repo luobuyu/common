@@ -1,2 +1,5 @@
 BasedOnStyle: Google
+ColumnLimit: 100
 InsertBraces: true
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortLoopsOnASingleLine: false

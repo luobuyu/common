@@ -1,22 +1,28 @@
-# clang-tidy 配置：命名风格 + 静态检查
-# 用法：clang-tidy -p build rpckit/network/tcp_connection.cpp
-# 或集成到 CMake：set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-config-file=${CMAKE_SOURCE_DIR}/.clang-tidy")
+# clang-tidy 配置
+# 用法: clang-tidy -p build --config-file=.clang-tidy rpckit/network/tcp_connection.cpp
+# 并行: find rpckit common -name "*.cpp" | xargs -P8 -I{} clang-tidy -p build --config-file=.clang-tidy {}
 
 Checks: >
+  -*,
   readability-identifier-naming,
+  readability-braces-around-statements,
   modernize-use-nullptr,
   modernize-use-override,
   modernize-pass-by-value,
+  modernize-use-using,
+  modernize-redundant-void-arg,
   bugprone-use-after-move,
+  cert-err34-c,
+  cert-err52-cpp,
+  performance-for-range-copy,
+  performance-unnecessary-copy-initialization,
   -google-build-using-namespace
 
 CheckOptions:
-  # 函数名：PascalCase（HandleRead, GenerateHeader, CallMethod）
+  # 函数名：PascalCase
   - key: readability-identifier-naming.FunctionCase
     value: CamelCase
-  - key: readability-identifier-naming.FunctionPrefix
-    value: ''
-  # 类/结构/枚举名：PascalCase（TcpConnection, HttpStatus）
+  # 类/结构/枚举：PascalCase
   - key: readability-identifier-naming.ClassCase
     value: CamelCase
   - key: readability-identifier-naming.StructCase
@@ -25,29 +31,24 @@ CheckOptions:
     value: CamelCase
   - key: readability-identifier-naming.EnumConstantCase
     value: CamelCase
-  # 私有成员变量：m_ 前缀 + camelCase（m_code, m_msgCallback）
+  # 私有成员：m_ 前缀 + snake_case
   - key: readability-identifier-naming.PrivateMemberPrefix
     value: 'm_'
   - key: readability-identifier-naming.PrivateMemberCase
     value: lower_case
-  # 公有成员变量：camelCase
+  # 公有成员/局部变量/参数：snake_case
   - key: readability-identifier-naming.PublicMemberCase
     value: lower_case
-  # 局部变量/参数：camelCase 或 lower_case
   - key: readability-identifier-naming.VariableCase
     value: lower_case
   - key: readability-identifier-naming.ParameterCase
     value: lower_case
-  # 命名空间：lower_case（rpckit, network, http）
+  # 命名空间：lower_case
   - key: readability-identifier-naming.NamespaceCase
     value: lower_case
-  # 常量/宏：UPPER_CASE
+  # 宏：UPPER_CASE
   - key: readability-identifier-naming.MacroCase
     value: UPPER_CASE
   # typedef/using：PascalCase
   - key: readability-identifier-naming.TypedefCase
     value: CamelCase
-
-# 豁免：标准库/POSIX 同名函数允许小写
-# clang-tidy 不支持 per-function 豁免，通过 NOLINT 行内注释跳过：
-#   size_t find(std::string_view needle) const { ... }  // NOLINT(readability-identifier-naming)
