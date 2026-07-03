@@ -12,16 +12,16 @@ LogManager& LogManager::GetInstance() {
   return instance;
 }
 
-void LogManager::init(LogLevel log_level, std::string module_name,
+void LogManager::Init(LogLevel log_level, std::string module_name,
                       LoggerType type, LogSink::LogSinkPtr log_sink,
                       LoggerFormat::LoggerFormatPtr log_format, int queue_size,
                       std::chrono::milliseconds flush_interval) {
   std::vector<LogSink::LogSinkPtr> sinks = {std::move(log_sink)};
-  init(log_level, std::move(module_name), type, std::move(sinks),
+  Init(log_level, std::move(module_name), type, std::move(sinks),
        std::move(log_format), queue_size, flush_interval);
 }
 
-void LogManager::init(LogLevel log_level, std::string module_name,
+void LogManager::Init(LogLevel log_level, std::string module_name,
                       LoggerType type,
                       std::vector<LogSink::LogSinkPtr> log_sinks,
                       LoggerFormat::LoggerFormatPtr log_format, int queue_size,
@@ -83,8 +83,8 @@ void LogManager::CoredumpHandler(int signal_no) {
   // 尽量 flush 已有日志到磁盘
   auto* logger = LogManager::GetInstance().GetLogger();
   if (logger != nullptr) {
-    for (auto& sink : logger->GetLogSinks()) {
-      sink->flush();
+    for (auto& Sink : logger->GetLogSinks()) {
+      Sink->flush();
     }
   }
   signal(signal_no, SIG_DFL);

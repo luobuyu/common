@@ -16,7 +16,7 @@ class LogSink {
   typedef std::shared_ptr<LogSink> LogSinkPtr;
   LogSink() = default;
   virtual ~LogSink() = default;
-  virtual void sink(const logger::LogEvent &log_event,
+  virtual void Sink(const logger::LogEvent &log_event,
                     LoggerFormat::LoggerFormatPtr &log_format) = 0;
   virtual void flush() = 0;
 };
@@ -24,7 +24,7 @@ class LogSink {
 // 按照日期和大小分文件
 class FileSink : public LogSink {
  public:
-  void sink(const logger::LogEvent &log_event,
+  void Sink(const logger::LogEvent &log_event,
             LoggerFormat::LoggerFormatPtr &log_format) override;
   void OpenNewFile();
   void flush() override;
@@ -44,7 +44,7 @@ class FileSink : public LogSink {
 
 class StdoutSink : public LogSink {
  public:
-  void sink(const logger::LogEvent &log_event,
+  void Sink(const logger::LogEvent &log_event,
             LoggerFormat::LoggerFormatPtr &log_format) override;
   void flush() override;
 

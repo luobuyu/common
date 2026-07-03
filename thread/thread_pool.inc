@@ -6,7 +6,7 @@
 namespace dry {
 namespace thread {
 template <typename Func, typename... Args>
-auto ThreadPool::submit(Func&& func, Args&&... args) {
+auto ThreadPool::Submit(Func&& func, Args&&... args) {
   using ReturnType = std::invoke_result_t<Func, Args...>;
 
   if (m_stop.load(std::memory_order_relaxed)) {

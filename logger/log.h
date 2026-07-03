@@ -58,7 +58,7 @@ std::string FormatString(const char *str, Args &&...args) {
 
 /**
  * @brief Logger 抽象基类
- * @details 只定义日志写入接口和 sink/format 管理，不持有任何全局状态。
+ * @details 只定义日志写入接口和 Sink/format 管理，不持有任何全局状态。
  *          全局状态（log_level、module_name 等）由 LogManager 管理。
  */
 class Logger {
@@ -69,11 +69,11 @@ class Logger {
   /// 添加日志输出目标（线程安全）
   void AddSink(const LogSink::LogSinkPtr &log_sink);
 
-  /// 获取所有 sink
+  /// 获取所有 Sink
   const std::vector<LogSink::LogSinkPtr> &GetLogSinks() const;
 
   /// 写入一条日志（子类实现同步/异步逻辑）
-  virtual void log(LogEvent log_event) = 0;
+  virtual void Log(LogEvent log_event) = 0;
 
   /// 退出前的清理操作，子类可重写（如 AsyncLogger 需排空队列）
   virtual void BeforeExit() {}
@@ -105,7 +105,7 @@ class SyncLogger : public Logger {
   SyncLogger(std::vector<LogSink::LogSinkPtr> sinks,
              LoggerFormat::LoggerFormatPtr fmt);
 
-  void log(LogEvent log_event) override;
+  void Log(LogEvent log_event) override;
   ~SyncLogger() = default;
 
  private:
@@ -140,7 +140,7 @@ class AsyncLogger : public Logger {
                      std::chrono::milliseconds flush_interval =
                          std::chrono::milliseconds(3000));
 
-  void log(LogEvent log_event) override;
+  void Log(LogEvent log_event) override;
 
   /// 退出前排空异步队列并等待消费线程结束
   void BeforeExit() override;

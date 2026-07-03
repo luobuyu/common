@@ -11,17 +11,17 @@ ShardedThreadPool::ShardedThreadPool(size_t num_shards) {
 
 ShardedThreadPool::~ShardedThreadPool() {
   if (!m_stopped.load(std::memory_order_relaxed)) {
-    stop();
+    Stop();
   }
 }
 
-/// 停止所有 worker（等待队列中的任务执行完毕）
-void ShardedThreadPool::stop() {
+/// 停止所有 Worker（等待队列中的任务执行完毕）
+void ShardedThreadPool::Stop() {
   if (m_stopped.exchange(true, std::memory_order_acq_rel)) {
     return;
   }
   for (auto& shard : m_shards) {
-    shard->stop();
+    shard->Stop();
   }
 }
 

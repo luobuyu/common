@@ -40,7 +40,7 @@ void InitLogger(config::Config& conf);
  * @param type 日志器类型，默认异步
  */
 void InitLogger(const std::string& module_name, int level = 2,
-                const std::string& log_path = "../log",
+                const std::string& log_path = "../Log",
                 bool enable_stdout = true,
                 logger::LogManager::LoggerType type =
                     logger::LogManager::LoggerType::ASYNC);
@@ -64,7 +64,7 @@ void OpenLog(config::Config& conf);
   do {                                                                   \
     auto& _log_mgr = dry::logger::LogManager::GetInstance();             \
     if (_log_mgr.IsOpen() && _log_mgr.ShouldLog(level)) {                \
-      _log_mgr.GetLogger()->log(dry::logger::LogEvent(                   \
+      _log_mgr.GetLogger()->Log(dry::logger::LogEvent(                   \
           level, _log_mgr.GetModuleName(), __FILE__, __func__, __LINE__, \
           dry::logger::FormatString(fmt, ##__VA_ARGS__)));               \
     }                                                                    \

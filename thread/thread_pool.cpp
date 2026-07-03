@@ -6,22 +6,22 @@ namespace thread {
 ThreadPool::ThreadPool(size_t num_threads) {
   m_workers.reserve(num_threads);
   for (size_t i = 0; i < num_threads; ++i) {
-    m_workers.emplace_back([this] { worker(); });
+    m_workers.emplace_back([this] { Worker(); });
   }
 }
 
 ThreadPool::~ThreadPool() {
   if (!m_stop) {
-    stop();
+    Stop();
   }
 }
 
-void ThreadPool::stop() {
+void ThreadPool::Stop() {
   m_stop.store(true);
   m_condition.notify_all();
-  for (auto& worker : m_workers) {
-    if (worker.joinable()) {
-      worker.join();
+  for (auto& Worker : m_workers) {
+    if (Worker.joinable()) {
+      Worker.join();
     }
   }
 }
@@ -41,7 +41,7 @@ std::size_t ThreadPool::GetQueueSize() const {
 
 std::size_t ThreadPool::GetThreadCount() const { return m_workers.size(); }
 
-void ThreadPool::worker() {
+void ThreadPool::Worker() {
   while (true) {
     TaskWrapper task;
     {

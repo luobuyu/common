@@ -55,14 +55,14 @@ inline std::string GetTime(const std::chrono::system_clock::time_point& t,
 // 带毫秒的时间格式化，在 GetTime 结果后追加 .毫秒
 inline std::string GetTimeWithMs(const std::chrono::system_clock::time_point& t,
                                  const std::string& format) {
-  std::string result = GetTime(t, format);
+  std::string Result = GetTime(t, format);
   auto epoch = t.time_since_epoch();
   auto millis =
       std::chrono::duration_cast<std::chrono::milliseconds>(epoch).count() %
       1000;
   char ms_buf[8];
   snprintf(ms_buf, sizeof(ms_buf), ".%03d", static_cast<int>(millis));
-  return result + ms_buf;
+  return Result + ms_buf;
 }
 
 class Timer {

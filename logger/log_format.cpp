@@ -21,7 +21,7 @@ void logger::LoggerFormat::ParserPattern() {
             size_t index1 = i + 2;
             size_t index2 = m_pattern.find_first_of('}', i + 2);
             if (index2 == m_pattern.npos) {
-              std::cout << "log format error" << std::endl;
+              std::cout << "Log format Error" << std::endl;
               return;
             }
             std::string val = m_pattern.substr(index1 + 1, index2 - 1 - index1);

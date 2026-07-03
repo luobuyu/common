@@ -21,8 +21,8 @@ const std::vector<LogSink::LogSinkPtr> &Logger::GetLogSinks() const {
 }
 
 Logger::~Logger() {
-  for (auto &sink : m_log_sinks) {
-    sink->flush();
+  for (auto &Sink : m_log_sinks) {
+    Sink->flush();
   }
 }
 
@@ -34,10 +34,10 @@ SyncLogger::SyncLogger(std::vector<LogSink::LogSinkPtr> sinks,
                        LoggerFormat::LoggerFormatPtr fmt)
     : Logger(std::move(sinks), std::move(fmt)) {}
 
-void SyncLogger::log(LogEvent log_event) {
+void SyncLogger::Log(LogEvent log_event) {
   std::lock_guard<std::mutex> lock(m_mtx);
-  for (auto &sink : m_log_sinks) {
-    sink->sink(log_event, m_log_format);
+  for (auto &Sink : m_log_sinks) {
+    Sink->Sink(log_event, m_log_format);
   }
 }
 
@@ -60,13 +60,13 @@ void AsyncLogger::StartBgThread(int queue_size,
 }
 
 void AsyncLogger::BeforeExit() {
-  m_logs.stop();
+  m_logs.Stop();
   if (m_async_thread.joinable()) m_async_thread.join();
 }
 
 AsyncLogger::~AsyncLogger() { BeforeExit(); }
 
-void AsyncLogger::log(LogEvent log_event) { m_logs.push(std::move(log_event)); }
+void AsyncLogger::Log(LogEvent log_event) { m_logs.push(std::move(log_event)); }
 
 void AsyncLogger::BgLogLoop() {
   static constexpr std::size_t kBatchSize = 64;  // 每批最多弹出条数
@@ -79,18 +79,18 @@ void AsyncLogger::BgLogLoop() {
         m_logs.BatchPopWithTimeout(batch, kBatchSize, m_flush_interval);
 
     if (n > 0) {
-      // 批量写入所有 sink
+      // 批量写入所有 Sink
       for (auto &log_event : batch) {
         if (!log_event.m_log_msg.empty()) {
-          for (auto &sink : m_log_sinks) {
-            sink->sink(log_event, m_log_format);
+          for (auto &Sink : m_log_sinks) {
+            Sink->Sink(log_event, m_log_format);
           }
         }
       }
     } else {
-      // 超时或 stop+空 → flush 一次确保已有日志落盘
-      for (auto &sink : m_log_sinks) {
-        sink->flush();
+      // 超时或 Stop+空 → flush 一次确保已有日志落盘
+      for (auto &Sink : m_log_sinks) {
+        Sink->flush();
       }
       if (m_logs.IsStopping()) {
         break;

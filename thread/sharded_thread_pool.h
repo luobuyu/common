@@ -35,11 +35,11 @@ class ShardedThreadPool {
   /// @param task 任务
   /// @note RpcServer 使用此接口，不同请求可并发处理
   template <typename F, typename... Args>
-  auto submit(F&& func, Args&&... args)
+  auto Submit(F&& func, Args&&... args)
       -> std::future<std::invoke_result_t<F, Args...>>;
 
-  /// 停止所有 worker（等待队列中的任务执行完毕）
-  void stop();
+  /// 停止所有 Worker（等待队列中的任务执行完毕）
+  void Stop();
 
   /// 获取 shard 数量
   size_t ShardCount() const { return m_shards.size(); }
@@ -61,7 +61,7 @@ class ShardedThreadPool {
  private:
   std::vector<std::unique_ptr<ThreadPool>> m_shards;  // 分片线程池
   std::atomic<size_t> m_next{0};                      // 轮询计数器
-  std::atomic<bool> m_stopped{false};                 // 防止重复 stop
+  std::atomic<bool> m_stopped{false};                 // 防止重复 Stop
 };
 
 }  // namespace thread

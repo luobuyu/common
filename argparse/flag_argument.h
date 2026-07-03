@@ -12,9 +12,9 @@ class FlagArgument : public Argument {
   // 构造函数（不带 required 和 callback 参数，避免隐式转换问题）
   // 使用链式调用 .required() 和 .callback() 来设置
   FlagArgument(const std::vector<std::string>& names,
-               const std::string& description = "");
+               const std::string& Description = "");
   FlagArgument(const std::vector<std::string>& names, bool& target,
-               const std::string& description = "");
+               const std::string& Description = "");
 
   bool GetFlag() const;
   void SetFlag(bool value);
@@ -25,25 +25,25 @@ class FlagArgument : public Argument {
   bool HasDefaultValue() const override;
 
   // 链式调用
-  FlagArgument& description(const std::string& description);
-  FlagArgument& required();
+  FlagArgument& Description(const std::string& Description);
+  FlagArgument& Required();
   FlagArgument& DefaultValue(bool value);
-  FlagArgument& callback(std::function<void()> callback);
+  FlagArgument& Callback(std::function<void()> Callback);
   FlagArgument& BindTo(bool& target);
 
   // 验证器（对布尔值进行验证）
-  FlagArgument& validator(std::function<bool(bool)> validator);
+  FlagArgument& Validator(std::function<bool(bool)> Validator);
   // 重写基类验证器接口
   bool IsValid() const override;
-  void validate() const override;
+  void Validate() const override;
 
   // 重写多态方法
   // FlagArgument 不需要额外参数，忽略 args 和 current_index
-  size_t parse(const std::vector<std::string>& args,
+  size_t Parse(const std::vector<std::string>& args,
                size_t current_index = 0) override;
 
   // 判断命令行参数是否匹配此标志参数
-  bool matches(const std::string& arg) const override;
+  bool Matches(const std::string& arg) const override;
 
   // 验证 flag 参数名称（必须以 '-' 开头）
   void ValidateNames() const override;

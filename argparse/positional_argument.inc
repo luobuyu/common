@@ -10,8 +10,8 @@ namespace argparse {
 template <typename T>
 PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
                                           std::vector<T>& target,
-                                          const std::string& description)
-    : MultiArgument<T>(ArgumentType::Positional, names, description) {
+                                          const std::string& Description)
+    : MultiArgument<T>(ArgumentType::Positional, names, Description) {
   this->BindTo(target);
 }
 
@@ -19,20 +19,20 @@ PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
 template <typename T>
 PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
                                           T& target,
-                                          const std::string& description)
-    : MultiArgument<T>(ArgumentType::Positional, names, description) {
+                                          const std::string& Description)
+    : MultiArgument<T>(ArgumentType::Positional, names, Description) {
   this->BindTo(target);
 }
 
 // 构造函数3: 不绑定
 template <typename T>
 PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
-                                          const std::string& description)
-    : MultiArgument<T>(ArgumentType::Positional, names, description) {}
+                                          const std::string& Description)
+    : MultiArgument<T>(ArgumentType::Positional, names, Description) {}
 
 // 重写解析方法
 template <typename T>
-size_t PositionalArgument<T>::parse(const std::vector<std::string>& args,
+size_t PositionalArgument<T>::Parse(const std::vector<std::string>& args,
                                     size_t current_index) {
   size_t consumed = 0;
   int max_count = this->GetExpectedMax();
@@ -52,7 +52,7 @@ size_t PositionalArgument<T>::parse(const std::vector<std::string>& args,
       break;
     }
     // 遇到选项参数，停止消耗
-    if (!matches(arg)) {
+    if (!Matches(arg)) {
       break;
     }
     this->AddValue(dry::StrTo<T>(arg));
@@ -76,7 +76,7 @@ size_t PositionalArgument<T>::parse(const std::vector<std::string>& args,
   }
 
   // 自动调用验证器
-  this->validate();
+  this->Validate();
 
   // 执行用户回调 (如果设置了)
   if (this->m_callback) {
@@ -89,7 +89,7 @@ size_t PositionalArgument<T>::parse(const std::vector<std::string>& args,
 
 // 重写匹配方法
 template <typename T>
-bool PositionalArgument<T>::matches(const std::string& arg) const {
+bool PositionalArgument<T>::Matches(const std::string& arg) const {
   // 位置参数匹配任何不以 '-' 开头的参数
   // 位置参数按顺序识别,不是按名称匹配
   return !arg.empty() && arg[0] != '-';
@@ -111,7 +111,7 @@ void PositionalArgument<T>::ValidateNames() const {
     }
     if (name[0] == '-') {
       throw std::invalid_argument(
-          "Positional argument name cannot start with '-': " + name);
+          "Positional argument name cannot Start with '-': " + name);
     }
   }
 }

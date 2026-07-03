@@ -10,7 +10,7 @@ CircleQueue<T>::CircleQueue(int max_size)
     : m_max_size(max_size + 1), m_vec(m_max_size) {}
 
 template <class T>
-bool CircleQueue<T>::full() const {
+bool CircleQueue<T>::Full() const {
   return (m_tail + 1) % m_max_size == m_head;
 }
 
@@ -70,7 +70,7 @@ void BlockingQueue<T>::push(T &&item) {
   {
     std::unique_lock<std::mutex> lock(m_mtx);
     m_cond_producer.wait(lock,
-                         [&]() { return !m_queue.full() || m_is_stopping; });
+                         [&]() { return !m_queue.Full() || m_is_stopping; });
     if (m_is_stopping) return;  // 停止后不再接受新数据
     m_queue.push(std::move(item));
   }
@@ -81,7 +81,7 @@ void BlockingQueue<T>::push(const T &item) {
   {
     std::unique_lock<std::mutex> lock(m_mtx);
     m_cond_producer.wait(lock,
-                         [&]() { return !m_queue.full() || m_is_stopping; });
+                         [&]() { return !m_queue.Full() || m_is_stopping; });
     if (m_is_stopping) return;  // 停止后不再接受新数据
     m_queue.push(item);
   }
@@ -114,7 +114,7 @@ bool BlockingQueue<T>::PopWithTimeout(T &item,
   bool got = m_cond_comsumer.wait_for(
       lock, timeout, [&]() { return !m_queue.empty() || m_is_stopping; });
   // got == false: 超时且谓词仍不满足 → 返回 false
-  // m_is_stopping && m_queue.empty(): stop 且队列空 → 返回 false
+  // m_is_stopping && m_queue.empty(): Stop 且队列空 → 返回 false
   if (!got || (m_is_stopping && m_queue.empty())) return false;
   item = std::move(m_queue.front());
   m_queue.PopFront();
@@ -139,7 +139,7 @@ bool BlockingQueue<T>::empty() {
   return m_queue.empty();
 }
 template <class T>
-void BlockingQueue<T>::stop() {
+void BlockingQueue<T>::Stop() {
   m_is_stopping.store(true);
   m_cond_comsumer.notify_all();
   m_cond_producer.notify_all();  // 唤醒可能阻塞在 push 的生产者
@@ -153,7 +153,7 @@ std::size_t BlockingQueue<T>::BatchPopWithTimeout(
     std::vector<T> &out, std::size_t max_count,
     std::chrono::milliseconds timeout) {
   std::unique_lock<std::mutex> lock(m_mtx);
-  // 等第一条到来（或超时/stop）
+  // 等第一条到来（或超时/Stop）
   bool got = m_cond_comsumer.wait_for(
       lock, timeout, [&]() { return !m_queue.empty() || m_is_stopping; });
   if (!got || (m_is_stopping && m_queue.empty())) return 0;

@@ -19,21 +19,21 @@ class Argument {
   // 构造函数（不带 required 和 callback 参数，避免隐式转换问题）
   // 使用链式调用 .required() 和 .callback() 来设置
   Argument(const std::vector<std::string>& names,
-           const std::string& description);
+           const std::string& Description);
   Argument(const ArgumentType& type, const std::vector<std::string>& names,
-           const std::string& description);
+           const std::string& Description);
   virtual ~Argument() = default;
 
   // setter
-  void SetDescription(const std::string& description);
-  void SetRequired(bool required);
+  void SetDescription(const std::string& Description);
+  void SetRequired(bool Required);
   void SetParsed(bool parsed);
-  void SetCallback(std::function<void()> callback);
+  void SetCallback(std::function<void()> Callback);
 
   // 链式调用
-  Argument& description(const std::string& description);
-  Argument& required();
-  Argument& callback(std::function<void()> callback);
+  Argument& Description(const std::string& Description);
+  Argument& Required();
+  Argument& Callback(std::function<void()> Callback);
 
   const std::vector<std::string>& GetNames() const;
   const std::string& GetDescription() const;
@@ -49,7 +49,7 @@ class Argument {
   //   中（精确匹配）
   //   - PositionalArgument: 检查 arg 是否不以 '-'
   //   开头（任何非选项都可能是位置参数）
-  virtual bool matches(const std::string& arg) const = 0;
+  virtual bool Matches(const std::string& arg) const = 0;
 
   // 解析命令行参数
   // 参数:
@@ -59,7 +59,7 @@ class Argument {
   //   - FlagArgument: 返回 1（消耗标志参数本身）
   //   - OptionArgument: 返回 1 + 消耗的值的个数
   //   - PositionalArgument: 返回实际消耗的参数数量
-  virtual size_t parse(const std::vector<std::string>& args,
+  virtual size_t Parse(const std::vector<std::string>& args,
                        size_t current_index) = 0;
 
   // 检查是否设置了默认值（子类应重写此方法）
@@ -81,7 +81,7 @@ class Argument {
 
   // 验证参数值，如果无效则抛出异常
   // 默认实现：调用 IsValid()，失败时抛出 std::invalid_argument
-  virtual void validate() const = 0;
+  virtual void Validate() const = 0;
 
  protected:
   ArgumentType m_type;               // 参数类型

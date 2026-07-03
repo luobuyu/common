@@ -64,16 +64,16 @@ T StrToOr(std::string_view str, T default_value = T{}, int base = 10) noexcept {
 inline std::vector<std::string> StringSplit(const std::string &s,
                                             const std::string &delim) {
   std::vector<std::string> ret;
-  size_t start = 0, end = 0;
+  size_t Start = 0, end = 0;
   size_t len = s.length();
   // 逐个找到子串并分割
-  while ((end = s.find(delim, start)) != std::string::npos) {
-    std::string substr = s.substr(start, end - start);
+  while ((end = s.find(delim, Start)) != std::string::npos) {
+    std::string substr = s.substr(Start, end - Start);
     if (!substr.empty()) ret.emplace_back(substr);  // 提取子串
-    start = end + delim.length();                   // 跳过分隔符
+    Start = end + delim.length();                   // 跳过分隔符
   }
   // 处理最后一个部分
-  std::string substr = s.substr(start);
+  std::string substr = s.substr(Start);
   if (!substr.empty()) ret.emplace_back(substr);
   return ret;
 }
@@ -92,36 +92,36 @@ inline std::vector<std::string_view> StringSplitView(std::string_view s,
     if (!s.empty()) ret.emplace_back(s);
     return ret;
   }
-  size_t start = 0, end = 0;
-  while ((end = s.find(delim, start)) != std::string_view::npos) {
-    if (end > start) ret.emplace_back(s.substr(start, end - start));
-    start = end + delim.size();
+  size_t Start = 0, end = 0;
+  while ((end = s.find(delim, Start)) != std::string_view::npos) {
+    if (end > Start) ret.emplace_back(s.substr(Start, end - Start));
+    Start = end + delim.size();
   }
-  if (start < s.size()) ret.emplace_back(s.substr(start));
+  if (Start < s.size()) ret.emplace_back(s.substr(Start));
   return ret;
 }
 
 inline std::vector<std::string_view> StringSplitView(std::string_view s,
                                                      char delim = ' ') {
   std::vector<std::string_view> ret;
-  size_t start = 0, end = 0;
-  while ((end = s.find(delim, start)) != std::string_view::npos) {
-    if (end > start) ret.emplace_back(s.substr(start, end - start));
-    start = end + 1;
+  size_t Start = 0, end = 0;
+  while ((end = s.find(delim, Start)) != std::string_view::npos) {
+    if (end > Start) ret.emplace_back(s.substr(Start, end - Start));
+    Start = end + 1;
   }
-  if (start < s.size()) ret.emplace_back(s.substr(start));
+  if (Start < s.size()) ret.emplace_back(s.substr(Start));
   return ret;
 }
 
 // join - 将字符串数组用分隔符拼接为一个字符串（StringSplit 的逆操作）
 inline std::string StringJoin(const std::vector<std::string> &parts,
                               const std::string &delim) {
-  std::string result;
+  std::string Result;
   for (size_t i = 0; i < parts.size(); i++) {
-    if (i > 0) result += delim;
-    result += parts[i];
+    if (i > 0) Result += delim;
+    Result += parts[i];
   }
-  return result;
+  return Result;
 }
 
 // TrimView：去除前后 SP/HTAB，返回 string_view（零拷贝）
@@ -138,26 +138,26 @@ inline std::string_view TrimView(std::string_view sv) {
 }
 
 // trim：去除前后 SP/HTAB，返回 std::string（安全拷贝，可对临时对象使用）
-inline std::string trim(std::string_view sv) {
+inline std::string Trim(std::string_view sv) {
   return std::string(TrimView(sv));
 }
 
 // 字符串转小写
 inline std::string ToLower(std::string_view str) {
-  std::string result(str);
-  for (auto &c : result) {
+  std::string Result(str);
+  for (auto &c : Result) {
     c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
   }
-  return result;
+  return Result;
 }
 
 // 字符串转大写
 inline std::string ToUpper(std::string_view str) {
-  std::string result(str);
-  for (auto &c : result) {
+  std::string Result(str);
+  for (auto &c : Result) {
     c = static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
   }
-  return result;
+  return Result;
 }
 
 // 大小写不敏感比较

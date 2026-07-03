@@ -6,9 +6,9 @@ namespace dry {
 namespace argparse {
 
 ArgumentParser::ArgumentParser(const std::string& program_name,
-                               const std::string& description, bool add_help)
+                               const std::string& Description, bool add_help)
     : m_program_name(program_name),
-      m_description(description),
+      m_description(Description),
       m_add_help(add_help) {}
 
 Argument& ArgumentParser::AddArgument(std::unique_ptr<Argument> argument) {
@@ -20,17 +20,17 @@ Argument& ArgumentParser::AddArgument(std::unique_ptr<Argument> argument) {
 
 FlagArgument& ArgumentParser::AddFlagArgument(
     const std::vector<std::string>& names, bool& target,
-    const std::string& description, bool required,
-    std::function<void()> callback) {
+    const std::string& Description, bool Required,
+    std::function<void()> Callback) {
   // 检查名称冲突
   CheckNameConflicts(names);
   // 创建参数对象（使用链式调用设置 required 和 callback）
-  auto arg = std::make_unique<FlagArgument>(names, target, description);
-  if (required) {
-    arg->required();
+  auto arg = std::make_unique<FlagArgument>(names, target, Description);
+  if (Required) {
+    arg->Required();
   }
-  if (callback) {
-    arg->callback(callback);
+  if (Callback) {
+    arg->Callback(Callback);
   }
   FlagArgument& ref = *arg;
   AddArgument(std::move(arg));
@@ -38,17 +38,17 @@ FlagArgument& ArgumentParser::AddFlagArgument(
 }
 
 FlagArgument& ArgumentParser::AddFlagArgument(
-    const std::vector<std::string>& names, const std::string& description,
-    bool required, std::function<void()> callback) {
+    const std::vector<std::string>& names, const std::string& Description,
+    bool Required, std::function<void()> Callback) {
   // 检查名称冲突
   CheckNameConflicts(names);
   // 创建参数对象（使用链式调用设置 required 和 callback）
-  auto arg = std::make_unique<FlagArgument>(names, description);
-  if (required) {
-    arg->required();
+  auto arg = std::make_unique<FlagArgument>(names, Description);
+  if (Required) {
+    arg->Required();
   }
-  if (callback) {
-    arg->callback(callback);
+  if (Callback) {
+    arg->Callback(Callback);
   }
   FlagArgument& ref = *arg;
   AddArgument(std::move(arg));
@@ -56,7 +56,7 @@ FlagArgument& ArgumentParser::AddFlagArgument(
 }
 
 ArgumentParser& ArgumentParser::AddSubcommand(const std::string& name,
-                                              const std::string& description) {
+                                              const std::string& Description) {
   // 1. 检查子命令名称不能为空（严重错误）
   if (name.empty()) {
     throw std::invalid_argument("Subcommand name cannot be empty");
@@ -64,7 +64,7 @@ ArgumentParser& ArgumentParser::AddSubcommand(const std::string& name,
 
   // 2. 子命令名称不能以 - 开头
   if (name[0] == '-') {
-    throw std::invalid_argument("Subcommand name cannot start with '-': " +
+    throw std::invalid_argument("Subcommand name cannot Start with '-': " +
                                 name);
   }
 
@@ -82,17 +82,17 @@ ArgumentParser& ArgumentParser::AddSubcommand(const std::string& name,
     }
   }
 
-  auto subcommand = std::make_unique<ArgumentParser>(name, description);
+  auto subcommand = std::make_unique<ArgumentParser>(name, Description);
   ArgumentParser& ref = *subcommand;
   m_subcommands[name] = std::move(subcommand);
   return ref;
 }
 
-bool ArgumentParser::parse(int argc, char** argv) {
-  return parse(std::vector<std::string>{argv + 1, argv + argc});
+bool ArgumentParser::Parse(int argc, char** argv) {
+  return Parse(std::vector<std::string>{argv + 1, argv + argc});
 }
 
-bool ArgumentParser::parse(const std::vector<std::string>& args) {
+bool ArgumentParser::Parse(const std::vector<std::string>& args) {
   // 预扫描：检查是否有 --help 或 -h
   // 只有当启用自动 help 且用户没有自定义 -h/--help 时才触发
   if (m_add_help && !HasArgument("-h") && !HasArgument("--help")) {
@@ -108,7 +108,7 @@ bool ArgumentParser::parse(const std::vector<std::string>& args) {
   if (!args.empty()) {
     auto it = m_subcommands.find(args[0]);
     if (it != m_subcommands.end()) {
-      return it->second->parse(
+      return it->second->Parse(
           std::vector<std::string>(args.begin() + 1, args.end()));
     }
   }
@@ -135,9 +135,9 @@ bool ArgumentParser::parse(const std::vector<std::string>& args) {
         }
         continue;
       }
-      if (argument->matches(arg)) {
-        // 调用子类的多态 parse 方法，返回值是消耗的参数总数
-        size_t consumed = argument->parse(args, i);
+      if (argument->Matches(arg)) {
+        // 调用子类的多态 Parse 方法，返回值是消耗的参数总数
+        size_t consumed = argument->Parse(args, i);
         i += consumed;  // 直接跳过消耗的参数数量
         // 找到匹配的参数，标记为已解析
         argument->SetParsed(true);
@@ -147,7 +147,7 @@ bool ArgumentParser::parse(const std::vector<std::string>& args) {
     }
     if (!matched) {
       if (first_not_parsed_pos != nullptr) {
-        size_t consumed = first_not_parsed_pos->parse(args, i);
+        size_t consumed = first_not_parsed_pos->Parse(args, i);
         i += consumed;  // 位置参数直接跳过消耗的参数数量
         // 找到匹配的参数，标记为已解析
         first_not_parsed_pos->SetParsed(true);
@@ -267,7 +267,7 @@ void ArgumentParser::PrintHelp() const {
       }
       // 显示是否必需
       if (arg->IsRequired()) {
-        std::cout << " [required]";
+        std::cout << " [Required]";
       }
       std::cout << "\n";
     }
@@ -307,7 +307,7 @@ void ArgumentParser::PrintHelp() const {
 
     // 显示是否必需
     if (arg->IsRequired()) {
-      std::cout << " [required]";
+      std::cout << " [Required]";
     }
 
     std::cout << "\n";

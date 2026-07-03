@@ -38,7 +38,7 @@ class BatchTaskPool final {
    * 支持链式调用：batch.spawn(...).spawn(...).spawn(...)
    */
   template <typename Func, typename... Args>
-  BatchTaskPool& spawn(Func&& func, Args&&... args);
+  BatchTaskPool& Spawn(Func&& func, Args&&... args);
 
   /**
    * 等待所有任务完成

@@ -21,14 +21,14 @@ void InitLogger(config::Config& conf) {
   // 构建 Sink 列表
   std::vector<logger::LogSink::LogSinkPtr> log_sinks;
   if (conf.GetInt("logger", "file_sink", 1)) {
-    std::string log_path = conf.GetString("logger", "log_path", "../log");
+    std::string log_path = conf.GetString("logger", "log_path", "../Log");
     log_sinks.emplace_back(std::make_shared<logger::FileSink>(log_path));
   }
   if (conf.GetInt("logger", "std_sink", 1)) {
     log_sinks.emplace_back(std::make_shared<logger::StdoutSink>());
   }
 
-  // 构建 Format
+  // 构建 format
   auto logger_format = std::make_shared<logger::LoggerFormat>();
   std::string pattern = conf.GetString("logger", "log_format", "");
   if (!pattern.empty()) {
@@ -40,7 +40,7 @@ void InitLogger(config::Config& conf) {
                          ? logger::LogManager::LoggerType::ASYNC
                          : logger::LogManager::LoggerType::SYNC;
 
-  mgr.init(log_level, module_name, logger_type, log_sinks, logger_format);
+  mgr.Init(log_level, module_name, logger_type, log_sinks, logger_format);
 }
 
 void InitLogger(const std::string& module_name, int level,
@@ -55,7 +55,7 @@ void InitLogger(const std::string& module_name, int level,
     log_sinks.emplace_back(std::make_shared<logger::StdoutSink>());
   }
 
-  mgr.init(log_level, module_name, type, log_sinks);
+  mgr.Init(log_level, module_name, type, log_sinks);
 }
 
 void OpenLog(config::Config& conf) { InitLogger(conf); }

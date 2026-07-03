@@ -34,7 +34,7 @@ class LogManager {
   LogManager& operator=(const LogManager&) = delete;
 
   /**
-   * @brief 初始化日志系统（单 sink 版本）
+   * @brief 初始化日志系统（单 Sink 版本）
    * @param log_level 日志级别
    * @param module_name 模块名称
    * @param type 日志器类型（同步/异步）
@@ -43,7 +43,7 @@ class LogManager {
    * @param queue_size 异步队列大小（仅异步模式有效）
    * @param flush_interval 异步刷盘间隔（仅异步模式有效）
    */
-  void init(LogLevel log_level, std::string module_name, LoggerType type,
+  void Init(LogLevel log_level, std::string module_name, LoggerType type,
             LogSink::LogSinkPtr log_sink,
             LoggerFormat::LoggerFormatPtr log_format =
                 std::make_shared<LoggerFormat>(),
@@ -52,7 +52,7 @@ class LogManager {
                 std::chrono::milliseconds(3000));
 
   /**
-   * @brief 初始化日志系统（多 sink 版本）
+   * @brief 初始化日志系统（多 Sink 版本）
    * @param log_level 日志级别
    * @param module_name 模块名称
    * @param type 日志器类型（同步/异步）
@@ -61,7 +61,7 @@ class LogManager {
    * @param queue_size 异步队列大小（仅异步模式有效）
    * @param flush_interval 异步刷盘间隔（仅异步模式有效）
    */
-  void init(LogLevel log_level, std::string module_name, LoggerType type,
+  void Init(LogLevel log_level, std::string module_name, LoggerType type,
             std::vector<LogSink::LogSinkPtr> log_sinks,
             LoggerFormat::LoggerFormatPtr log_format =
                 std::make_shared<LoggerFormat>(),
@@ -81,7 +81,7 @@ class LogManager {
   /// 获取当前 Logger 实例（可能为 nullptr，未初始化时）
   Logger* GetLogger() const;
 
-  /// 动态添加 sink
+  /// 动态添加 Sink
   void AddSink(const LogSink::LogSinkPtr& log_sink);
 
  private:
@@ -93,7 +93,7 @@ class LogManager {
   /// 信号处理回调
   static void CoredumpHandler(int signal_no);
 
-  std::once_flag m_init_flag;            ///< 保证 init 只执行一次
+  std::once_flag m_init_flag;            ///< 保证 Init 只执行一次
   std::unique_ptr<Logger> m_logger;      ///< 持有的日志器实例
   LogLevel m_log_level = LogLevel::OFF;  ///< 全局日志级别
   std::string m_module_name;             ///< 模块名称

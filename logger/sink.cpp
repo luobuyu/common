@@ -10,7 +10,7 @@ logger::FileSink::FileSink(std::string file_path, uint32_t max_size,
       m_max_size(max_size),
       m_rotate_interval(rotate_interval),
       m_next_start(std::chrono::system_clock::now() + m_rotate_interval) {}
-void FileSink::sink(const logger::LogEvent &log_event,
+void FileSink::Sink(const logger::LogEvent &log_event,
                     LoggerFormat::LoggerFormatPtr &log_format) {
   bool create_new_file = !m_ofs.is_open();
   // 如果超过了日期
@@ -41,7 +41,7 @@ void FileSink::OpenNewFile() {
     m_ofs.close();
   }
   std::string date = dry::GetTime(m_next_start - m_rotate_interval, "%Y%m%d%H");
-  std::filesystem::path file_name = date + "-" + std::to_string(m_no) + ".log";
+  std::filesystem::path file_name = date + "-" + std::to_string(m_no) + ".Log";
   std::filesystem::path file_full_name = m_file_path / file_name;
   // 确保日志目录存在
   std::filesystem::create_directories(m_file_path);
@@ -54,7 +54,7 @@ void FileSink::OpenNewFile() {
 
 void FileSink::flush() { m_ofs.flush(); }
 
-void StdoutSink::sink(const logger::LogEvent &log_event,
+void StdoutSink::Sink(const logger::LogEvent &log_event,
                       LoggerFormat::LoggerFormatPtr &log_format) {
   log_format->format(std::cout, log_event);
 }

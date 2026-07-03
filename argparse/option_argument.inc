@@ -8,24 +8,24 @@ namespace argparse {
 template <typename T>
 OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
                                   std::vector<T>& target,
-                                  const std::string& description)
-    : MultiArgument<T>(ArgumentType::Option, names, description) {
+                                  const std::string& Description)
+    : MultiArgument<T>(ArgumentType::Option, names, Description) {
   this->BindTo(target);
 }
 
 // 构造函数2: 绑定单个 T
 template <typename T>
 OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
-                                  T& target, const std::string& description)
-    : MultiArgument<T>(ArgumentType::Option, names, description) {
+                                  T& target, const std::string& Description)
+    : MultiArgument<T>(ArgumentType::Option, names, Description) {
   this->BindTo(target);
 }
 
 // 构造函数3: 不绑定
 template <typename T>
 OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
-                                  const std::string& description)
-    : MultiArgument<T>(ArgumentType::Option, names, description) {}
+                                  const std::string& Description)
+    : MultiArgument<T>(ArgumentType::Option, names, Description) {}
 
 // 获取和设置值
 template <typename T>
@@ -35,13 +35,13 @@ OptionArgument<T>& OptionArgument<T>::value(const T& value) {
   return *this;
 }
 template <typename T>
-OptionArgument<T>& OptionArgument<T>::description(
-    const std::string& description) {
-  this->SetDescription(description);
+OptionArgument<T>& OptionArgument<T>::Description(
+    const std::string& Description) {
+  this->SetDescription(Description);
   return *this;
 }
 template <typename T>
-OptionArgument<T>& OptionArgument<T>::required() {
+OptionArgument<T>& OptionArgument<T>::Required() {
   this->SetRequired(true);
   return *this;
 }
@@ -51,14 +51,14 @@ OptionArgument<T>& OptionArgument<T>::DefaultValue(const T& value) {
   return *this;
 }
 template <typename T>
-OptionArgument<T>& OptionArgument<T>::callback(std::function<void()> callback) {
-  this->SetCallback(callback);
+OptionArgument<T>& OptionArgument<T>::Callback(std::function<void()> Callback) {
+  this->SetCallback(Callback);
   return *this;
 }
 
 // 重写解析方法
 template <typename T>
-size_t OptionArgument<T>::parse(const std::vector<std::string>& args,
+size_t OptionArgument<T>::Parse(const std::vector<std::string>& args,
                                 size_t current_index) {
   // OptionArgument 解析逻辑：消耗后续参数直到遇到下一个选项或达到上限
   size_t consumed = 0;
@@ -99,7 +99,7 @@ size_t OptionArgument<T>::parse(const std::vector<std::string>& args,
   }
 
   // 自动调用验证器
-  this->validate();
+  this->Validate();
 
   // 执行用户回调
   if (this->m_callback) {
@@ -112,7 +112,7 @@ size_t OptionArgument<T>::parse(const std::vector<std::string>& args,
 
 // 重写匹配方法
 template <typename T>
-bool OptionArgument<T>::matches(const std::string& arg) const {
+bool OptionArgument<T>::Matches(const std::string& arg) const {
   if (arg.empty() || arg[0] != '-') {
     return false;  // 不是选项参数
   }
@@ -138,7 +138,7 @@ void OptionArgument<T>::ValidateNames() const {
       throw std::invalid_argument("Option name cannot only be '-' or '--'");
     }
     if (name[0] != '-') {
-      throw std::invalid_argument("Option name must start with '-': " + name);
+      throw std::invalid_argument("Option name must Start with '-': " + name);
     }
   }
 }

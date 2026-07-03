@@ -106,7 +106,7 @@ class ThreadPool {
   ThreadPool(size_t num_threads);
   ~ThreadPool();
 
-  void stop();
+  void Stop();
 
   const Stats& GetStats() const;
   void SetMaxWaitTimeMs(uint64_t max_wait_time_ms);
@@ -115,10 +115,10 @@ class ThreadPool {
   std::size_t GetThreadCount() const;
 
   template <typename Func, typename... Args>
-  auto submit(Func&& func, Args&&... args);
+  auto Submit(Func&& func, Args&&... args);
 
  private:
-  void worker();
+  void Worker();
 
   std::vector<std::thread> m_workers;
   std::queue<TaskWrapper> m_tasks;

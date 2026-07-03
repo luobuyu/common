@@ -12,8 +12,8 @@ class Config {
   Config() = default;
   ~Config() = default;
   bool InitConfig(const std::string &path);
-  bool exist(const std::string &section, const std::string &key);
-  bool exist(const std::string &section);
+  bool Exist(const std::string &section, const std::string &key);
+  bool Exist(const std::string &section);
   bool GetValue(const std::string &section, const std::string &key,
                 std::string &val);
   bool GetValue(const std::string &section, const std::string &key, int &val);

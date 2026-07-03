@@ -16,7 +16,7 @@ bool Config::InitConfig(const std::string &path) {
   // parser config
   std::string line, cur_section;
   while (std::getline(ifs, line)) {
-    line = std::string(dry::trim(line));
+    line = std::string(dry::Trim(line));
 
     // 忽略空行或注释行
     if (line.empty() || line.front() == '#' || line.front() == ';') continue;
@@ -24,7 +24,7 @@ bool Config::InitConfig(const std::string &path) {
     // 检查是否是section
     if (line.front() == '[' && line.back() == ']') {
       cur_section = line.substr(1, line.size() - 2);
-      cur_section = std::string(dry::trim(cur_section));
+      cur_section = std::string(dry::Trim(cur_section));
       m_sections[cur_section] = Section();
     }
     // 解析键值对
@@ -34,8 +34,8 @@ bool Config::InitConfig(const std::string &path) {
         std::cerr << "can't parser config line: " << line << std::endl;
         return false;
       }
-      std::string key(dry::trim(line.substr(0, index)));
-      std::string val(dry::trim(line.substr(index + 1)));
+      std::string key(dry::Trim(line.substr(0, index)));
+      std::string val(dry::Trim(line.substr(index + 1)));
       if (key.empty() || val.empty()) {
         std::cerr << "can't parser config line: " << line << std::endl;
         return false;
@@ -47,7 +47,7 @@ bool Config::InitConfig(const std::string &path) {
   return true;
 }
 
-bool Config::exist(const std::string &section, const std::string &key) {
+bool Config::Exist(const std::string &section, const std::string &key) {
   auto section_iter = m_sections.find(section);
   if (section_iter == m_sections.end()) return false;
   if (section_iter->second.find(key) == section_iter->second.end()) {
@@ -55,32 +55,32 @@ bool Config::exist(const std::string &section, const std::string &key) {
   }
   return true;
 }
-bool Config::exist(const std::string &section) {
+bool Config::Exist(const std::string &section) {
   return m_sections.find(section) != m_sections.end();
 }
 
 bool Config::GetValue(const std::string &section, const std::string &key,
                       std::string &val) {
-  if (!exist(section, key)) return false;
+  if (!Exist(section, key)) return false;
   val = m_sections[section][key];
   return true;
 }
 bool Config::GetValue(const std::string &section, const std::string &key,
                       int &val) {
-  if (!exist(section, key)) return false;
+  if (!Exist(section, key)) return false;
   val = std::stoi(m_sections[section][key]);
   return true;
 }
 bool Config::GetValue(const std::string &section, const std::string &key,
                       double &val) {
-  if (!exist(section, key)) return false;
+  if (!Exist(section, key)) return false;
   val = std::stod(m_sections[section][key]);
   return true;
 }
 
 void Config::GetValue(const std::string &section, const std::string &key,
                       std::string &val, const std::string &default_value) {
-  if (!exist(section, key)) {
+  if (!Exist(section, key)) {
     val = default_value;
     return;
   }
@@ -89,7 +89,7 @@ void Config::GetValue(const std::string &section, const std::string &key,
 
 void Config::GetValue(const std::string &section, const std::string &key,
                       int &val, const int &default_value) {
-  if (!exist(section, key)) {
+  if (!Exist(section, key)) {
     val = default_value;
     return;
   }
@@ -97,7 +97,7 @@ void Config::GetValue(const std::string &section, const std::string &key,
 }
 void Config::GetValue(const std::string &section, const std::string &key,
                       double &val, const double &default_value) {
-  if (!exist(section, key)) {
+  if (!Exist(section, key)) {
     val = default_value;
     return;
   }

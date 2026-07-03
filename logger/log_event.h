@@ -12,7 +12,7 @@ enum LogLevel {
   INFO = 2,
   WARN = 3,
   ERROR = 4,
-  OFF = 5  // don't print log
+  OFF = 5  // don't print Log
 };
 const std::string &LevelToString(LogLevel level);
 
