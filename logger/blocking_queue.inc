@@ -6,8 +6,7 @@ namespace logger {
 /****************CircleQueue*******************************/
 /*********************************************************/
 template <class T>
-CircleQueue<T>::CircleQueue(int max_size)
-    : m_max_size(max_size + 1), m_vec(m_max_size) {}
+CircleQueue<T>::CircleQueue(int max_size) : m_max_size(max_size + 1), m_vec(m_max_size) {}
 
 template <class T>
 bool CircleQueue<T>::Full() const {
@@ -59,8 +58,7 @@ void logger::CircleQueue<T>::Resize(int size) {
 template <class T>
 BlockingQueue<T>::BlockingQueue() : m_queue(1024), m_is_stopping(false) {}
 template <class T>
-BlockingQueue<T>::BlockingQueue(int max_size)
-    : m_queue(max_size), m_is_stopping(false) {}
+BlockingQueue<T>::BlockingQueue(int max_size) : m_queue(max_size), m_is_stopping(false) {}
 template <class T>
 BlockingQueue<T>::~BlockingQueue() {
   m_cond_comsumer.notify_all();
@@ -69,8 +67,7 @@ template <class T>
 void BlockingQueue<T>::Push(T &&item) {
   {
     std::unique_lock<std::mutex> lock(m_mtx);
-    m_cond_producer.wait(lock,
-                         [&]() { return !m_queue.Full() || m_is_stopping; });
+    m_cond_producer.wait(lock, [&]() { return !m_queue.Full() || m_is_stopping; });
     if (m_is_stopping) {
       return;  // 停止后不再接受新数据
     }
@@ -82,8 +79,7 @@ template <class T>
 void BlockingQueue<T>::Push(const T &item) {
   {
     std::unique_lock<std::mutex> lock(m_mtx);
-    m_cond_producer.wait(lock,
-                         [&]() { return !m_queue.Full() || m_is_stopping; });
+    m_cond_producer.wait(lock, [&]() { return !m_queue.Full() || m_is_stopping; });
     if (m_is_stopping) {
       return;  // 停止后不再接受新数据
     }
@@ -105,8 +101,7 @@ bool BlockingQueue<T>::TryPop(T &item) {
 template <class T>
 bool BlockingQueue<T>::Pop(T &item) {
   std::unique_lock<std::mutex> lock(m_mtx);
-  m_cond_comsumer.wait(lock,
-                       [&]() { return !m_queue.empty() || m_is_stopping; });
+  m_cond_comsumer.wait(lock, [&]() { return !m_queue.empty() || m_is_stopping; });
   if (m_is_stopping && m_queue.empty()) {
     return false;
   }
@@ -116,11 +111,10 @@ bool BlockingQueue<T>::Pop(T &item) {
   return true;
 }
 template <class T>
-bool BlockingQueue<T>::PopWithTimeout(T &item,
-                                      std::chrono::milliseconds timeout) {
+bool BlockingQueue<T>::PopWithTimeout(T &item, std::chrono::milliseconds timeout) {
   std::unique_lock<std::mutex> lock(m_mtx);
-  bool got = m_cond_comsumer.wait_for(
-      lock, timeout, [&]() { return !m_queue.empty() || m_is_stopping; });
+  bool got =
+      m_cond_comsumer.wait_for(lock, timeout, [&]() { return !m_queue.empty() || m_is_stopping; });
   // got == false: 超时且谓词仍不满足 → 返回 false
   // m_is_stopping && m_queue.empty(): Stop 且队列空 → 返回 false
   if (!got || (m_is_stopping && m_queue.empty())) {
@@ -159,12 +153,13 @@ bool BlockingQueue<T>::IsStopping() const {
   return m_is_stopping.load();
 }
 template <class T>
-std::size_t BlockingQueue<T>::batch_pop_with_timeoutor;tor;<T> &out, std::size_t max_count,
+std::size_t BlockingQueue<T>::batch_pop_with_timeoutor;
+tor;<T> &out, std::size_t max_count,
     std::chrono::milliseconds timeout) {
   std::unique_lock<std::mutex> lock(m_mtx);
   // 等第一条到来（或超时/Stop）
-  bool got = m_cond_comsumer.wait_for(
-      lock, timeout, [&]() { return !m_queue.empty() || m_is_stopping; });
+  bool got =
+      m_cond_comsumer.wait_for(lock, timeout, [&]() { return !m_queue.empty() || m_is_stopping; });
   if (!got || (m_is_stopping && m_queue.empty())) {
     return 0;
   }

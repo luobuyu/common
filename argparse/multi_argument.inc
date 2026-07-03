@@ -9,8 +9,7 @@ namespace argparse {
 
 // 构造函数实现
 template <typename T>
-MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
-                                std::vector<T>& target,
+MultiArgument<T>::MultiArgument(const std::vector<std::string>& names, std::vector<T>& target,
                                 const std::string& description)
     : Argument(names, description),
       m_expected_min(1),  // 默认至少需要1个值
@@ -20,10 +19,8 @@ MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
 }
 
 template <typename T>
-MultiArgument<T>::MultiArgument(const ArgumentType& type,
-                                const std::vector<std::string>& names,
-                                std::vector<T>& target,
-                                const std::string& description)
+MultiArgument<T>::MultiArgument(const ArgumentType& type, const std::vector<std::string>& names,
+                                std::vector<T>& target, const std::string& description)
     : Argument(type, names, description),
       m_expected_min(1),  // 默认至少需要1个值
       m_expected_max(1)   // 默认最多1个值
@@ -32,8 +29,8 @@ MultiArgument<T>::MultiArgument(const ArgumentType& type,
 }
 
 template <typename T>
-MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
-                                T& target, const std::string& description)
+MultiArgument<T>::MultiArgument(const std::vector<std::string>& names, T& target,
+                                const std::string& description)
     : Argument(names, description),
       m_expected_min(1),  // 默认至少需要1个值
       m_expected_max(1)   // 默认最多1个值
@@ -42,8 +39,7 @@ MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
 }
 
 template <typename T>
-MultiArgument<T>::MultiArgument(const ArgumentType& type,
-                                const std::vector<std::string>& names,
+MultiArgument<T>::MultiArgument(const ArgumentType& type, const std::vector<std::string>& names,
                                 T& target, const std::string& description)
     : Argument(type, names, description),
       m_expected_min(1),  // 默认至少需要1个值
@@ -61,8 +57,7 @@ MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
 {}
 
 template <typename T>
-MultiArgument<T>::MultiArgument(const ArgumentType& type,
-                                const std::vector<std::string>& names,
+MultiArgument<T>::MultiArgument(const ArgumentType& type, const std::vector<std::string>& names,
                                 const std::string& description)
     : Argument(type, names, description),
       m_expected_min(1),  // 默认至少需要1个值
@@ -110,8 +105,7 @@ MultiArgument<T>& MultiArgument<T>::DefaultValue(const T& value) {
 }
 
 template <typename T>
-MultiArgument<T>& MultiArgument<T>::DefaultValues(
-    const std::vector<T>& values) {
+MultiArgument<T>& MultiArgument<T>::DefaultValues(const std::vector<T>& values) {
   m_default_values = values;
   return *this;
 }
@@ -197,8 +191,7 @@ MultiArgument<T>& MultiArgument<T>::BindTo(T& target) {
   m_sync_to_target = [&target, this]() {
     if (!this->m_values.empty()) {
       target = this->m_values.front();  // 绑定第一个值
-    } else if (this->m_default_values.has_value() &&
-               !this->m_default_values->empty()) {
+    } else if (this->m_default_values.has_value() && !this->m_default_values->empty()) {
       target = this->m_default_values->front();
     }
   };
@@ -224,15 +217,13 @@ bool MultiArgument<T>::IsValid() const {
 template <typename T>
 void MultiArgument<T>::Validate() const {
   if (m_validator && !m_validator(m_values)) {
-    throw std::runtime_error("Validation failed for argument: " +
-                             this->GetNames().front());
+    throw std::runtime_error("Validation failed for argument: " + this->GetNames().front());
   }
 }
 
 // 链式调用实现
 template <typename T>
-MultiArgument<T>& MultiArgument<T>::Description(
-    const std::string& description) {
+MultiArgument<T>& MultiArgument<T>::Description(const std::string& description) {
   SetDescription(description);
   return *this;
 }

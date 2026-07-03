@@ -6,8 +6,7 @@ namespace argparse {
 
 // 构造函数1: 绑定 vector<T>
 template <typename T>
-OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
-                                  std::vector<T>& target,
+OptionArgument<T>::OptionArgument(const std::vector<std::string>& names, std::vector<T>& target,
                                   const std::string& description)
     : MultiArgument<T>(ArgumentType::Option, names, description) {
   this->BindTo(target);
@@ -15,8 +14,8 @@ OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
 
 // 构造函数2: 绑定单个 T
 template <typename T>
-OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
-                                  T& target, const std::string& description)
+OptionArgument<T>::OptionArgument(const std::vector<std::string>& names, T& target,
+                                  const std::string& description)
     : MultiArgument<T>(ArgumentType::Option, names, description) {
   this->BindTo(target);
 }
@@ -35,8 +34,7 @@ OptionArgument<T>& OptionArgument<T>::Value(const T& value) {
   return *this;
 }
 template <typename T>
-OptionArgument<T>& OptionArgument<T>::Description(
-    const std::string& description) {
+OptionArgument<T>& OptionArgument<T>::Description(const std::string& description) {
   this->SetDescription(description);
   return *this;
 }
@@ -58,16 +56,14 @@ OptionArgument<T>& OptionArgument<T>::Callback(std::function<void()> callback) {
 
 // 重写解析方法
 template <typename T>
-size_t OptionArgument<T>::Parse(const std::vector<std::string>& args,
-                                size_t current_index) {
+size_t OptionArgument<T>::Parse(const std::vector<std::string>& args, size_t current_index) {
   // OptionArgument 解析逻辑：消耗后续参数直到遇到下一个选项或达到上限
   size_t consumed = 0;
   int max_count = this->GetExpectedMax();
   bool terminated_by_dashdash = false;
 
   // 从 current_index + 1 开始逐个消耗参数
-  for (size_t i = current_index + 1; i < args.size() && consumed < max_count;
-       ++i) {
+  for (size_t i = current_index + 1; i < args.size() && consumed < max_count; ++i) {
     const std::string& next_arg = args[i];
     // 如果遇到 "--"，表示用户想提前结束当前选项的参数收集
     if (next_arg == "--") {
@@ -85,9 +81,9 @@ size_t OptionArgument<T>::Parse(const std::vector<std::string>& args,
   // 检查是否满足最小期望数量
   int min_count = this->GetExpectedMin();
   if (this->ValueCount() < min_count) {
-    throw std::runtime_error("Option " + args[current_index] +
-                             " requires at least " + std::to_string(min_count) +
-                             " value(s), got " + std::to_string(consumed));
+    throw std::runtime_error("Option " + args[current_index] + " requires at least " +
+                             std::to_string(min_count) + " value(s), got " +
+                             std::to_string(consumed));
   }
 
   // 标记为已解析

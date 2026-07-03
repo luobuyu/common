@@ -15,8 +15,7 @@ auto ShardedThreadPool::SubmitOrdered(uint64_t key, F&& func, Args&&... args)
     return std::future<ReturnType>();
   }
   size_t shard_idx = key % m_shards.size();
-  return m_shards[shard_idx]->Submit(std::forward<F>(func),
-                                     std::forward<Args>(args)...);
+  return m_shards[shard_idx]->Submit(std::forward<F>(func), std::forward<Args>(args)...);
 }
 
 template <typename F, typename... Args>
@@ -27,8 +26,7 @@ auto ShardedThreadPool::Submit(F&& func, Args&&... args)
     return std::future<ReturnType>();
   }
   size_t shard_idx = m_next++ % m_shards.size();
-  return m_shards[shard_idx]->Submit(std::forward<F>(func),
-                                     std::forward<Args>(args)...);
+  return m_shards[shard_idx]->Submit(std::forward<F>(func), std::forward<Args>(args)...);
 }
 }  // namespace thread
 

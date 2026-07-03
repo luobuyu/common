@@ -9,16 +9,14 @@ namespace argparse {
 // 构造函数1: 绑定 vector<T>
 template <typename T>
 PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
-                                          std::vector<T>& target,
-                                          const std::string& description)
+                                          std::vector<T>& target, const std::string& description)
     : MultiArgument<T>(ArgumentType::Positional, names, description) {
   this->BindTo(target);
 }
 
 // 构造函数2: 绑定单个 T
 template <typename T>
-PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
-                                          T& target,
+PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names, T& target,
                                           const std::string& description)
     : MultiArgument<T>(ArgumentType::Positional, names, description) {
   this->BindTo(target);
@@ -32,8 +30,7 @@ PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
 
 // 重写解析方法
 template <typename T>
-size_t PositionalArgument<T>::Parse(const std::vector<std::string>& args,
-                                    size_t current_index) {
+size_t PositionalArgument<T>::Parse(const std::vector<std::string>& args, size_t current_index) {
   size_t consumed = 0;
   int max_count = this->GetExpectedMax();
   bool terminated_by_dashdash = false;
@@ -43,8 +40,7 @@ size_t PositionalArgument<T>::Parse(const std::vector<std::string>& args,
   // 2. 遇到非位置参数
   // 3. 遇到 "--" 终止符
   // 4. 用完所有参数
-  for (size_t i = current_index;
-       i < args.size() && this->ValueCount() < max_count; ++i) {
+  for (size_t i = current_index; i < args.size() && this->ValueCount() < max_count; ++i) {
     const std::string& arg = args[i];
     // 如果遇到 "--"，表示用户想提前结束当前位置参数的收集
     if (arg == "--") {
@@ -62,9 +58,8 @@ size_t PositionalArgument<T>::Parse(const std::vector<std::string>& args,
   // 检查是否满足最小期望数量
   int min_count = this->GetExpectedMin();
   if (this->ValueCount() < min_count) {
-    throw std::runtime_error("Positional argument expects at least " +
-                             std::to_string(min_count) + " value(s), got " +
-                             std::to_string(this->ValueCount()));
+    throw std::runtime_error("Positional argument expects at least " + std::to_string(min_count) +
+                             " value(s), got " + std::to_string(this->ValueCount()));
   }
 
   // 标记为已解析
@@ -101,8 +96,7 @@ void PositionalArgument<T>::ValidateNames() const {
   const auto& names = this->GetNames();
 
   if (names.empty()) {
-    throw std::invalid_argument(
-        "Positional argument must have at least one name");
+    throw std::invalid_argument("Positional argument must have at least one name");
   }
 
   for (const auto& name : names) {
@@ -110,8 +104,7 @@ void PositionalArgument<T>::ValidateNames() const {
       throw std::invalid_argument("Positional argument name cannot be empty");
     }
     if (name[0] == '-') {
-      throw std::invalid_argument(
-          "Positional argument name cannot Start with '-': " + name);
+      throw std::invalid_argument("Positional argument name cannot Start with '-': " + name);
     }
   }
 }
