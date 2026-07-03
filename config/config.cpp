@@ -63,24 +63,21 @@ bool Config::Exist(const std::string &section) {
   return m_sections.find(section) != m_sections.end();
 }
 
-bool Config::GetValue(const std::string &section, const std::string &key,
-                      std::string &val) {
+bool Config::GetValue(const std::string &section, const std::string &key, std::string &val) {
   if (!Exist(section, key)) {
     return false;
   }
   val = m_sections[section][key];
   return true;
 }
-bool Config::GetValue(const std::string &section, const std::string &key,
-                      int &val) {
+bool Config::GetValue(const std::string &section, const std::string &key, int &val) {
   if (!Exist(section, key)) {
     return false;
   }
   val = std::stoi(m_sections[section][key]);
   return true;
 }
-bool Config::GetValue(const std::string &section, const std::string &key,
-                      double &val) {
+bool Config::GetValue(const std::string &section, const std::string &key, double &val) {
   if (!Exist(section, key)) {
     return false;
   }
@@ -88,8 +85,8 @@ bool Config::GetValue(const std::string &section, const std::string &key,
   return true;
 }
 
-void Config::GetValue(const std::string &section, const std::string &key,
-                      std::string &val, const std::string &default_value) {
+void Config::GetValue(const std::string &section, const std::string &key, std::string &val,
+                      const std::string &default_value) {
   if (!Exist(section, key)) {
     val = default_value;
     return;
@@ -97,16 +94,16 @@ void Config::GetValue(const std::string &section, const std::string &key,
   val = m_sections[section][key];
 }
 
-void Config::GetValue(const std::string &section, const std::string &key,
-                      int &val, const int &default_value) {
+void Config::GetValue(const std::string &section, const std::string &key, int &val,
+                      const int &default_value) {
   if (!Exist(section, key)) {
     val = default_value;
     return;
   }
   val = std::stoi(m_sections[section][key]);
 }
-void Config::GetValue(const std::string &section, const std::string &key,
-                      double &val, const double &default_value) {
+void Config::GetValue(const std::string &section, const std::string &key, double &val,
+                      const double &default_value) {
   if (!Exist(section, key)) {
     val = default_value;
     return;
@@ -114,15 +111,13 @@ void Config::GetValue(const std::string &section, const std::string &key,
   val = std::stod(m_sections[section][key]);
 }
 
-std::string Config::GetString(const std::string &section,
-                              const std::string &key,
+std::string Config::GetString(const std::string &section, const std::string &key,
                               const std::string &default_value) {
   std::string value;
   GetValue(section, key, value, default_value);
   return value;
 }
-int Config::GetInt(const std::string &section, const std::string &key,
-                   const int &default_value) {
+int Config::GetInt(const std::string &section, const std::string &key, const int &default_value) {
   int value;
   GetValue(section, key, value, default_value);
   return value;
@@ -152,8 +147,7 @@ Config::Section Config::GetSectionKVs(const std::string &section) {
     return m_sections[section];
   }
 }
-void Config::SetValue(const std::string &section, const std::string &key,
-                      const std::string &val) {
+void Config::SetValue(const std::string &section, const std::string &key, const std::string &val) {
   m_sections[section][key] = val;
 }
 

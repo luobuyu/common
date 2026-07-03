@@ -80,9 +80,9 @@ inline std::string UrlEncode(const std::string& str) {
 struct UrlComponents {
   std::string scheme;  // "http"/"https"，相对路径时为空（已转小写）
   std::string host;    // 主机名/IP（已转小写），相对路径时为空
-  uint16_t port{0};  // 端口，0 表示未指定（需根据 scheme 推断默认值）
-  std::string path;   // 路径（不含 query 和 fragment）
-  std::string query;  // 查询字符串（含前导 '?'）
+  uint16_t port{0};    // 端口，0 表示未指定（需根据 scheme 推断默认值）
+  std::string path;    // 路径（不含 query 和 fragment）
+  std::string query;   // 查询字符串（含前导 '?'）
   bool valid{true};  // 解析是否成功（false 表示 URL 格式非法或不支持的 scheme）
 
   /// 返回完整的 path+query（用于发送请求和循环检测）
@@ -114,8 +114,7 @@ struct UrlComponents {
 /// @param base_path 当前请求的 path（用于解析无前导 / 的相对路径），可为空
 /// @return 解析后的 URL 组成部分，解析失败时 valid=false
 /// @note 纯函数，无状态，可在任何上下文中调用
-UrlComponents ParseUrl(std::string_view location,
-                       std::string_view base_path = "");
+UrlComponents ParseUrl(std::string_view location, std::string_view base_path = "");
 
 /// 安全端口解析（不抛异常，范围校验 0~65535）
 /// @return 解析成功返回端口号，失败返回 0
@@ -125,8 +124,7 @@ uint16_t SafeParsePort(std::string_view port_str);
 /// @param relative  相对路径（可含 query，如 "../v2/users?page=1"）
 /// @param base_path 当前请求的 path（用于确定目录基准）
 /// @return 解析后的绝对路径（含 query）
-std::string ResolveRelativePath(std::string_view relative,
-                                std::string_view base_path);
+std::string ResolveRelativePath(std::string_view relative, std::string_view base_path);
 
 /// 判断两个 URL 是否同源（scheme + host + EffectivePort 均相同）
 /// @param origin 当前连接的 origin（scheme/host/port）

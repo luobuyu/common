@@ -29,8 +29,8 @@ const std::string &LevelToString(LogLevel level) {
 }
 
 LogEvent::LogEvent(logger::LogLevel log_level, std::string_view module_name,
-                   std::string_view file_name, std::string_view function_name,
-                   uint32_t line_id, std::string log_msg)
+                   std::string_view file_name, std::string_view function_name, uint32_t line_id,
+                   std::string log_msg)
     : m_timestamp(std::chrono::system_clock::now()),
       m_log_level(log_level),
       m_module_name(module_name),
@@ -45,8 +45,8 @@ LogEvent::LogEvent(logger::LogLevel log_level, std::string_view module_name,
 std::ostream &operator<<(std::ostream &os, const logger::LogEvent &log_event) {
   os << dry::GetTimeWithMs(log_event.m_timestamp, "%Y-%m-%d %H:%M:%S") << " ["
      << LevelToString(log_event.m_log_level) << "] "
-     << "[" << std::to_string(log_event.m_process_id) << ", "
-     << log_event.m_thread_id << ", " << log_event.m_coroutine_id << "] "
+     << "[" << std::to_string(log_event.m_process_id) << ", " << log_event.m_thread_id << ", "
+     << log_event.m_coroutine_id << "] "
      << "[" << log_event.m_module_name << "] "
      << "[" << log_event.m_file_name << ":" << log_event.m_function_name << ":"
      << log_event.m_line_id << "] " << log_event.m_log_msg << "\n";

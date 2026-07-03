@@ -131,8 +131,7 @@ class LoggerFormat {
   // %m : 日志内容           MessageFormatItem
   // %n : 换行符[\r\n]       NewLineFormatItem
   LoggerFormat(
-      std::string pattern =
-          "%d{%Y-%m-%d %H:%M:%S}%T[%L]%T[%p,%t,%c]%T[%M]%T[%F:%f:%l]%T%m%n");
+      std::string pattern = "%d{%Y-%m-%d %H:%M:%S}%T[%L]%T[%p,%t,%c]%T[%M]%T[%F:%f:%l]%T%m%n");
   ~LoggerFormat() = default;
   void ParserPattern();
   void Format(std::ostream &os, const logger::LogEvent &log_msg);
@@ -145,8 +144,8 @@ class LoggerFormat {
 
 class FormatItemFactory {
  public:
-  static std::shared_ptr<FormatItem> CreateFormatItem(
-      const char &key, const std::string &val = std::string());
+  static std::shared_ptr<FormatItem> CreateFormatItem(const char &key,
+                                                      const std::string &val = std::string());
   static bool CanCreate(const char &key);
 };
 };  // namespace logger

@@ -6,15 +6,13 @@ namespace dry {
 namespace argparse {
 
 // 构造函数（不带 required 和 callback 参数，避免隐式转换问题）
-Argument::Argument(const std::vector<std::string>& names,
-                   std::string description)
+Argument::Argument(const std::vector<std::string>& names, std::string description)
     : m_names{names},
       m_description{std::move(description)},
       m_required{false},
       m_parsed{false},
       m_callback{nullptr} {}
-Argument::Argument(const ArgumentType& type,
-                   const std::vector<std::string>& names,
+Argument::Argument(const ArgumentType& type, const std::vector<std::string>& names,
                    std::string description)
     : m_type{type},
       m_names{names},
@@ -27,9 +25,13 @@ void Argument::SetDescription(const std::string& description) {
   m_description = description;
 }
 
-void Argument::SetRequired(bool required) { m_required = required; }
+void Argument::SetRequired(bool required) {
+  m_required = required;
+}
 
-void Argument::SetParsed(bool parsed) { m_parsed = parsed; }
+void Argument::SetParsed(bool parsed) {
+  m_parsed = parsed;
+}
 
 void Argument::SetCallback(std::function<void()> callback) {
   m_callback = callback;
@@ -50,15 +52,25 @@ Argument& Argument::Callback(std::function<void()> callback) {
   return *this;
 }
 
-const std::vector<std::string>& Argument::GetNames() const { return m_names; }
+const std::vector<std::string>& Argument::GetNames() const {
+  return m_names;
+}
 
-const std::string& Argument::GetDescription() const { return m_description; }
+const std::string& Argument::GetDescription() const {
+  return m_description;
+}
 
-ArgumentType Argument::GetType() const { return m_type; }
+ArgumentType Argument::GetType() const {
+  return m_type;
+}
 
-bool Argument::IsRequired() const { return m_required; }
+bool Argument::IsRequired() const {
+  return m_required;
+}
 
-bool Argument::IsParsed() const { return m_parsed; }
+bool Argument::IsParsed() const {
+  return m_parsed;
+}
 
 }  // namespace argparse
 }  // namespace dry

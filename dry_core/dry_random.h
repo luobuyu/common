@@ -8,14 +8,13 @@ namespace dry {
 class Random {
  public:
   static std::default_random_engine &GetRandomEngine() {
-    static std::default_random_engine gen(static_cast<unsigned>(
-        std::chrono::steady_clock::now().time_since_epoch().count()));
+    static std::default_random_engine gen(
+        static_cast<unsigned>(std::chrono::steady_clock::now().time_since_epoch().count()));
     return gen;
   }
   static void SetSeed(unsigned int seed) { GetRandomEngine().seed(seed); }
   // [lb, ub)
-  static int rand(int lb, int ub,
-                  std::default_random_engine &gen = GetRandomEngine()) {
+  static int rand(int lb, int ub, std::default_random_engine &gen = GetRandomEngine()) {
     return std::uniform_int_distribution<int>(lb, ub - 1)(gen);
   }
   // [0, ub)
@@ -27,8 +26,7 @@ class Random {
     return std::uniform_real_distribution<double>(0, 1)(gen);
   }
   // [lb, ub)
-  static double rand(double lb, double ub,
-                     std::default_random_engine &gen = GetRandomEngine()) {
+  static double rand(double lb, double ub, std::default_random_engine &gen = GetRandomEngine()) {
     return std::uniform_real_distribution<double>(lb, ub)(gen);
   }
   // [0, weight.size() - 1) 返回的是数组下标

@@ -26,14 +26,13 @@ class MultiArgument : public Argument {
                 std::vector<T>& target, const std::string& description = "");
   MultiArgument(const std::vector<std::string>& names, T& target,
                 const std::string& description = "");
-  MultiArgument(const ArgumentType& type, const std::vector<std::string>& names,
-                T& target, const std::string& description = "");
+  MultiArgument(const ArgumentType& type, const std::vector<std::string>& names, T& target,
+                const std::string& description = "");
 
   // 构造函数（不绑定）
   // - names: 参数名称（必需）
   // - description: 描述信息（可选）
-  MultiArgument(const std::vector<std::string>& names,
-                const std::string& description = "");
+  MultiArgument(const std::vector<std::string>& names, const std::string& description = "");
   MultiArgument(const ArgumentType& type, const std::vector<std::string>& names,
                 const std::string& description = "");
   // 值操作
@@ -44,15 +43,15 @@ class MultiArgument : public Argument {
   size_t ValueCount() const;
 
   // 默认值设置（统一使用 std::optional<std::vector<T>>）
-  MultiArgument<T>& DefaultValue(const T& value);  // 单个默认值
+  MultiArgument<T>& DefaultValue(const T& value);                 // 单个默认值
   MultiArgument<T>& DefaultValues(const std::vector<T>& values);  // 多个默认值
-  bool HasDefaultValue() const override;  // 重写基类虚方法
+  bool HasDefaultValue() const override;                          // 重写基类虚方法
   const std::vector<T>& GetDefaultValues() const;
 
   // Expected 参数数量控制
-  MultiArgument<T>& Expected(int count);  // 精确数量或特殊值（整数）
+  MultiArgument<T>& Expected(int count);            // 精确数量或特殊值（整数）
   MultiArgument<T>& Expected(ExpectedCount count);  // 枚举类型：强类型安全
-  MultiArgument<T>& Expected(int min, int max);  // 范围控制
+  MultiArgument<T>& Expected(int min, int max);     // 范围控制
   int GetExpectedMin() const;
   int GetExpectedMax() const;
 
@@ -61,8 +60,7 @@ class MultiArgument : public Argument {
   MultiArgument<T>& BindTo(T& target);
 
   // 验证器（只保留整体验证）
-  MultiArgument<T>& Validator(
-      std::function<bool(const std::vector<T>&)> validator);
+  MultiArgument<T>& Validator(std::function<bool(const std::vector<T>&)> validator);
   bool IsValid() const override;
   // 验证并抛出异常（供 Parse 时调用）
   void Validate() const override;
@@ -75,15 +73,14 @@ class MultiArgument : public Argument {
   // 重写多态方法
   // MultiArgument 接收值列表（二阶段模式），忽略 current_index
   // args: 专门给这个位置参数的值列表
-  size_t Parse(const std::vector<std::string>& args,
-               size_t current_index = 0) override = 0;
+  size_t Parse(const std::vector<std::string>& args, size_t current_index = 0) override = 0;
 
   // 判断命令行参数是否匹配此位置参数
   // 位置参数匹配任何不以 '-' 开头的参数
   bool Matches(const std::string& arg) const override = 0;
 
  private:
-  std::vector<T> m_values;  // 已解析的值（统一存储）
+  std::vector<T> m_values;                         // 已解析的值（统一存储）
   std::optional<std::vector<T>> m_default_values;  // 是否存在默认值
 
   int m_expected_min;  // 最小期望数量

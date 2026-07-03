@@ -48,8 +48,8 @@ class ObjectPool {
   };
 
  public:
-  ObjectPool(Factory factory, Validator validator = nullptr,
-             Destroyer destroyer = nullptr, Config config = {})
+  ObjectPool(Factory factory, Validator validator = nullptr, Destroyer destroyer = nullptr,
+             Config config = {})
       : m_factory(std::move(factory)),
         m_validator(std::move(validator)),
         m_destroyer(std::move(destroyer)),

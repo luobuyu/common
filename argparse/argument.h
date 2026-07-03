@@ -58,8 +58,7 @@ class Argument {
   //   - FlagArgument: 返回 1（消耗标志参数本身）
   //   - OptionArgument: 返回 1 + 消耗的值的个数
   //   - PositionalArgument: 返回实际消耗的参数数量
-  virtual size_t Parse(const std::vector<std::string>& args,
-                       size_t current_index) = 0;
+  virtual size_t Parse(const std::vector<std::string>& args, size_t current_index) = 0;
 
   // 检查是否设置了默认值（子类应重写此方法）
   virtual bool HasDefaultValue() const { return false; }
@@ -83,14 +82,13 @@ class Argument {
   virtual void Validate() const = 0;
 
  protected:
-  ArgumentType m_type;               // 参数类型
-  std::vector<std::string> m_names;  // 存储命令行参数的名称以及别名 --help, -h
-  std::string m_description;  // 参数的描述信息
-  bool m_required;            // 参数是否必填
-  bool m_parsed;              // 是否已被解析
-  std::function<void()> m_callback;  // 参数被成功解析时，会自动调用这个函数
-  std::function<void()>
-      m_sync_to_target;  // 用于将解析出的变量同步到绑定的外部变量
+  ArgumentType m_type;                     // 参数类型
+  std::vector<std::string> m_names;        // 存储命令行参数的名称以及别名 --help, -h
+  std::string m_description;               // 参数的描述信息
+  bool m_required;                         // 参数是否必填
+  bool m_parsed;                           // 是否已被解析
+  std::function<void()> m_callback;        // 参数被成功解析时，会自动调用这个函数
+  std::function<void()> m_sync_to_target;  // 用于将解析出的变量同步到绑定的外部变量
 };
 
 }  // namespace argparse

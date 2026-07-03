@@ -15,8 +15,8 @@ void InitLogger(config::Config& conf) {
   auto& mgr = logger::LogManager::GetInstance();
 
   std::string module_name = conf.GetString("logger", "module_name", "app");
-  logger::LogLevel log_level = static_cast<logger::LogLevel>(conf.GetInt(
-      "logger", "log_level", static_cast<int>(logger::LogLevel::INFO)));
+  logger::LogLevel log_level = static_cast<logger::LogLevel>(
+      conf.GetInt("logger", "log_level", static_cast<int>(logger::LogLevel::INFO)));
 
   // 构建 Sink 列表
   std::vector<logger::LogSink::LogSinkPtr> log_sinks;
@@ -36,16 +36,14 @@ void InitLogger(config::Config& conf) {
   }
 
   // 支持通过配置选择同步/异步，默认异步
-  auto logger_type = conf.GetInt("logger", "async", 1)
-                         ? logger::LogManager::LoggerType::ASYNC
-                         : logger::LogManager::LoggerType::SYNC;
+  auto logger_type = conf.GetInt("logger", "async", 1) ? logger::LogManager::LoggerType::ASYNC
+                                                       : logger::LogManager::LoggerType::SYNC;
 
   mgr.Init(log_level, module_name, logger_type, log_sinks, logger_format);
 }
 
-void InitLogger(const std::string& module_name, int level,
-                const std::string& log_path, bool enable_stdout,
-                logger::LogManager::LoggerType type) {
+void InitLogger(const std::string& module_name, int level, const std::string& log_path,
+                bool enable_stdout, logger::LogManager::LoggerType type) {
   auto& mgr = logger::LogManager::GetInstance();
   logger::LogLevel log_level = static_cast<logger::LogLevel>(level);
 
@@ -58,6 +56,8 @@ void InitLogger(const std::string& module_name, int level,
   mgr.Init(log_level, module_name, type, log_sinks);
 }
 
-void OpenLog(config::Config& conf) { InitLogger(conf); }
+void OpenLog(config::Config& conf) {
+  InitLogger(conf);
+}
 
 }  // namespace dry

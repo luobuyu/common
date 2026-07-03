@@ -24,13 +24,11 @@ class LogSink {
 // 按照日期和大小分文件
 class FileSink : public LogSink {
  public:
-  void Sink(const logger::LogEvent &log_event,
-            LoggerFormat::LoggerFormatPtr &log_format) override;
+  void Sink(const logger::LogEvent &log_event, LoggerFormat::LoggerFormatPtr &log_format) override;
   void OpenNewFile();
   void Flush() override;
   FileSink(std::string file_path, uint32_t max_size = 10 * 1024 * 1024,
-           std::chrono::system_clock::duration rotate_interval =
-               std::chrono::hours(1));
+           std::chrono::system_clock::duration rotate_interval = std::chrono::hours(1));
 
  private:
   std::string m_file_path;  // 路径，
@@ -44,8 +42,7 @@ class FileSink : public LogSink {
 
 class StdoutSink : public LogSink {
  public:
-  void Sink(const logger::LogEvent &log_event,
-            LoggerFormat::LoggerFormatPtr &log_format) override;
+  void Sink(const logger::LogEvent &log_event, LoggerFormat::LoggerFormatPtr &log_format) override;
   void Flush() override;
 
  private:

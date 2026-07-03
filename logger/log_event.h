@@ -21,11 +21,9 @@ const std::string &LevelToString(LogLevel level);
 // [时间戳] [日志级别] [模块名] [线程ID] [文件名:行号] [callgraphid]
 struct LogEvent {
  public:
-  LogEvent(logger::LogLevel log_level, std::string_view module_name,
-           std::string_view file_name, std::string_view function_name,
-           uint32_t line_id, std::string log_msg);
-  friend std::ostream &operator<<(std::ostream &os,
-                                  const logger::LogEvent &log_event);
+  LogEvent(logger::LogLevel log_level, std::string_view module_name, std::string_view file_name,
+           std::string_view function_name, uint32_t line_id, std::string log_msg);
+  friend std::ostream &operator<<(std::ostream &os, const logger::LogEvent &log_event);
   LogEvent() = default;
 
   std::chrono::system_clock::time_point m_timestamp;

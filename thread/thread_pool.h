@@ -21,44 +21,33 @@ class ThreadPool {
 
     // 用于计算平均排队等待时间
     std::atomic<uint64_t> total_wait_time_us{0};  // 累计排队等待时间(微秒)
-    std::atomic<uint64_t> wait_time_count{0};  // 采样计数
+    std::atomic<uint64_t> wait_time_count{0};     // 采样计数
 
     Stats() = default;
 
     // 快照拷贝构造（用于 GetStats() 返回值）
     Stats(const Stats& other)
-        : total_submitted(
-              other.total_submitted.load(std::memory_order_relaxed)),
-          total_completed(
-              other.total_completed.load(std::memory_order_relaxed)),
+        : total_submitted(other.total_submitted.load(std::memory_order_relaxed)),
+          total_completed(other.total_completed.load(std::memory_order_relaxed)),
           total_rejected(other.total_rejected.load(std::memory_order_relaxed)),
-          total_timeout_dropped(
-              other.total_timeout_dropped.load(std::memory_order_relaxed)),
-          total_wait_time_us(
-              other.total_wait_time_us.load(std::memory_order_relaxed)),
-          wait_time_count(
-              other.wait_time_count.load(std::memory_order_relaxed)) {}
+          total_timeout_dropped(other.total_timeout_dropped.load(std::memory_order_relaxed)),
+          total_wait_time_us(other.total_wait_time_us.load(std::memory_order_relaxed)),
+          wait_time_count(other.wait_time_count.load(std::memory_order_relaxed)) {}
 
     Stats& operator=(const Stats& other) {
       if (this != &other) {
-        total_submitted.store(
-            other.total_submitted.load(std::memory_order_relaxed),
-            std::memory_order_relaxed);
-        total_completed.store(
-            other.total_completed.load(std::memory_order_relaxed),
-            std::memory_order_relaxed);
-        total_rejected.store(
-            other.total_rejected.load(std::memory_order_relaxed),
-            std::memory_order_relaxed);
-        total_timeout_dropped.store(
-            other.total_timeout_dropped.load(std::memory_order_relaxed),
-            std::memory_order_relaxed);
-        total_wait_time_us.store(
-            other.total_wait_time_us.load(std::memory_order_relaxed),
-            std::memory_order_relaxed);
-        wait_time_count.store(
-            other.wait_time_count.load(std::memory_order_relaxed),
-            std::memory_order_relaxed);
+        total_submitted.store(other.total_submitted.load(std::memory_order_relaxed),
+                              std::memory_order_relaxed);
+        total_completed.store(other.total_completed.load(std::memory_order_relaxed),
+                              std::memory_order_relaxed);
+        total_rejected.store(other.total_rejected.load(std::memory_order_relaxed),
+                             std::memory_order_relaxed);
+        total_timeout_dropped.store(other.total_timeout_dropped.load(std::memory_order_relaxed),
+                                    std::memory_order_relaxed);
+        total_wait_time_us.store(other.total_wait_time_us.load(std::memory_order_relaxed),
+                                 std::memory_order_relaxed);
+        wait_time_count.store(other.wait_time_count.load(std::memory_order_relaxed),
+                              std::memory_order_relaxed);
       }
       return *this;
     }
@@ -66,30 +55,24 @@ class ThreadPool {
     /// 聚合另一个 Stats 的值（用于 ShardedThreadPool 汇总）
     /// @note 仅用于局部变量汇总，非线程安全
     Stats& operator+=(const Stats& other) {
-      total_submitted.store(
-          total_submitted.load(std::memory_order_relaxed) +
-              other.total_submitted.load(std::memory_order_relaxed),
-          std::memory_order_relaxed);
-      total_completed.store(
-          total_completed.load(std::memory_order_relaxed) +
-              other.total_completed.load(std::memory_order_relaxed),
-          std::memory_order_relaxed);
-      total_rejected.store(
-          total_rejected.load(std::memory_order_relaxed) +
-              other.total_rejected.load(std::memory_order_relaxed),
-          std::memory_order_relaxed);
-      total_timeout_dropped.store(
-          total_timeout_dropped.load(std::memory_order_relaxed) +
-              other.total_timeout_dropped.load(std::memory_order_relaxed),
-          std::memory_order_relaxed);
-      total_wait_time_us.store(
-          total_wait_time_us.load(std::memory_order_relaxed) +
-              other.total_wait_time_us.load(std::memory_order_relaxed),
-          std::memory_order_relaxed);
-      wait_time_count.store(
-          wait_time_count.load(std::memory_order_relaxed) +
-              other.wait_time_count.load(std::memory_order_relaxed),
-          std::memory_order_relaxed);
+      total_submitted.store(total_submitted.load(std::memory_order_relaxed) +
+                                other.total_submitted.load(std::memory_order_relaxed),
+                            std::memory_order_relaxed);
+      total_completed.store(total_completed.load(std::memory_order_relaxed) +
+                                other.total_completed.load(std::memory_order_relaxed),
+                            std::memory_order_relaxed);
+      total_rejected.store(total_rejected.load(std::memory_order_relaxed) +
+                               other.total_rejected.load(std::memory_order_relaxed),
+                           std::memory_order_relaxed);
+      total_timeout_dropped.store(total_timeout_dropped.load(std::memory_order_relaxed) +
+                                      other.total_timeout_dropped.load(std::memory_order_relaxed),
+                                  std::memory_order_relaxed);
+      total_wait_time_us.store(total_wait_time_us.load(std::memory_order_relaxed) +
+                                   other.total_wait_time_us.load(std::memory_order_relaxed),
+                               std::memory_order_relaxed);
+      wait_time_count.store(wait_time_count.load(std::memory_order_relaxed) +
+                                other.wait_time_count.load(std::memory_order_relaxed),
+                            std::memory_order_relaxed);
       return *this;
     }
   };

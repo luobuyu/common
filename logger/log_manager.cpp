@@ -12,17 +12,15 @@ LogManager& LogManager::GetInstance() {
   return instance;
 }
 
-void LogManager::Init(LogLevel log_level, std::string module_name,
-                      LoggerType type, LogSink::LogSinkPtr log_sink,
-                      LoggerFormat::LoggerFormatPtr log_format, int queue_size,
-                      std::chrono::milliseconds flush_interval) {
+void LogManager::Init(LogLevel log_level, std::string module_name, LoggerType type,
+                      LogSink::LogSinkPtr log_sink, LoggerFormat::LoggerFormatPtr log_format,
+                      int queue_size, std::chrono::milliseconds flush_interval) {
   std::vector<LogSink::LogSinkPtr> sinks = {std::move(log_sink)};
-  Init(log_level, std::move(module_name), type, std::move(sinks),
-       std::move(log_format), queue_size, flush_interval);
+  Init(log_level, std::move(module_name), type, std::move(sinks), std::move(log_format), queue_size,
+       flush_interval);
 }
 
-void LogManager::Init(LogLevel log_level, std::string module_name,
-                      LoggerType type,
+void LogManager::Init(LogLevel log_level, std::string module_name, LoggerType type,
                       std::vector<LogSink::LogSinkPtr> log_sinks,
                       LoggerFormat::LoggerFormatPtr log_format, int queue_size,
                       std::chrono::milliseconds flush_interval) {
@@ -35,12 +33,10 @@ void LogManager::Init(LogLevel log_level, std::string module_name,
 
     // 根据类型创建对应的 Logger
     if (type == LoggerType::ASYNC) {
-      m_logger = std::make_unique<AsyncLogger>(std::move(log_sinks),
-                                               std::move(log_format),
+      m_logger = std::make_unique<AsyncLogger>(std::move(log_sinks), std::move(log_format),
                                                queue_size, flush_interval);
     } else {
-      m_logger = std::make_unique<SyncLogger>(std::move(log_sinks),
-                                              std::move(log_format));
+      m_logger = std::make_unique<SyncLogger>(std::move(log_sinks), std::move(log_format));
     }
 
     m_is_open = true;
@@ -48,15 +44,21 @@ void LogManager::Init(LogLevel log_level, std::string module_name,
   });
 }
 
-bool LogManager::IsOpen() const { return m_is_open && m_logger != nullptr; }
+bool LogManager::IsOpen() const {
+  return m_is_open && m_logger != nullptr;
+}
 
 bool LogManager::ShouldLog(LogLevel level) const {
   return level >= m_log_level;
 }
 
-const std::string& LogManager::GetModuleName() const { return m_module_name; }
+const std::string& LogManager::GetModuleName() const {
+  return m_module_name;
+}
 
-Logger* LogManager::GetLogger() const { return m_logger.get(); }
+Logger* LogManager::GetLogger() const {
+  return m_logger.get();
+}
 
 void LogManager::AddSink(const LogSink::LogSinkPtr& log_sink) {
   if (m_logger) {

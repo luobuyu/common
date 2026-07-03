@@ -6,8 +6,7 @@
 namespace dry {
 namespace argparse {
 
-ArgumentParser::ArgumentParser(std::string program_name,
-                               std::string description, bool add_help)
+ArgumentParser::ArgumentParser(std::string program_name, std::string description, bool add_help)
     : m_program_name(std::move(program_name)),
       m_description(std::move(description)),
       m_add_help(add_help) {}
@@ -19,10 +18,9 @@ Argument& ArgumentParser::AddArgument(std::unique_ptr<Argument> argument) {
   return ref;
 }
 
-FlagArgument& ArgumentParser::AddFlagArgument(
-    const std::vector<std::string>& names, bool& target,
-    const std::string& description, bool required,
-    std::function<void()> callback) {
+FlagArgument& ArgumentParser::AddFlagArgument(const std::vector<std::string>& names, bool& target,
+                                              const std::string& description, bool required,
+                                              std::function<void()> callback) {
   // 检查名称冲突
   CheckNameConflicts(names);
   // 创建参数对象（使用链式调用设置 required 和 callback）
@@ -38,9 +36,9 @@ FlagArgument& ArgumentParser::AddFlagArgument(
   return ref;
 }
 
-FlagArgument& ArgumentParser::AddFlagArgument(
-    const std::vector<std::string>& names, const std::string& description,
-    bool required, std::function<void()> callback) {
+FlagArgument& ArgumentParser::AddFlagArgument(const std::vector<std::string>& names,
+                                              const std::string& description, bool required,
+                                              std::function<void()> callback) {
   // 检查名称冲突
   CheckNameConflicts(names);
   // 创建参数对象（使用链式调用设置 required 和 callback）
@@ -65,8 +63,7 @@ ArgumentParser& ArgumentParser::AddSubcommand(const std::string& name,
 
   // 2. 子命令名称不能以 - 开头
   if (name[0] == '-') {
-    throw std::invalid_argument("Subcommand name cannot Start with '-': " +
-                                name);
+    throw std::invalid_argument("Subcommand name cannot Start with '-': " + name);
   }
 
   // 3. 检查子命令名称是否已存在
@@ -78,8 +75,7 @@ ArgumentParser& ArgumentParser::AddSubcommand(const std::string& name,
   for (const auto& arg : m_args) {
     const auto& names = arg->GetNames();
     if (std::find(names.begin(), names.end(), name) != names.end()) {
-      throw std::invalid_argument("Subcommand name conflicts with argument: " +
-                                  name);
+      throw std::invalid_argument("Subcommand name conflicts with argument: " + name);
     }
   }
 
@@ -109,8 +105,7 @@ bool ArgumentParser::Parse(const std::vector<std::string>& args) {
   if (!args.empty()) {
     auto it = m_subcommands.find(args[0]);
     if (it != m_subcommands.end()) {
-      return it->second->Parse(
-          std::vector<std::string>(args.begin() + 1, args.end()));
+      return it->second->Parse(std::vector<std::string>(args.begin() + 1, args.end()));
     }
   }
 
@@ -168,8 +163,7 @@ bool ArgumentParser::Parse(const std::vector<std::string>& args) {
   // 检查必需参数是否都已解析
   for (const auto& argument : m_args) {
     if (argument->IsRequired() && !argument->IsParsed()) {
-      throw std::runtime_error("Required argument missing: " +
-                               argument->GetNames().front());
+      throw std::runtime_error("Required argument missing: " + argument->GetNames().front());
     }
   }
 
@@ -182,8 +176,7 @@ void ArgumentParser::ValidateNames(const Argument& argument) const {
   // 验证是否出现冲突的名字
   for (const auto& name : argument.GetNames()) {
     if (m_subcommands.count(name)) {
-      throw std::invalid_argument("Subcommand name conflicts with argument: " +
-                                  name);
+      throw std::invalid_argument("Subcommand name conflicts with argument: " + name);
     }
   }
 }
@@ -198,19 +191,16 @@ bool ArgumentParser::HasArgument(const std::string& name) const {
   return false;
 }
 
-void ArgumentParser::CheckNameConflicts(
-    const std::vector<std::string>& names) const {
+void ArgumentParser::CheckNameConflicts(const std::vector<std::string>& names) const {
   for (const auto& name : names) {
     for (const auto& existing_arg : m_args) {
       const auto& existing_names = existing_arg->GetNames();
-      if (std::find(existing_names.begin(), existing_names.end(), name) !=
-          existing_names.end()) {
+      if (std::find(existing_names.begin(), existing_names.end(), name) != existing_names.end()) {
         throw std::invalid_argument("Argument name already exists: " + name);
       }
     }
     if (m_subcommands.count(name)) {
-      throw std::invalid_argument("Argument name conflicts with subcommand: " +
-                                  name);
+      throw std::invalid_argument("Argument name conflicts with subcommand: " + name);
     }
   }
 }

@@ -31,7 +31,7 @@ Logger::~Logger() {
 // =============================================================================
 
 ::dry::logger::SyncLogger::SyncLogger(std::vector<LogSink::LogSinkPtr> sinks,
-                       LoggerFormat::LoggerFormatPtr fmt)
+                                      LoggerFormat::LoggerFormatPtr fmt)
     : Logger(std::move(sinks), std::move(fmt)) {}
 
 void ::dry::logger::SyncLogger::Log(LogEvent log_event) {
@@ -45,15 +45,13 @@ void ::dry::logger::SyncLogger::Log(LogEvent log_event) {
 // AsyncLogger 实现
 // =============================================================================
 
-AsyncLogger::AsyncLogger(std::vector<LogSink::LogSinkPtr> sinks,
-                         LoggerFormat::LoggerFormatPtr fmt, int queue_size,
-                         std::chrono::milliseconds flush_interval)
+AsyncLogger::AsyncLogger(std::vector<LogSink::LogSinkPtr> sinks, LoggerFormat::LoggerFormatPtr fmt,
+                         int queue_size, std::chrono::milliseconds flush_interval)
     : Logger(std::move(sinks), std::move(fmt)) {
   StartBgThread(queue_size, flush_interval);
 }
 
-void AsyncLogger::StartBgThread(int queue_size,
-                                std::chrono::milliseconds flush_interval) {
+void AsyncLogger::StartBgThread(int queue_size, std::chrono::milliseconds flush_interval) {
   m_logs.resize(queue_size);
   m_flush_interval = flush_interval;
   m_async_thread = std::thread(&AsyncLogger::BgLogLoop, this);
@@ -66,9 +64,13 @@ void AsyncLogger::BeforeExit() {
   }
 }
 
-AsyncLogger::~AsyncLogger() { BeforeExit(); }
+AsyncLogger::~AsyncLogger() {
+  BeforeExit();
+}
 
-void AsyncLogger::Log(LogEvent log_event) { m_logs.push(std::move(log_event)); }
+void AsyncLogger::Log(LogEvent log_event) {
+  m_logs.push(std::move(log_event));
+}
 
 void AsyncLogger::BgLogLoop() {
   static constexpr std::size_t kBatchSize = 64;  // 每批最多弹出条数
@@ -77,8 +79,7 @@ void AsyncLogger::BgLogLoop() {
 
   while (true) {
     batch.clear();
-    std::size_t n =
-        m_logs.BatchPopWithTimeout(batch, kBatchSize, m_flush_interval);
+    std::size_t n = m_logs.BatchPopWithTimeout(batch, kBatchSize, m_flush_interval);
 
     if (n > 0) {
       // 批量写入所有 Sink

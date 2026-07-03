@@ -10,8 +10,7 @@ logger::FileSink::FileSink(std::string file_path, uint32_t max_size,
       m_max_size(max_size),
       m_rotate_interval(rotate_interval),
       m_next_start(std::chrono::system_clock::now() + m_rotate_interval) {}
-void FileSink::Sink(const logger::LogEvent &log_event,
-                    LoggerFormat::LoggerFormatPtr &log_format) {
+void FileSink::Sink(const logger::LogEvent &log_event, LoggerFormat::LoggerFormatPtr &log_format) {
   bool create_new_file = !m_ofs.is_open();
   // 如果超过了日期
   if (log_event.m_timestamp >= m_next_start) {
@@ -52,13 +51,17 @@ void FileSink::OpenNewFile() {
   }
 }
 
-void FileSink::Flush() { m_ofs.flush(); }
+void FileSink::Flush() {
+  m_ofs.flush();
+}
 
 void StdoutSink::Sink(const logger::LogEvent &log_event,
                       LoggerFormat::LoggerFormatPtr &log_format) {
   log_format->Format(std::cout, log_event);
 }
 
-void StdoutSink::Flush() { std::cout.flush(); }
+void StdoutSink::Flush() {
+  std::cout.flush();
+}
 };  // namespace logger
 }  // namespace dry

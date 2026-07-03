@@ -7,8 +7,7 @@ namespace dry {
 namespace argparse {
 
 // 构造函数（不带 required 和 callback 参数，避免隐式转换问题）
-FlagArgument::FlagArgument(const std::vector<std::string>& names,
-                           const std::string& description)
+FlagArgument::FlagArgument(const std::vector<std::string>& names, const std::string& description)
     : Argument(ArgumentType::Flag, names, description), m_flag(false) {}
 
 FlagArgument::FlagArgument(const std::vector<std::string>& names, bool& target,
@@ -42,7 +41,9 @@ void FlagArgument::SetFlag(bool value) {
   }
 }
 
-void FlagArgument::SetDefaultValue(bool value) { m_default_flag = value; }
+void FlagArgument::SetDefaultValue(bool value) {
+  m_default_flag = value;
+}
 
 bool FlagArgument::GetDefaultValue() const {
   return m_default_flag.value_or(false);
@@ -97,8 +98,7 @@ void FlagArgument::Validate() const {
   }
 }
 
-size_t FlagArgument::Parse(const std::vector<std::string>& args,
-                           size_t current_index) {
+size_t FlagArgument::Parse(const std::vector<std::string>& args, size_t current_index) {
   SetFlag(true);
   Validate();  // 解析后自动验证
   return 1;    // 消耗了标志参数本身

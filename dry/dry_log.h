@@ -40,10 +40,8 @@ void InitLogger(config::Config& conf);
  * @param type 日志器类型，默认异步
  */
 void InitLogger(const std::string& module_name, int level = 2,
-                const std::string& log_path = "../Log",
-                bool enable_stdout = true,
-                logger::LogManager::LoggerType type =
-                    logger::LogManager::LoggerType::ASYNC);
+                const std::string& log_path = "../Log", bool enable_stdout = true,
+                logger::LogManager::LoggerType type = logger::LogManager::LoggerType::ASYNC);
 
 /// 向后兼容的函数名
 void OpenLog(config::Config& conf);
@@ -60,14 +58,14 @@ void OpenLog(config::Config& conf);
  * @details {} 风格（fmt::format），需 fmt 库（FMT_FOUND）。
  *          保留此骨架便于后续注入上下文/默认参数等扩展。
  */
-#define LOG_FMT(level, fmt, ...)                                         \
-  do {                                                                   \
-    auto& _log_mgr = dry::logger::LogManager::GetInstance();             \
-    if (_log_mgr.IsOpen() && _log_mgr.ShouldLog(level)) {                \
-      _log_mgr.GetLogger()->Log(dry::logger::LogEvent(                   \
-          level, _log_mgr.GetModuleName(), __FILE__, __func__, __LINE__, \
-          dry::logger::FormatString(fmt, ##__VA_ARGS__)));               \
-    }                                                                    \
+#define LOG_FMT(level, fmt, ...)                                                               \
+  do {                                                                                         \
+    auto& _log_mgr = dry::logger::LogManager::GetInstance();                                   \
+    if (_log_mgr.IsOpen() && _log_mgr.ShouldLog(level)) {                                      \
+      _log_mgr.GetLogger()->Log(                                                               \
+          dry::logger::LogEvent(level, _log_mgr.GetModuleName(), __FILE__, __func__, __LINE__, \
+                                dry::logger::FormatString(fmt, ##__VA_ARGS__)));               \
+    }                                                                                          \
   } while (0)
 
 /// @name 日志输出宏（{} 风格，fmt::format）
@@ -79,14 +77,10 @@ void OpenLog(config::Config& conf);
 ///   LOG_ERROR("connect failed, ret={}", ret);
 /// @endcode
 /// @{
-#define LOG_DEBUG(fmt, ...) \
-  LOG_FMT(dry::logger::LogLevel::DEBUG, fmt, ##__VA_ARGS__)
-#define LOG_INFO(fmt, ...) \
-  LOG_FMT(dry::logger::LogLevel::INFO, fmt, ##__VA_ARGS__)
-#define LOG_WARN(fmt, ...) \
-  LOG_FMT(dry::logger::LogLevel::WARN, fmt, ##__VA_ARGS__)
-#define LOG_ERROR(fmt, ...) \
-  LOG_FMT(dry::logger::LogLevel::ERROR, fmt, ##__VA_ARGS__)
+#define LOG_DEBUG(fmt, ...) LOG_FMT(dry::logger::LogLevel::DEBUG, fmt, ##__VA_ARGS__)
+#define LOG_INFO(fmt, ...) LOG_FMT(dry::logger::LogLevel::INFO, fmt, ##__VA_ARGS__)
+#define LOG_WARN(fmt, ...) LOG_FMT(dry::logger::LogLevel::WARN, fmt, ##__VA_ARGS__)
+#define LOG_ERROR(fmt, ...) LOG_FMT(dry::logger::LogLevel::ERROR, fmt, ##__VA_ARGS__)
 /// @}
 
 #endif

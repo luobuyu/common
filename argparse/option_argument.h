@@ -49,8 +49,7 @@ class OptionArgument : public MultiArgument<T> {
                  const std::string& description = "");
 
   // 构造函数3: 不绑定
-  OptionArgument(const std::vector<std::string>& names,
-                 const std::string& description = "");
+  OptionArgument(const std::vector<std::string>& names, const std::string& description = "");
 
   // 链式调用
   OptionArgument<T>& Value(const T& value);
@@ -61,8 +60,7 @@ class OptionArgument : public MultiArgument<T> {
 
   // 重写多态方法
   // OptionArgument 需要一个额外参数，解析 args[current_index+1]
-  size_t Parse(const std::vector<std::string>& args,
-               size_t current_index = 0) override;
+  size_t Parse(const std::vector<std::string>& args, size_t current_index = 0) override;
 
   // 判断命令行参数是否匹配此选项参数
   bool Matches(const std::string& arg) const override;

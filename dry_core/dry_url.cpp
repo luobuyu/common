@@ -85,10 +85,8 @@ static void ParseAuthority(std::string_view authority, UrlComponents& result) {
       return;
     }
     result.host = host_part.substr(1, bracket_end - 1);  // 去掉 []
-    if (bracket_end + 1 < host_part.size() &&
-        host_part[bracket_end + 1] == ':') {
-      result.port =
-          SafeParsePort(std::string_view(host_part).substr(bracket_end + 2));
+    if (bracket_end + 1 < host_part.size() && host_part[bracket_end + 1] == ':') {
+      result.port = SafeParsePort(std::string_view(host_part).substr(bracket_end + 2));
     }
   } else {
     // IPv4 / hostname
@@ -104,8 +102,7 @@ static void ParseAuthority(std::string_view authority, UrlComponents& result) {
       }
       if (all_digits && colon + 1 < host_part.size()) {
         result.host = host_part.substr(0, colon);
-        result.port =
-            SafeParsePort(std::string_view(host_part).substr(colon + 1));
+        result.port = SafeParsePort(std::string_view(host_part).substr(colon + 1));
       } else {
         // colon 后面不是纯数字，整个当 host（可能是 IPv6 裸地址）
         result.host = host_part;
@@ -122,8 +119,7 @@ static void ParseAuthority(std::string_view authority, UrlComponents& result) {
 }
 
 /// RFC 3986 §5.2.4 相对路径解析（dot-segment 移除）
-std::string ResolveRelativePath(std::string_view relative,
-                                std::string_view base_path) {
+std::string ResolveRelativePath(std::string_view relative, std::string_view base_path) {
   // 先分离 query string（避免 query 中的 ".." 等干扰路径解析）（漏洞 B）
   std::string path_part(relative);
   std::string query_part;
@@ -141,9 +137,8 @@ std::string ResolveRelativePath(std::string_view relative,
   std::string base = "/";
   if (!base_path.empty()) {
     auto query_start = base_path.find('?');
-    std::string_view pure_path = (query_start != std::string_view::npos)
-                                     ? base_path.substr(0, query_start)
-                                     : base_path;
+    std::string_view pure_path =
+        (query_start != std::string_view::npos) ? base_path.substr(0, query_start) : base_path;
     auto last_slash = pure_path.rfind('/');
     if (last_slash != std::string_view::npos) {
       base = std::string(pure_path.substr(0, last_slash + 1));
@@ -195,8 +190,7 @@ std::string ResolveRelativePath(std::string_view relative,
     }
     // D: 单独的 "." 或 ".." → 移除
     if ((merged.size() - pos == 1 && merged[pos] == '.') ||
-        (merged.size() - pos == 2 && merged[pos] == '.' &&
-         merged[pos + 1] == '.')) {
+        (merged.size() - pos == 2 && merged[pos] == '.' && merged[pos + 1] == '.')) {
       break;
     }
     // E: 移动第一个路径段到 output
@@ -227,8 +221,7 @@ UrlComponents ParseUrl(std::string_view location, std::string_view base_path) {
   while (start < end && (location[start] == ' ' || location[start] == '\t')) {
     start++;
   }
-  while (end > start &&
-         (location[end - 1] == ' ' || location[end - 1] == '\t')) {
+  while (end > start && (location[end - 1] == ' ' || location[end - 1] == '\t')) {
     end--;
   }
   if (start >= end) {
@@ -284,8 +277,7 @@ UrlComponents ParseUrl(std::string_view location, std::string_view base_path) {
   bool valid_scheme = true;
   for (size_t i = 0; i < colon_pos; ++i) {
     char c = loc[i];
-    if (!std::isalnum(static_cast<unsigned char>(c)) && c != '+' && c != '-' &&
-        c != '.') {
+    if (!std::isalnum(static_cast<unsigned char>(c)) && c != '+' && c != '-' && c != '.') {
       valid_scheme = false;
       break;
     }
@@ -296,8 +288,8 @@ UrlComponents ParseUrl(std::string_view location, std::string_view base_path) {
     }
   }
 
-  if (!valid_scheme || loc.size() < colon_pos + 3 ||
-      loc[colon_pos + 1] != '/' || loc[colon_pos + 2] != '/') {
+  if (!valid_scheme || loc.size() < colon_pos + 3 || loc[colon_pos + 1] != '/' ||
+      loc[colon_pos + 2] != '/') {
     // 不是合法的 scheme://... → 当作相对路径
     result.path = ResolveRelativePath(loc, base_path);
     return result;

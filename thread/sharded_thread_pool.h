@@ -35,8 +35,7 @@ class ShardedThreadPool {
   /// @param task 任务
   /// @note RpcServer 使用此接口，不同请求可并发处理
   template <typename F, typename... Args>
-  auto Submit(F&& func, Args&&... args)
-      -> std::future<std::invoke_result_t<F, Args...>>;
+  auto Submit(F&& func, Args&&... args) -> std::future<std::invoke_result_t<F, Args...>>;
 
   /// 停止所有 Worker（等待队列中的任务执行完毕）
   void Stop();
@@ -45,9 +44,7 @@ class ShardedThreadPool {
   size_t ShardCount() const { return m_shards.size(); }
 
   /// 获取指定 shard 的队列长度
-  size_t QueueSize(size_t shard_idx) const {
-    return m_shards.at(shard_idx)->GetQueueSize();
-  }
+  size_t QueueSize(size_t shard_idx) const { return m_shards.at(shard_idx)->GetQueueSize(); }
 
   /// 获取所有 shard 的总队列长度
   size_t TotalQueueSize() const;

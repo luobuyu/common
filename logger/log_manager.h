@@ -14,9 +14,9 @@ namespace logger {
 
 /**
  * @brief 日志管理器（唯一单例）
- * @details 负责日志系统的全局状态管理、Logger 实例的创建与持有、信号处理注册。
- *          所有外部代码应通过 LogManager 访问日志功能，而非直接操作 Logger
- * 子类。
+ * @details 负责日志系统的全局状态管理、Logger
+ * 实例的创建与持有、信号处理注册。 所有外部代码应通过 LogManager
+ * 访问日志功能，而非直接操作 Logger 子类。
  */
 class LogManager {
  public:
@@ -43,11 +43,16 @@ class LogManager {
    * @param queue_size 异步队列大小（仅异步模式有效）
    * @param flush_interval 异步刷盘间隔（仅异步模式有效）
    */
-  void Init(::dry::logger::LogLevelogger::LogLevelogger::LogLevelogger::LogLevel log_level, std::stri::dry::logger::LogSinkle_name,::dry::logger::LogSinkType ::dry::logger::LoggerFormatgger::LogSink     ::dry::logger::LoggerFormatgger::LogSink::Log:::dry::logger::LoggerFormat::LoggerFormatsink,
-            :::dry::logger::LoggerFormat::LoggerFormat::LoggerFormatPtr l::dry::logger::LoggerFormat                std::make_shared<::dry::logger::LoggerFormat>(),
-            int queue_size = 8192,
-            std::chrono::milliseconds flush_interval =
-                std::chrono::milliseconds(3000));
+  void Init(
+      ::dry::logger::LogLevelogger::LogLevelogger::LogLevelogger::LogLevel log_level,
+      std::stri::dry::logger::LogSinkle_name,
+      ::dry::logger::LogSinkType ::dry::logger::LoggerFormatgger::LogSink ::dry::logger::
+          LoggerFormatgger::LogSink::Log::
+          : dry::logger::LoggerFormat::LoggerFormatsink, ::
+              : dry::logger::LoggerFormat::LoggerFormat::LoggerFormatPtr
+                    l::dry::logger::LoggerFormat std::make_shared<::dry::logger::LoggerFormat>(),
+                int queue_size = 8192,
+                std::chrono::milliseconds flush_interval = std::chrono::milliseconds(3000));
 
   /**
    * @brief 初始化日志系统（多 Sink 版本）

@@ -21,8 +21,7 @@ std::optional<T> StrTo(std::string_view str, int base = 10) noexcept {
   }
   if constexpr (std::is_integral_v<T> && !std::is_same_v<T, bool>) {
     T value{};
-    auto [ptr, ec] =
-        std::from_chars(str.data(), str.data() + str.size(), value, base);
+    auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), value, base);
     // 必须无错误 且 消费了全部字符
     if (ec != std::errc{} || ptr != str.data() + str.size()) {
       return std::nullopt;
@@ -30,8 +29,7 @@ std::optional<T> StrTo(std::string_view str, int base = 10) noexcept {
     return value;
   } else if constexpr (std::is_floating_point_v<T>) {
     T value{};
-    auto [ptr, ec] =
-        std::from_chars(str.data(), str.data() + str.size(), value);
+    auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), value);
     if (ec != std::errc{} || ptr != str.data() + str.size()) {
       return std::nullopt;
     }
@@ -71,8 +69,7 @@ T StrToOr(std::string_view str, T default_value = T{}, int base = 10) noexcept {
 }
 
 // split
-inline std::vector<std::string> StringSplit(const std::string &s,
-                                            const std::string &delim) {
+inline std::vector<std::string> StringSplit(const std::string &s, const std::string &delim) {
   std::vector<std::string> ret;
   size_t start = 0, end = 0;
   size_t len = s.length();
@@ -92,15 +89,13 @@ inline std::vector<std::string> StringSplit(const std::string &s,
   return ret;
 }
 // split
-inline std::vector<std::string> StringSplit(const std::string &str,
-                                            char delim = ' ') {
+inline std::vector<std::string> StringSplit(const std::string &str, char delim = ' ') {
   return StringSplit(str, std::string(1, delim));
 }
 
 // split (string_view 版本，零拷贝；返回的 view 生命周期由调用方保证 s 仍存活)
 // 注意：与 StringSplit 行为一致——跳过空段
-inline std::vector<std::string_view> StringSplitView(std::string_view s,
-                                                     std::string_view delim) {
+inline std::vector<std::string_view> StringSplitView(std::string_view s, std::string_view delim) {
   std::vector<std::string_view> ret;
   if (delim.empty()) {
     if (!s.empty()) {
@@ -121,8 +116,7 @@ inline std::vector<std::string_view> StringSplitView(std::string_view s,
   return ret;
 }
 
-inline std::vector<std::string_view> StringSplitView(std::string_view s,
-                                                     char delim = ' ') {
+inline std::vector<std::string_view> StringSplitView(std::string_view s, char delim = ' ') {
   std::vector<std::string_view> ret;
   size_t start = 0, end = 0;
   while ((end = s.find(delim, start)) != std::string_view::npos) {
@@ -138,8 +132,7 @@ inline std::vector<std::string_view> StringSplitView(std::string_view s,
 }
 
 // join - 将字符串数组用分隔符拼接为一个字符串（StringSplit 的逆操作）
-inline std::string StringJoin(const std::vector<std::string> &parts,
-                              const std::string &delim) {
+inline std::string StringJoin(const std::vector<std::string> &parts, const std::string &delim) {
   std::string result;
   for (size_t i = 0; i < parts.size(); i++) {
     if (i > 0) {

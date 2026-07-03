@@ -10,15 +10,20 @@ namespace dry {
 // 默认返回毫秒，可通过模板参数指定精度，如 GetNow<std::chrono::microseconds>()
 template <typename Duration = std::chrono::milliseconds>
 inline int64_t GetNow() {
-  return std::chrono::duration_cast<Duration>(
-             std::chrono::steady_clock::now().time_since_epoch())
+  return std::chrono::duration_cast<Duration>(std::chrono::steady_clock::now().time_since_epoch())
       .count();
 }
 
 // 常用精度的简洁别名
-inline int64_t GetNowS() { return GetNow<std::chrono::seconds>(); }
-inline int64_t GetNowMs() { return GetNow<std::chrono::milliseconds>(); }
-inline int64_t GetNowUs() { return GetNow<std::chrono::microseconds>(); }
+inline int64_t GetNowS() {
+  return GetNow<std::chrono::seconds>();
+}
+inline int64_t GetNowMs() {
+  return GetNow<std::chrono::milliseconds>();
+}
+inline int64_t GetNowUs() {
+  return GetNow<std::chrono::microseconds>();
+}
 
 inline std::string GetTime(std::string format) {
   auto now = std::chrono::system_clock::now();
@@ -57,9 +62,7 @@ inline std::string GetTimeWithMs(const std::chrono::system_clock::time_point& t,
                                  const std::string& format) {
   std::string result = GetTime(t, format);
   auto epoch = t.time_since_epoch();
-  auto millis =
-      std::chrono::duration_cast<std::chrono::milliseconds>(epoch).count() %
-      1000;
+  auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(epoch).count() % 1000;
   char ms_buf[8];
   snprintf(ms_buf, sizeof(ms_buf), ".%03d", static_cast<int>(millis));
   return result + ms_buf;
@@ -73,10 +76,7 @@ class Timer {
   long long m_timeout;
 
  public:
-  Timer()
-      : m_start_time(SteadyClock::now()),
-        m_end_time(m_start_time),
-        m_timeout(0) {}
+  Timer() : m_start_time(SteadyClock::now()), m_end_time(m_start_time), m_timeout(0) {}
   Timer(long long sec_timeout) {
     m_timeout = sec_timeout;
     SetTimer(sec_timeout);
@@ -86,19 +86,13 @@ class Timer {
     m_end_time = m_start_time + std::chrono::seconds(sec_timeout);
   }
   bool IsTimeout() { return m_end_time < SteadyClock::now(); }
-  std::chrono::duration<double> GetDuration() {
-    return SteadyClock::now() - m_start_time;
-  }
-  double GetDurationS() {
-    return std::chrono::duration<double>(GetDuration()).count();
-  }
+  std::chrono::duration<double> GetDuration() { return SteadyClock::now() - m_start_time; }
+  double GetDurationS() { return std::chrono::duration<double>(GetDuration()).count(); }
   int64_t GetDurationMs() {
-    return std::chrono::duration_cast<std::chrono::milliseconds>(GetDuration())
-        .count();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(GetDuration()).count();
   }
   int64_t GetDurationUs() {
-    return std::chrono::duration_cast<std::chrono::microseconds>(GetDuration())
-        .count();
+    return std::chrono::duration_cast<std::chrono::microseconds>(GetDuration()).count();
   }
 
   long long GetTimeout() { return m_timeout; }
