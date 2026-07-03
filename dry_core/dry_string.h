@@ -16,7 +16,9 @@ namespace dry {
 // base 参数仅对整数类型生效（默认十进制；HTTP chunked size 等场景可传 16）
 template <typename T>
 std::optional<T> StrTo(std::string_view str, int base = 10) noexcept {
-  if (str.empty()) return std::nullopt;
+  if (str.empty()) {
+    return std::nullopt;
+  }
   if constexpr (std::is_integral_v<T> && !std::is_same_v<T, bool>) {
     T value{};
     auto [ptr, ec] =
@@ -35,18 +37,26 @@ std::optional<T> StrTo(std::string_view str, int base = 10) noexcept {
     }
     return value;
   } else if constexpr (std::is_same_v<T, bool>) {
-    if (str == "true" || str == "1") return true;
-    if (str == "false" || str == "0") return false;
+    if (str == "true" || str == "1") {
+      return true;
+    }
+    if (str == "false" || str == "0") {
+      return false;
+    }
     return std::nullopt;
   } else if constexpr (std::is_same_v<T, std::string>) {
     return std::string(str);
   } else {
     std::istringstream iss{std::string(str)};
     T value;
-    if (!(iss >> value)) return std::nullopt;
+    if (!(iss >> value)) {
+      return std::nullopt;
+    }
     // 检查是否还有剩余字符（跳过尾部空白）
     char c;
-    if (iss >> c) return std::nullopt;  // 还有未消费的非空白字符
+    if (iss >> c) {
+      return std::nullopt;  // 还有未消费的非空白字符
+    }
     return value;
   }
 }
@@ -69,12 +79,16 @@ inline std::vector<std::string> StringSplit(const std::string &s,
   // 逐个找到子串并分割
   while ((end = s.find(delim, start)) != std::string::npos) {
     std::string substr = s.substr(start, end - start);
-    if (!substr.empty()) ret.emplace_back(substr);  // 提取子串
-    start = end + delim.length();                   // 跳过分隔符
+    if (!substr.empty()) {
+      ret.emplace_back(substr);  // 提取子串
+    }
+    start = end + delim.length();  // 跳过分隔符
   }
   // 处理最后一个部分
   std::string substr = s.substr(start);
-  if (!substr.empty()) ret.emplace_back(substr);
+  if (!substr.empty()) {
+    ret.emplace_back(substr);
+  }
   return ret;
 }
 // split
@@ -89,15 +103,21 @@ inline std::vector<std::string_view> StringSplitView(std::string_view s,
                                                      std::string_view delim) {
   std::vector<std::string_view> ret;
   if (delim.empty()) {
-    if (!s.empty()) ret.emplace_back(s);
+    if (!s.empty()) {
+      ret.emplace_back(s);
+    }
     return ret;
   }
   size_t start = 0, end = 0;
   while ((end = s.find(delim, start)) != std::string_view::npos) {
-    if (end > start) ret.emplace_back(s.substr(start, end - start));
+    if (end > start) {
+      ret.emplace_back(s.substr(start, end - start));
+    }
     start = end + delim.size();
   }
-  if (start < s.size()) ret.emplace_back(s.substr(start));
+  if (start < s.size()) {
+    ret.emplace_back(s.substr(start));
+  }
   return ret;
 }
 
@@ -106,10 +126,14 @@ inline std::vector<std::string_view> StringSplitView(std::string_view s,
   std::vector<std::string_view> ret;
   size_t start = 0, end = 0;
   while ((end = s.find(delim, start)) != std::string_view::npos) {
-    if (end > start) ret.emplace_back(s.substr(start, end - start));
+    if (end > start) {
+      ret.emplace_back(s.substr(start, end - start));
+    }
     start = end + 1;
   }
-  if (start < s.size()) ret.emplace_back(s.substr(start));
+  if (start < s.size()) {
+    ret.emplace_back(s.substr(start));
+  }
   return ret;
 }
 
@@ -118,7 +142,9 @@ inline std::string StringJoin(const std::vector<std::string> &parts,
                               const std::string &delim) {
   std::string result;
   for (size_t i = 0; i < parts.size(); i++) {
-    if (i > 0) result += delim;
+    if (i > 0) {
+      result += delim;
+    }
     result += parts[i];
   }
   return result;
@@ -162,7 +188,9 @@ inline std::string ToUpper(std::string_view str) {
 
 // 大小写不敏感比较
 inline bool EqualsIgnoreCase(std::string_view a, std::string_view b) {
-  if (a.size() != b.size()) return false;
+  if (a.size() != b.size()) {
+    return false;
+  }
   for (size_t i = 0; i < a.size(); ++i) {
     if (std::tolower(static_cast<unsigned char>(a[i])) !=
         std::tolower(static_cast<unsigned char>(b[i]))) {

@@ -18,10 +18,9 @@ class Argument {
  public:
   // 构造函数（不带 required 和 callback 参数，避免隐式转换问题）
   // 使用链式调用 .required() 和 .callback() 来设置
-  Argument(const std::vector<std::string>& names,
-           const std::string& description);
+  Argument(const std::vector<std::string>& names, std::string description);
   Argument(const ArgumentType& type, const std::vector<std::string>& names,
-           const std::string& description);
+           std::string description);
   virtual ~Argument() = default;
 
   // setter

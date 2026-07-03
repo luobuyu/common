@@ -1,0 +1,53 @@
+# clang-tidy 配置：命名风格 + 静态检查
+# 用法：clang-tidy -p build rpckit/network/tcp_connection.cpp
+# 或集成到 CMake：set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-config-file=${CMAKE_SOURCE_DIR}/.clang-tidy")
+
+Checks: >
+  readability-identifier-naming,
+  modernize-use-nullptr,
+  modernize-use-override,
+  modernize-pass-by-value,
+  bugprone-use-after-move,
+  -google-build-using-namespace
+
+CheckOptions:
+  # 函数名：PascalCase（HandleRead, GenerateHeader, CallMethod）
+  - key: readability-identifier-naming.FunctionCase
+    value: CamelCase
+  - key: readability-identifier-naming.FunctionPrefix
+    value: ''
+  # 类/结构/枚举名：PascalCase（TcpConnection, HttpStatus）
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key: readability-identifier-naming.StructCase
+    value: CamelCase
+  - key: readability-identifier-naming.EnumCase
+    value: CamelCase
+  - key: readability-identifier-naming.EnumConstantCase
+    value: CamelCase
+  # 私有成员变量：m_ 前缀 + camelCase（m_code, m_msgCallback）
+  - key: readability-identifier-naming.PrivateMemberPrefix
+    value: 'm_'
+  - key: readability-identifier-naming.PrivateMemberCase
+    value: lower_case
+  # 公有成员变量：camelCase
+  - key: readability-identifier-naming.PublicMemberCase
+    value: lower_case
+  # 局部变量/参数：camelCase 或 lower_case
+  - key: readability-identifier-naming.VariableCase
+    value: lower_case
+  - key: readability-identifier-naming.ParameterCase
+    value: lower_case
+  # 命名空间：lower_case（rpckit, network, http）
+  - key: readability-identifier-naming.NamespaceCase
+    value: lower_case
+  # 常量/宏：UPPER_CASE
+  - key: readability-identifier-naming.MacroCase
+    value: UPPER_CASE
+  # typedef/using：PascalCase
+  - key: readability-identifier-naming.TypedefCase
+    value: CamelCase
+
+# 豁免：标准库/POSIX 同名函数允许小写
+# clang-tidy 不支持 per-function 豁免，通过 NOLINT 行内注释跳过：
+#   size_t find(std::string_view needle) const { ... }  // NOLINT(readability-identifier-naming)

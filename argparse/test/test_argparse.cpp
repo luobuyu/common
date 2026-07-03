@@ -79,7 +79,7 @@ static int test_failed = 0;
 
 // ==================== 1. FlagArgument 测试 ====================
 
-void test_flag_basic() {
+void TestFlagBasic() {
   TEST_CASE("Flag 基本功能");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -92,7 +92,7 @@ void test_flag_basic() {
   TEST_PASSED();
 }
 
-void test_flag_short_name() {
+void TestFlagShortName() {
   TEST_CASE("Flag 短名称");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -105,7 +105,7 @@ void test_flag_short_name() {
   TEST_PASSED();
 }
 
-void test_flag_not_set() {
+void TestFlagNotSet() {
   TEST_CASE("Flag 未设置");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -118,7 +118,7 @@ void test_flag_not_set() {
   TEST_PASSED();
 }
 
-void test_flag_default_value() {
+void TestFlagDefaultValue() {
   TEST_CASE("Flag 默认值");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -132,7 +132,7 @@ void test_flag_default_value() {
   TEST_PASSED();
 }
 
-void test_flag_callback() {
+void TestFlagCallback() {
   TEST_CASE("Flag 回调函数");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -148,7 +148,7 @@ void test_flag_callback() {
 
 // ==================== 2. OptionArgument 测试 ====================
 
-void test_option_basic() {
+void TestOptionBasic() {
   TEST_CASE("Option 基本功能");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -161,7 +161,7 @@ void test_option_basic() {
   TEST_PASSED();
 }
 
-void test_option_long_name() {
+void TestOptionLongName() {
   TEST_CASE("Option 长名称");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -174,7 +174,7 @@ void test_option_long_name() {
   TEST_PASSED();
 }
 
-void test_option_int() {
+void TestOptionInt() {
   TEST_CASE("Option 整数类型");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -187,7 +187,7 @@ void test_option_int() {
   TEST_PASSED();
 }
 
-void test_option_negative_number() {
+void TestOptionNegativeNumber() {
   TEST_CASE("Option 负数");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -200,7 +200,7 @@ void test_option_negative_number() {
   TEST_PASSED();
 }
 
-void test_option_default_value() {
+void TestOptionDefaultValue() {
   TEST_CASE("Option 默认值");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -214,7 +214,7 @@ void test_option_default_value() {
   TEST_PASSED();
 }
 
-void test_option_callback() {
+void TestOptionCallback() {
   TEST_CASE("Option 回调函数");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -229,7 +229,7 @@ void test_option_callback() {
   TEST_PASSED();
 }
 
-void test_option_required_missing() {
+void TestOptionRequiredMissing() {
   TEST_CASE("Option 必需参数缺失");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -242,7 +242,7 @@ void test_option_required_missing() {
   TEST_PASSED();
 }
 
-void test_option_missing_value() {
+void TestOptionMissingValue() {
   TEST_CASE("Option 缺少值");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -257,7 +257,7 @@ void test_option_missing_value() {
 
 // ==================== 3. nargs (expected) 测试 ====================
 
-void test_option_nargs_exact() {
+void TestOptionNargsExact() {
   TEST_CASE("Option nargs 精确数量");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -274,7 +274,7 @@ void test_option_nargs_exact() {
   TEST_PASSED();
 }
 
-void test_option_nargs_exact_insufficient() {
+void TestOptionNargsExactInsufficient() {
   TEST_CASE("Option nargs 精确数量不足");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -288,7 +288,7 @@ void test_option_nargs_exact_insufficient() {
   TEST_PASSED();
 }
 
-void test_option_nargs_range() {
+void TestOptionNargsRange() {
   TEST_CASE("Option nargs 范围 [1, 3]");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -302,7 +302,7 @@ void test_option_nargs_range() {
   TEST_PASSED();
 }
 
-void test_option_nargs_range_0_1() {
+void TestOptionNargsRange01() {
   TEST_CASE("Option nargs 范围 [0, 1] - 可选参数");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -317,7 +317,7 @@ void test_option_nargs_range_0_1() {
   TEST_PASSED();
 }
 
-void test_option_nargs_range_0_1_with_value() {
+void TestOptionNargsRange01WithValue() {
   TEST_CASE("Option nargs 范围 [0, 1] 带值");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -333,7 +333,7 @@ void test_option_nargs_range_0_1_with_value() {
   TEST_PASSED();
 }
 
-void test_option_nargs_unlimited() {
+void TestOptionNargsUnlimited() {
   TEST_CASE("Option nargs 无限制 (*)");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -347,7 +347,7 @@ void test_option_nargs_unlimited() {
   TEST_PASSED();
 }
 
-void test_option_nargs_unlimited_empty() {
+void TestOptionNargsUnlimitedEmpty() {
   TEST_CASE("Option nargs 无限制 (*) 空值");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -362,7 +362,7 @@ void test_option_nargs_unlimited_empty() {
   TEST_PASSED();
 }
 
-void test_option_nargs_at_least_one() {
+void TestOptionNargsAtLeastOne() {
   TEST_CASE("Option nargs 至少一个 (+)");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -376,7 +376,7 @@ void test_option_nargs_at_least_one() {
   TEST_PASSED();
 }
 
-void test_option_nargs_at_least_one_empty() {
+void TestOptionNargsAtLeastOneEmpty() {
   TEST_CASE("Option nargs 至少一个 (+) 空值 - 应报错");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -392,7 +392,7 @@ void test_option_nargs_at_least_one_empty() {
 
 // ==================== 4. PositionalArgument 测试 ====================
 
-void test_positional_basic() {
+void TestPositionalBasic() {
   TEST_CASE("Positional 基本功能");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -405,7 +405,7 @@ void test_positional_basic() {
   TEST_PASSED();
 }
 
-void test_positional_multiple() {
+void TestPositionalMultiple() {
   TEST_CASE("Positional 多个位置参数");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -420,7 +420,7 @@ void test_positional_multiple() {
   TEST_PASSED();
 }
 
-void test_positional_with_option() {
+void TestPositionalWithOption() {
   TEST_CASE("Positional 与 Option 混合");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -436,7 +436,7 @@ void test_positional_with_option() {
   TEST_PASSED();
 }
 
-void test_positional_nargs_unlimited() {
+void TestPositionalNargsUnlimited() {
   TEST_CASE("Positional nargs 无限制");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -452,30 +452,30 @@ void test_positional_nargs_unlimited() {
 
 // ==================== 5. 自动 help 测试 ====================
 
-void test_auto_help_enabled() {
+void TestAutoHelpEnabled() {
   TEST_CASE("自动 help 启用");
 
   ArgumentParser parser("test", "测试程序", true);  // 启用自动 help
 
   // 遇到 --help 应该返回 false
-  bool Result = parser.Parse({"--help"});
-  ASSERT_FALSE(Result);
+  bool result = parser.Parse({"--help"});
+  ASSERT_FALSE(result);
 
   TEST_PASSED();
 }
 
-void test_auto_help_short() {
+void TestAutoHelpShort() {
   TEST_CASE("自动 help 短名称 -h");
 
   ArgumentParser parser("test", "测试程序", true);
 
-  bool Result = parser.Parse({"-h"});
-  ASSERT_FALSE(Result);
+  bool result = parser.Parse({"-h"});
+  ASSERT_FALSE(result);
 
   TEST_PASSED();
 }
 
-void test_auto_help_disabled() {
+void TestAutoHelpDisabled() {
   TEST_CASE("自动 help 禁用");
 
   ArgumentParser parser("test", "测试程序", false);  // 禁用自动 help
@@ -486,7 +486,7 @@ void test_auto_help_disabled() {
   TEST_PASSED();
 }
 
-void test_user_defined_help_flag() {
+void TestUserDefinedHelpFlag() {
   TEST_CASE("用户自定义 --help 为 Flag");
 
   ArgumentParser parser("test", "测试程序", true);  // 启用自动 help
@@ -500,7 +500,7 @@ void test_user_defined_help_flag() {
   TEST_PASSED();
 }
 
-void test_user_defined_help_option() {
+void TestUserDefinedHelpOption() {
   TEST_CASE("用户自定义 --help 为 Option (nargs [0,1])");
 
   ArgumentParser parser("test", "测试程序", true);
@@ -516,7 +516,7 @@ void test_user_defined_help_option() {
   TEST_PASSED();
 }
 
-void test_user_defined_help_option_no_value() {
+void TestUserDefinedHelpOptionNoValue() {
   TEST_CASE("用户自定义 --help 为 Option (nargs [0,1]) 无值");
 
   ArgumentParser parser("test", "测试程序", true);
@@ -533,14 +533,14 @@ void test_user_defined_help_option_no_value() {
 
 // ==================== 6. 子命令测试 ====================
 
-void test_subcommand_basic() {
+void TestSubcommandBasic() {
   TEST_CASE("子命令基本功能");
 
   ArgumentParser parser("git", "Git 命令", false);
-  auto& Clone = parser.AddSubcommand("Clone", "克隆仓库");
+  auto& clone = parser.AddSubcommand("Clone", "克隆仓库");
 
   std::string url;
-  Clone.AddPositionalArgument<std::string>({"url"}, url, "仓库地址");
+  clone.AddPositionalArgument<std::string>({"url"}, url, "仓库地址");
 
   ASSERT_TRUE(parser.Parse({"Clone", "https://github.com/test/repo.git"}));
   ASSERT_EQ(url, "https://github.com/test/repo.git");
@@ -548,7 +548,7 @@ void test_subcommand_basic() {
   TEST_PASSED();
 }
 
-void test_subcommand_with_options() {
+void TestSubcommandWithOptions() {
   TEST_CASE("子命令带选项");
 
   ArgumentParser parser("git", "Git 命令", false);
@@ -566,7 +566,7 @@ void test_subcommand_with_options() {
 
 // ==================== 7. 异常处理测试 ====================
 
-void test_unknown_argument() {
+void TestUnknownArgument() {
   TEST_CASE("未知参数");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -576,7 +576,7 @@ void test_unknown_argument() {
   TEST_PASSED();
 }
 
-void test_invalid_flag_name() {
+void TestInvalidFlagName() {
   TEST_CASE("无效的 Flag 名称");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -587,7 +587,7 @@ void test_invalid_flag_name() {
   TEST_PASSED();
 }
 
-void test_duplicate_argument_name() {
+void TestDuplicateArgumentName() {
   TEST_CASE("重复的参数名称");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -601,7 +601,7 @@ void test_duplicate_argument_name() {
   TEST_PASSED();
 }
 
-void test_empty_subcommand_name() {
+void TestEmptySubcommandName() {
   TEST_CASE("空子命令名称");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -611,7 +611,7 @@ void test_empty_subcommand_name() {
   TEST_PASSED();
 }
 
-void test_subcommand_starts_with_dash() {
+void TestSubcommandStartsWithDash() {
   TEST_CASE("子命令名称以 - 开头");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -623,7 +623,7 @@ void test_subcommand_starts_with_dash() {
 
 // ==================== 8. 复杂场景测试 ====================
 
-void test_mixed_arguments() {
+void TestMixedArguments() {
   TEST_CASE("混合参数场景 - 基本");
 
   ArgumentParser parser("myapp", "测试程序", false);
@@ -648,7 +648,7 @@ void test_mixed_arguments() {
   TEST_PASSED();
 }
 
-void test_mixed_with_subcommand() {
+void TestMixedWithSubcommand() {
   TEST_CASE("混合参数场景 - 子命令 + 选项 + 位置参数");
 
   ArgumentParser parser("git", "Git 版本控制", false);
@@ -658,16 +658,16 @@ void test_mixed_with_subcommand() {
   parser.AddFlagArgument({"-v", "--verbose"}, global_verbose, "全局详细模式");
 
   // Clone 子命令
-  auto& Clone = parser.AddSubcommand("Clone", "克隆仓库");
+  auto& clone = parser.AddSubcommand("Clone", "克隆仓库");
   std::string url;
   std::string branch;
   int depth = 0;
   bool shallow = false;
-  Clone.AddPositionalArgument<std::string>({"url"}, url, "仓库地址");
-  Clone.AddOptionArgument<std::string>({"-b", "--branch"}, branch, "分支名")
+  clone.AddPositionalArgument<std::string>({"url"}, url, "仓库地址");
+  clone.AddOptionArgument<std::string>({"-b", "--branch"}, branch, "分支名")
       .DefaultValue("main");
-  Clone.AddOptionArgument<int>({"--depth"}, depth, "克隆深度");
-  Clone.AddFlagArgument({"--shallow"}, shallow, "浅克隆");
+  clone.AddOptionArgument<int>({"--depth"}, depth, "克隆深度");
+  clone.AddFlagArgument({"--shallow"}, shallow, "浅克隆");
 
   ASSERT_TRUE(parser.Parse({"Clone", "-b", "develop", "--depth", "1",
                             "--shallow", "https://github.com/test/repo.git"}));
@@ -679,7 +679,7 @@ void test_mixed_with_subcommand() {
   TEST_PASSED();
 }
 
-void test_mixed_with_help_and_subcommand() {
+void TestMixedWithHelpAndSubcommand() {
   TEST_CASE("混合参数场景 - 自动 help + 子命令");
 
   ArgumentParser parser("myapp", "应用程序", true);  // 启用自动 help
@@ -694,7 +694,7 @@ void test_mixed_with_help_and_subcommand() {
   TEST_PASSED();
 }
 
-void test_mixed_with_user_help_and_subcommand() {
+void TestMixedWithUserHelpAndSubcommand() {
   TEST_CASE("混合参数场景 - 用户自定义 help + 子命令");
 
   ArgumentParser parser("myapp", "应用程序", true);
@@ -717,7 +717,7 @@ void test_mixed_with_user_help_and_subcommand() {
   TEST_PASSED();
 }
 
-void test_mixed_subcommand_help() {
+void TestMixedSubcommandHelp() {
   TEST_CASE("混合参数场景 - 子命令的 --help");
 
   ArgumentParser parser("git", "Git 命令", true);  // 启用自动 help
@@ -733,7 +733,7 @@ void test_mixed_subcommand_help() {
   TEST_PASSED();
 }
 
-void test_mixed_all_types() {
+void TestMixedAllTypes() {
   TEST_CASE("混合参数场景 - 全类型组合");
 
   ArgumentParser parser("myapp", "全功能测试", true);  // 启用自动 help
@@ -764,9 +764,9 @@ void test_mixed_all_types() {
   // 子命令 build
   auto& build = parser.AddSubcommand("build", "构建项目");
   std::string target;
-  bool Release = false;
+  bool release = false;
   build.AddPositionalArgument<std::string>({"target"}, target, "构建目标");
-  build.AddFlagArgument({"-r", "--Release"}, Release, "Release 模式");
+  build.AddFlagArgument({"-r", "--Release"}, release, "Release 模式");
 
   // 解析复杂命令行
   // 注意：子命令必须放在第一个位置，全局参数在子命令之后由子命令解析器处理
@@ -775,12 +775,12 @@ void test_mixed_all_types() {
   // 注意：当使用子命令时，主解析器不会执行默认值同步
   // 因此这里只验证子命令的参数
   ASSERT_EQ(target, "myproject");
-  ASSERT_TRUE(Release);
+  ASSERT_TRUE(release);
 
   TEST_PASSED();
 }
 
-void test_mixed_multiple_subcommands() {
+void TestMixedMultipleSubcommands() {
   TEST_CASE("混合参数场景 - 多子命令");
 
   ArgumentParser parser("pkg", "包管理器", false);
@@ -793,11 +793,11 @@ void test_mixed_multiple_subcommands() {
   install.AddFlagArgument({"-g", "--global"}, global, "全局安装");
 
   // Remove 子命令
-  auto& Remove = parser.AddSubcommand("Remove", "移除包");
+  auto& remove = parser.AddSubcommand("Remove", "移除包");
   std::string remove_pkg;
   bool force = false;
-  Remove.AddPositionalArgument<std::string>({"package"}, remove_pkg, "包名");
-  Remove.AddFlagArgument({"-f", "--force"}, force, "强制移除");
+  remove.AddPositionalArgument<std::string>({"package"}, remove_pkg, "包名");
+  remove.AddFlagArgument({"-f", "--force"}, force, "强制移除");
 
   // list 子命令
   auto& list = parser.AddSubcommand("list", "列出包");
@@ -812,7 +812,7 @@ void test_mixed_multiple_subcommands() {
   TEST_PASSED();
 }
 
-void test_mixed_nargs_and_positional() {
+void TestMixedNargsAndPositional() {
   TEST_CASE("混合参数场景 - nargs 与位置参数");
 
   ArgumentParser parser("cp", "复制文件", false);
@@ -834,7 +834,7 @@ void test_mixed_nargs_and_positional() {
   TEST_PASSED();
 }
 
-void test_mixed_callback_chain() {
+void TestMixedCallbackChain() {
   TEST_CASE("混合参数场景 - 回调链");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -859,7 +859,7 @@ void test_mixed_callback_chain() {
   TEST_PASSED();
 }
 
-void test_option_stops_at_next_option() {
+void TestOptionStopsAtNextOption() {
   TEST_CASE("Option 遇到下一个选项停止");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -878,7 +878,7 @@ void test_option_stops_at_next_option() {
   TEST_PASSED();
 }
 
-void test_double_dash_separator() {
+void TestDoubleDashSeparator() {
   TEST_CASE("双短横线分隔符 --");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -903,7 +903,7 @@ void test_double_dash_separator() {
 // ==================== 9. 更多混合模式测试 ====================
 
 // 9.1 参数顺序变化测试
-void test_mixed_order_positional_first() {
+void TestMixedOrderPositionalFirst() {
   TEST_CASE("混合模式 - 位置参数在最前");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -924,7 +924,7 @@ void test_mixed_order_positional_first() {
   TEST_PASSED();
 }
 
-void test_mixed_order_positional_middle() {
+void TestMixedOrderPositionalMiddle() {
   TEST_CASE("混合模式 - 位置参数在中间");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -945,7 +945,7 @@ void test_mixed_order_positional_middle() {
   TEST_PASSED();
 }
 
-void test_mixed_order_flags_scattered() {
+void TestMixedOrderFlagsScattered() {
   TEST_CASE("混合模式 - Flag 分散在各处");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -973,7 +973,7 @@ void test_mixed_order_flags_scattered() {
 }
 
 // 9.2 多个 Option 交错测试
-void test_mixed_multiple_options_interleaved() {
+void TestMixedMultipleOptionsInterleaved() {
   TEST_CASE("混合模式 - 多个 Option 交错");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -998,7 +998,7 @@ void test_mixed_multiple_options_interleaved() {
   TEST_PASSED();
 }
 
-void test_mixed_options_with_multiple_positional() {
+void TestMixedOptionsWithMultiplePositional() {
   TEST_CASE("混合模式 - Option 与多个位置参数");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1023,7 +1023,7 @@ void test_mixed_options_with_multiple_positional() {
 }
 
 // 9.3 子命令与全局参数混合测试
-void test_mixed_global_option_before_subcommand() {
+void TestMixedGlobalOptionBeforeSubcommand() {
   TEST_CASE("混合模式 - 子命令在第一位（符合主流CLI惯例）");
 
   ArgumentParser parser("git", "Git 命令", false);
@@ -1031,11 +1031,11 @@ void test_mixed_global_option_before_subcommand() {
   // 注意：按照 git/docker/kubectl 等主流CLI工具的惯例，
   // 子命令应该出现在第一位，全局参数不支持在子命令前
 
-  auto& Clone = parser.AddSubcommand("Clone", "克隆仓库");
+  auto& clone = parser.AddSubcommand("Clone", "克隆仓库");
   std::string url;
   bool verbose = false;
-  Clone.AddPositionalArgument<std::string>({"url"}, url, "仓库地址");
-  Clone.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
+  clone.AddPositionalArgument<std::string>({"url"}, url, "仓库地址");
+  clone.AddFlagArgument({"-v", "--verbose"}, verbose, "详细模式");
 
   // 子命令在第一位，选项在后面
   ASSERT_TRUE(
@@ -1046,7 +1046,7 @@ void test_mixed_global_option_before_subcommand() {
   TEST_PASSED();
 }
 
-void test_mixed_subcommand_with_multiple_global_options() {
+void TestMixedSubcommandWithMultipleGlobalOptions() {
   TEST_CASE("混合模式 - 子命令与多个选项");
 
   ArgumentParser parser("app", "应用程序", false);
@@ -1077,7 +1077,7 @@ void test_mixed_subcommand_with_multiple_global_options() {
 }
 
 // 9.4 nargs 与其他参数混合测试
-void test_mixed_nargs_unlimited_with_flag() {
+void TestMixedNargsUnlimitedWithFlag() {
   TEST_CASE("混合模式 - nargs=* 与 Flag");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1102,7 +1102,7 @@ void test_mixed_nargs_unlimited_with_flag() {
   TEST_PASSED();
 }
 
-void test_mixed_nargs_at_least_one_with_option() {
+void TestMixedNargsAtLeastOneWithOption() {
   TEST_CASE("混合模式 - nargs=+ 与 Option");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1125,7 +1125,7 @@ void test_mixed_nargs_at_least_one_with_option() {
   TEST_PASSED();
 }
 
-void test_mixed_nargs_range_with_positional() {
+void TestMixedNargsRangeWithPositional() {
   TEST_CASE("混合模式 - nargs=[1,3] 与位置参数");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1150,7 +1150,7 @@ void test_mixed_nargs_range_with_positional() {
   TEST_PASSED();
 }
 
-void test_mixed_multiple_nargs_options() {
+void TestMixedMultipleNargsOptions() {
   TEST_CASE("混合模式 - 多个 nargs 选项");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1178,7 +1178,7 @@ void test_mixed_multiple_nargs_options() {
 }
 
 // 9.5 默认值与混合参数测试
-void test_mixed_multiple_defaults() {
+void TestMixedMultipleDefaults() {
   TEST_CASE("混合模式 - 多个默认值");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1211,7 +1211,7 @@ void test_mixed_multiple_defaults() {
   TEST_PASSED();
 }
 
-void test_mixed_partial_defaults() {
+void TestMixedPartialDefaults() {
   TEST_CASE("混合模式 - 部分使用默认值");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1236,7 +1236,7 @@ void test_mixed_partial_defaults() {
 }
 
 // 9.6 help 与其他参数混合测试
-void test_mixed_help_with_other_args_before() {
+void TestMixedHelpWithOtherArgsBefore() {
   TEST_CASE("混合模式 - help 前有其他参数");
 
   ArgumentParser parser("test", "测试程序", true);  // 启用自动 help
@@ -1247,13 +1247,13 @@ void test_mixed_help_with_other_args_before() {
   parser.AddOptionArgument<std::string>({"-o", "--output"}, output, "输出");
 
   // -v 后跟 --help
-  bool Result = parser.Parse({"-v", "--help"});
-  ASSERT_FALSE(Result);  // 遇到 --help 返回 false
+  bool result = parser.Parse({"-v", "--help"});
+  ASSERT_FALSE(result);  // 遇到 --help 返回 false
 
   TEST_PASSED();
 }
 
-void test_mixed_user_help_with_subcommand_and_args() {
+void TestMixedUserHelpWithSubcommandAndArgs() {
   TEST_CASE("混合模式 - 用户 help + 子命令 + 参数");
 
   ArgumentParser parser("app", "应用程序", true);
@@ -1281,7 +1281,7 @@ void test_mixed_user_help_with_subcommand_and_args() {
 }
 
 // 9.7 复杂位置参数场景
-void test_mixed_positional_after_all_options() {
+void TestMixedPositionalAfterAllOptions() {
   TEST_CASE("混合模式 - 所有位置参数在选项之后");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1305,7 +1305,7 @@ void test_mixed_positional_after_all_options() {
   TEST_PASSED();
 }
 
-void test_mixed_positional_between_options() {
+void TestMixedPositionalBetweenOptions() {
   TEST_CASE("混合模式 - 位置参数在选项之间");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1330,7 +1330,7 @@ void test_mixed_positional_between_options() {
 }
 
 // 9.8 子命令内部混合测试
-void test_mixed_subcommand_all_types() {
+void TestMixedSubcommandAllTypes() {
   TEST_CASE("混合模式 - 子命令内全类型参数");
 
   ArgumentParser parser("docker", "Docker 命令", false);
@@ -1382,7 +1382,7 @@ void test_mixed_subcommand_all_types() {
   TEST_PASSED();
 }
 
-void test_mixed_nested_subcommands() {
+void TestMixedNestedSubcommands() {
   TEST_CASE("混合模式 - 嵌套子命令");
 
   ArgumentParser parser("kubectl", "Kubernetes 命令", false);
@@ -1414,7 +1414,7 @@ void test_mixed_nested_subcommands() {
 }
 
 // 9.9 边界情况测试
-void test_mixed_empty_string_value() {
+void TestMixedEmptyStringValue() {
   TEST_CASE("混合模式 - 空字符串值");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1429,7 +1429,7 @@ void test_mixed_empty_string_value() {
   TEST_PASSED();
 }
 
-void test_mixed_value_looks_like_option() {
+void TestMixedValueLooksLikeOption() {
   TEST_CASE("混合模式 - 值看起来像选项（负数）");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1447,7 +1447,7 @@ void test_mixed_value_looks_like_option() {
   TEST_PASSED();
 }
 
-void test_mixed_long_option_with_equals() {
+void TestMixedLongOptionWithEquals() {
   TEST_CASE("混合模式 - 长选项等号形式 (当前不支持)");
 
   // 当前实现不支持 --option=value 形式
@@ -1464,7 +1464,7 @@ void test_mixed_long_option_with_equals() {
   TEST_PASSED();
 }
 
-void test_mixed_combined_short_flags() {
+void TestMixedCombinedShortFlags() {
   TEST_CASE("混合模式 - 组合短 flag (当前不支持)");
 
   // 当前实现不支持 -abc 形式（等价于 -a -b -c）
@@ -1484,7 +1484,7 @@ void test_mixed_combined_short_flags() {
 }
 
 // 9.10 回调与默认值交互测试
-void test_mixed_callback_not_called_for_default() {
+void TestMixedCallbackNotCalledForDefault() {
   TEST_CASE("混合模式 - 默认值不触发回调");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1504,7 +1504,7 @@ void test_mixed_callback_not_called_for_default() {
   TEST_PASSED();
 }
 
-void test_mixed_callback_called_for_explicit_value() {
+void TestMixedCallbackCalledForExplicitValue() {
   TEST_CASE("混合模式 - 显式值触发回调");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1524,7 +1524,7 @@ void test_mixed_callback_called_for_explicit_value() {
   TEST_PASSED();
 }
 
-void test_mixed_multiple_callbacks_order() {
+void TestMixedMultipleCallbacksOrder() {
   TEST_CASE("混合模式 - 多回调顺序");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1555,7 +1555,7 @@ void test_mixed_multiple_callbacks_order() {
 }
 
 // 9.11 类型转换测试
-void test_mixed_various_types() {
+void TestMixedVariousTypes() {
   TEST_CASE("混合模式 - 各种类型");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1589,7 +1589,7 @@ void test_mixed_various_types() {
 }
 
 // 9.12 required 与混合参数测试
-void test_mixed_required_and_optional() {
+void TestMixedRequiredAndOptional() {
   TEST_CASE("混合模式 - 必需与可选参数");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1616,7 +1616,7 @@ void test_mixed_required_and_optional() {
   TEST_PASSED();
 }
 
-void test_mixed_required_missing_with_others_present() {
+void TestMixedRequiredMissingWithOthersPresent() {
   TEST_CASE("混合模式 - 必需参数缺失（其他参数存在）");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1643,7 +1643,7 @@ void test_mixed_required_missing_with_others_present() {
 
 // ==================== 10. 验证器测试 ====================
 
-void test_validator() {
+void TestValidator() {
   TEST_CASE("验证器 - 通过场景");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1652,7 +1652,9 @@ void test_validator() {
       .Expected(1, 5)
       .Validator([](const std::vector<int>& vals) {
         for (int v : vals) {
-          if (v < 0 || v > 100) return false;
+          if (v < 0 || v > 100) {
+            return false;
+          }
         }
         return true;
       });
@@ -1663,7 +1665,7 @@ void test_validator() {
   TEST_PASSED();
 }
 
-void test_validator_auto_called_failure() {
+void TestValidatorAutoCalledFailure() {
   TEST_CASE("验证器 - 自动调用失败场景");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1672,7 +1674,9 @@ void test_validator_auto_called_failure() {
       .Expected(1, 5)
       .Validator([](const std::vector<int>& vals) {
         for (int v : vals) {
-          if (v < 0 || v > 100) return false;  // 只允许 0-100 范围
+          if (v < 0 || v > 100) {
+            return false;  // 只允许 0-100 范围
+          }
         }
         return true;
       });
@@ -1683,7 +1687,7 @@ void test_validator_auto_called_failure() {
   TEST_PASSED();
 }
 
-void test_validator_positional() {
+void TestValidatorPositional() {
   TEST_CASE("验证器 - 位置参数");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1691,7 +1695,9 @@ void test_validator_positional() {
   parser.AddPositionalArgument<std::string>({"filename"}, filename, "文件名")
       .Validator([](const std::vector<std::string>& vals) {
         // 验证文件名必须以 .txt 结尾
-        if (vals.empty()) return false;
+        if (vals.empty()) {
+          return false;
+        }
         const auto& name = vals.front();
         return name.size() > 4 && name.substr(name.size() - 4) == ".txt";
       });
@@ -1703,7 +1709,7 @@ void test_validator_positional() {
   TEST_PASSED();
 }
 
-void test_validator_positional_failure() {
+void TestValidatorPositionalFailure() {
   TEST_CASE("验证器 - 位置参数失败场景");
 
   ArgumentParser parser("test", "测试程序", false);
@@ -1711,7 +1717,9 @@ void test_validator_positional_failure() {
   parser.AddPositionalArgument<std::string>({"filename"}, filename, "文件名")
       .Validator([](const std::vector<std::string>& vals) {
         // 验证文件名必须以 .txt 结尾
-        if (vals.empty()) return false;
+        if (vals.empty()) {
+          return false;
+        }
         const auto& name = vals.front();
         return name.size() > 4 && name.substr(name.size() - 4) == ".txt";
       });
@@ -1731,116 +1739,116 @@ int main() {
 
   // 1. FlagArgument 测试
   std::cout << "\n--- FlagArgument 测试 ---" << std::endl;
-  test_flag_basic();
-  test_flag_short_name();
-  test_flag_not_set();
-  test_flag_default_value();
-  test_flag_callback();
+  TestFlagBasic();
+  TestFlagShortName();
+  TestFlagNotSet();
+  TestFlagDefaultValue();
+  TestFlagCallback();
 
   // 2. OptionArgument 测试
   std::cout << "\n--- OptionArgument 测试 ---" << std::endl;
-  test_option_basic();
-  test_option_long_name();
-  test_option_int();
-  test_option_negative_number();
-  test_option_default_value();
-  test_option_callback();
-  test_option_required_missing();
-  test_option_missing_value();
+  TestOptionBasic();
+  TestOptionLongName();
+  TestOptionInt();
+  TestOptionNegativeNumber();
+  TestOptionDefaultValue();
+  TestOptionCallback();
+  TestOptionRequiredMissing();
+  TestOptionMissingValue();
 
   // 3. nargs (expected) 测试
   std::cout << "\n--- nargs (Expected) 测试 ---" << std::endl;
-  test_option_nargs_exact();
-  test_option_nargs_exact_insufficient();
-  test_option_nargs_range();
-  test_option_nargs_range_0_1();
-  test_option_nargs_range_0_1_with_value();
-  test_option_nargs_unlimited();
-  test_option_nargs_unlimited_empty();
-  test_option_nargs_at_least_one();
-  test_option_nargs_at_least_one_empty();
+  TestOptionNargsExact();
+  TestOptionNargsExactInsufficient();
+  TestOptionNargsRange();
+  TestOptionNargsRange01();
+  TestOptionNargsRange01WithValue();
+  TestOptionNargsUnlimited();
+  TestOptionNargsUnlimitedEmpty();
+  TestOptionNargsAtLeastOne();
+  TestOptionNargsAtLeastOneEmpty();
 
   // 4. PositionalArgument 测试
   std::cout << "\n--- PositionalArgument 测试 ---" << std::endl;
-  test_positional_basic();
-  test_positional_multiple();
-  test_positional_with_option();
-  test_positional_nargs_unlimited();
+  TestPositionalBasic();
+  TestPositionalMultiple();
+  TestPositionalWithOption();
+  TestPositionalNargsUnlimited();
 
   // 5. 自动 help 测试
   std::cout << "\n--- 自动 help 测试 ---" << std::endl;
-  test_auto_help_enabled();
-  test_auto_help_short();
-  test_auto_help_disabled();
-  test_user_defined_help_flag();
-  test_user_defined_help_option();
-  test_user_defined_help_option_no_value();
+  TestAutoHelpEnabled();
+  TestAutoHelpShort();
+  TestAutoHelpDisabled();
+  TestUserDefinedHelpFlag();
+  TestUserDefinedHelpOption();
+  TestUserDefinedHelpOptionNoValue();
 
   // 6. 子命令测试
   std::cout << "\n--- 子命令测试 ---" << std::endl;
-  test_subcommand_basic();
-  test_subcommand_with_options();
+  TestSubcommandBasic();
+  TestSubcommandWithOptions();
 
   // 7. 异常处理测试
   std::cout << "\n--- 异常处理测试 ---" << std::endl;
-  test_unknown_argument();
-  test_invalid_flag_name();
-  test_duplicate_argument_name();
-  test_empty_subcommand_name();
-  test_subcommand_starts_with_dash();
+  TestUnknownArgument();
+  TestInvalidFlagName();
+  TestDuplicateArgumentName();
+  TestEmptySubcommandName();
+  TestSubcommandStartsWithDash();
 
   // 8. 复杂场景测试
   std::cout << "\n--- 复杂场景测试 ---" << std::endl;
-  test_mixed_arguments();
-  test_mixed_with_subcommand();
-  test_mixed_with_help_and_subcommand();
-  test_mixed_with_user_help_and_subcommand();
-  test_mixed_subcommand_help();
-  test_mixed_all_types();
-  test_mixed_multiple_subcommands();
-  test_mixed_nargs_and_positional();
-  test_mixed_callback_chain();
-  test_option_stops_at_next_option();
-  test_double_dash_separator();
+  TestMixedArguments();
+  TestMixedWithSubcommand();
+  TestMixedWithHelpAndSubcommand();
+  TestMixedWithUserHelpAndSubcommand();
+  TestMixedSubcommandHelp();
+  TestMixedAllTypes();
+  TestMixedMultipleSubcommands();
+  TestMixedNargsAndPositional();
+  TestMixedCallbackChain();
+  TestOptionStopsAtNextOption();
+  TestDoubleDashSeparator();
 
   // 9. 更多混合模式测试
   std::cout << "\n--- 更多混合模式测试 ---" << std::endl;
-  test_mixed_order_positional_first();
-  test_mixed_order_positional_middle();
-  test_mixed_order_flags_scattered();
-  test_mixed_multiple_options_interleaved();
-  test_mixed_options_with_multiple_positional();
-  test_mixed_global_option_before_subcommand();
-  test_mixed_subcommand_with_multiple_global_options();
-  test_mixed_nargs_unlimited_with_flag();
-  test_mixed_nargs_at_least_one_with_option();
-  test_mixed_nargs_range_with_positional();
-  test_mixed_multiple_nargs_options();
-  test_mixed_multiple_defaults();
-  test_mixed_partial_defaults();
-  test_mixed_help_with_other_args_before();
-  test_mixed_user_help_with_subcommand_and_args();
-  test_mixed_positional_after_all_options();
-  test_mixed_positional_between_options();
-  test_mixed_subcommand_all_types();
-  test_mixed_nested_subcommands();
-  test_mixed_empty_string_value();
-  test_mixed_value_looks_like_option();
-  test_mixed_long_option_with_equals();
-  test_mixed_combined_short_flags();
-  test_mixed_callback_not_called_for_default();
-  test_mixed_callback_called_for_explicit_value();
-  test_mixed_multiple_callbacks_order();
-  test_mixed_various_types();
-  test_mixed_required_and_optional();
-  test_mixed_required_missing_with_others_present();
+  TestMixedOrderPositionalFirst();
+  TestMixedOrderPositionalMiddle();
+  TestMixedOrderFlagsScattered();
+  TestMixedMultipleOptionsInterleaved();
+  TestMixedOptionsWithMultiplePositional();
+  TestMixedGlobalOptionBeforeSubcommand();
+  TestMixedSubcommandWithMultipleGlobalOptions();
+  TestMixedNargsUnlimitedWithFlag();
+  TestMixedNargsAtLeastOneWithOption();
+  TestMixedNargsRangeWithPositional();
+  TestMixedMultipleNargsOptions();
+  TestMixedMultipleDefaults();
+  TestMixedPartialDefaults();
+  TestMixedHelpWithOtherArgsBefore();
+  TestMixedUserHelpWithSubcommandAndArgs();
+  TestMixedPositionalAfterAllOptions();
+  TestMixedPositionalBetweenOptions();
+  TestMixedSubcommandAllTypes();
+  TestMixedNestedSubcommands();
+  TestMixedEmptyStringValue();
+  TestMixedValueLooksLikeOption();
+  TestMixedLongOptionWithEquals();
+  TestMixedCombinedShortFlags();
+  TestMixedCallbackNotCalledForDefault();
+  TestMixedCallbackCalledForExplicitValue();
+  TestMixedMultipleCallbacksOrder();
+  TestMixedVariousTypes();
+  TestMixedRequiredAndOptional();
+  TestMixedRequiredMissingWithOthersPresent();
 
   // 10. 验证器测试
   std::cout << "\n--- 验证器测试 ---" << std::endl;
-  test_validator();
-  test_validator_auto_called_failure();
-  test_validator_positional();
-  test_validator_positional_failure();
+  TestValidator();
+  TestValidatorAutoCalledFailure();
+  TestValidatorPositional();
+  TestValidatorPositionalFailure();
 
   // 打印测试结果
   std::cout << "\n========================================" << std::endl;

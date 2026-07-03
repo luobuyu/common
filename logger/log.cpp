@@ -7,16 +7,16 @@ namespace logger {
 // Logger 基类实现
 // =============================================================================
 
-Logger::Logger(std::vector<LogSink::LogSinkPtr> sinks,
-               LoggerFormat::LoggerFormatPtr fmt)
+logger::Logger(std::vector<::dry::logger::LogSink::LogSinkPtr> sinks,
+               ::dry::logger::LoggerFormat::LoggerFormatPtr fmt)
     : m_log_sinks(std::move(sinks)), m_log_format(std::move(fmt)) {}
 
-void Logger::AddSink(const LogSink::LogSinkPtr &log_sink) {
+void Logger::AddSink(const ::dry::logger::LogSink::LogSinkPtr &log_sink) {
   std::lock_guard<std::mutex> lock(m_sink_mtx);
   m_log_sinks.emplace_back(log_sink);
 }
 
-const std::vector<LogSink::LogSinkPtr> &Logger::GetLogSinks() const {
+const std::vector<::dry::logger::LogSink::LogSinkPtr> &Logger::GetLogSinks() const {
   return m_log_sinks;
 }
 
@@ -30,13 +30,13 @@ Logger::~Logger() {
 // SyncLogger 实现
 // =============================================================================
 
-SyncLogger::SyncLogger(std::vector<LogSink::LogSinkPtr> sinks,
+::dry::logger::SyncLogger::SyncLogger(std::vector<LogSink::LogSinkPtr> sinks,
                        LoggerFormat::LoggerFormatPtr fmt)
     : Logger(std::move(sinks), std::move(fmt)) {}
 
-void SyncLogger::Log(LogEvent log_event) {
-  std::lock_guard<std::mutex> lock(m_mtx);
-  for (auto &Sink : m_log_sinks) {
+void ::dry::logger::SyncLogger::Log(LogEvent log_event) {
+  std::lock_guard<std::mutex> Lock(m_mtx);
+  for (auto &sink : m_log_sinks) {
     Sink->Sink(log_event, m_log_format);
   }
 }
@@ -61,7 +61,9 @@ void AsyncLogger::StartBgThread(int queue_size,
 
 void AsyncLogger::BeforeExit() {
   m_logs.Stop();
-  if (m_async_thread.joinable()) m_async_thread.join();
+  if (m_async_thread.joinable()) {
+    m_async_thread.join();
+  }
 }
 
 AsyncLogger::~AsyncLogger() { BeforeExit(); }

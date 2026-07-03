@@ -26,7 +26,9 @@ void LogManager::Init(LogLevel log_level, std::string module_name,
                       std::vector<LogSink::LogSinkPtr> log_sinks,
                       LoggerFormat::LoggerFormatPtr log_format, int queue_size,
                       std::chrono::milliseconds flush_interval) {
-  if (log_level == LogLevel::OFF) return;
+  if (log_level == LogLevel::OFF) {
+    return;
+  }
   std::call_once(m_init_flag, [&]() {
     m_log_level = log_level;
     m_module_name = std::move(module_name);
@@ -98,4 +100,4 @@ LogManager::~LogManager() {
 }
 
 }  // namespace logger
-}  // namespace dry
+};  // namespace dry

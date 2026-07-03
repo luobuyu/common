@@ -45,12 +45,13 @@ void logger::LoggerFormat::ParserPattern() {
         size_t index =
             (pos == std::string::npos) ? m_pattern.size() - 1 : pos - 1;
         std::string val = m_pattern.substr(i, index - i + 1);
-        if (is_pre_other)
+        if (is_pre_other) {
           m_format_items.back()->SetFmt(
               std::move(m_format_items.back()->GetFmt() + val));
-        else
+        } else {
           m_format_items.emplace_back(
               FormatItemFactory::CreateFormatItem('%', val));
+        }
         i = index + 1;
         is_pre_other = true;
       }
@@ -60,20 +61,21 @@ void logger::LoggerFormat::ParserPattern() {
       size_t index =
           (pos == std::string::npos) ? m_pattern.size() - 1 : pos - 1;
       std::string val = m_pattern.substr(i, index - i + 1);
-      if (is_pre_other)
+      if (is_pre_other) {
         m_format_items.back()->SetFmt(
             std::move(m_format_items.back()->GetFmt() + val));
-      else
+      } else {
         m_format_items.emplace_back(
             FormatItemFactory::CreateFormatItem('%', val));
+      }
       i = index + 1;
       is_pre_other = true;
     }
   }
 }
-void LoggerFormat::format(std::ostream &os, const logger::LogEvent &log_msg) {
+void LoggerFormat::Format(std::ostream &os, const logger::LogEvent &log_msg) {
   for (auto &fmt : m_format_items) {
-    fmt->format(os, log_msg);
+    fmt->Format(os, log_msg);
   }
 }
 void LoggerFormat::SetPattern(const std::string &pattern) {
@@ -83,55 +85,55 @@ void LoggerFormat::SetPattern(const std::string &pattern) {
 }
 logger::DateFormatItem::DateFormatItem(std::string time_fmt)
     : m_time_fmt(std::move(time_fmt)) {}
-void DateFormatItem::format(std::ostream &os, const logger::LogEvent &log_msg) {
+void DateFormatItem::Format(std::ostream &os, const logger::LogEvent &log_msg) {
   os << dry::GetTimeWithMs(log_msg.m_timestamp, m_time_fmt);
 }
-void TabFormatItem::format(std::ostream &os, const logger::LogEvent &log_msg) {
+void TabFormatItem::Format(std::ostream &os, const logger::LogEvent &log_msg) {
   os << " ";
 }
-void logger::LevelFormatItem::format(std::ostream &os,
+void logger::LevelFormatItem::Format(std::ostream &os,
                                      const logger::LogEvent &log_msg) {
   os << LevelToString(log_msg.m_log_level);
 }
-void ProcessIdFormatItem::format(std::ostream &os,
+void ProcessIdFormatItem::Format(std::ostream &os,
                                  const logger::LogEvent &log_msg) {
   os << log_msg.m_process_id;
 }
-void ThreadIdFormatItem::format(std::ostream &os,
+void ThreadIdFormatItem::Format(std::ostream &os,
                                 const logger::LogEvent &log_msg) {
   os << log_msg.m_thread_id;
 }
-void CoroutineIdFormatItem::format(std::ostream &os,
+void CoroutineIdFormatItem::Format(std::ostream &os,
                                    const logger::LogEvent &log_msg) {
   os << log_msg.m_coroutine_id;
 }
-void ModuleNameFormatItem::format(std::ostream &os,
+void ModuleNameFormatItem::Format(std::ostream &os,
                                   const logger::LogEvent &log_msg) {
   os << log_msg.m_module_name;
 }
-void FileNameFormatItem::format(std::ostream &os,
+void FileNameFormatItem::Format(std::ostream &os,
                                 const logger::LogEvent &log_msg) {
   os << log_msg.m_file_name;
 }
-void FunctionNameFormatItem::format(std::ostream &os,
+void FunctionNameFormatItem::Format(std::ostream &os,
                                     const logger::LogEvent &log_msg) {
   os << log_msg.m_function_name;
 }
-void LineIdFormatItem::format(std::ostream &os,
+void LineIdFormatItem::Format(std::ostream &os,
                               const logger::LogEvent &log_msg) {
   os << log_msg.m_line_id;
 }
-void LogMsgFormatItem::format(std::ostream &os,
+void LogMsgFormatItem::Format(std::ostream &os,
                               const logger::LogEvent &log_msg) {
   os << log_msg.m_log_msg;
 }
-void NewLineFormatItem::format(std::ostream &os,
+void NewLineFormatItem::Format(std::ostream &os,
                                const logger::LogEvent &log_msg) {
   os << "\n";
 }
 logger::OtherFormatItem::OtherFormatItem(std::string other_fmt)
     : m_other_fmt(std::move(other_fmt)) {}
-void OtherFormatItem::format(std::ostream &os,
+void OtherFormatItem::Format(std::ostream &os,
                              const logger::LogEvent &log_msg) {
   os << m_other_fmt;
 }
@@ -149,17 +151,39 @@ std::shared_ptr<FormatItem> logger::FormatItemFactory::CreateFormatItem(
       return std::make_shared<DateFormatItem>(val);
     }
   }
-  if (key == 'T') return std::make_shared<TabFormatItem>();
-  if (key == 'L') return std::make_shared<LevelFormatItem>();
-  if (key == 'p') return std::make_shared<ProcessIdFormatItem>();
-  if (key == 't') return std::make_shared<ThreadIdFormatItem>();
-  if (key == 'c') return std::make_shared<CoroutineIdFormatItem>();
-  if (key == 'M') return std::make_shared<ModuleNameFormatItem>();
-  if (key == 'F') return std::make_shared<FileNameFormatItem>();
-  if (key == 'f') return std::make_shared<FunctionNameFormatItem>();
-  if (key == 'l') return std::make_shared<LineIdFormatItem>();
-  if (key == 'm') return std::make_shared<LogMsgFormatItem>();
-  if (key == 'n') return std::make_shared<NewLineFormatItem>();
+  if (key == 'T') {
+    return std::make_shared<TabFormatItem>();
+  }
+  if (key == 'L') {
+    return std::make_shared<LevelFormatItem>();
+  }
+  if (key == 'p') {
+    return std::make_shared<ProcessIdFormatItem>();
+  }
+  if (key == 't') {
+    return std::make_shared<ThreadIdFormatItem>();
+  }
+  if (key == 'c') {
+    return std::make_shared<CoroutineIdFormatItem>();
+  }
+  if (key == 'M') {
+    return std::make_shared<ModuleNameFormatItem>();
+  }
+  if (key == 'F') {
+    return std::make_shared<FileNameFormatItem>();
+  }
+  if (key == 'f') {
+    return std::make_shared<FunctionNameFormatItem>();
+  }
+  if (key == 'l') {
+    return std::make_shared<LineIdFormatItem>();
+  }
+  if (key == 'm') {
+    return std::make_shared<LogMsgFormatItem>();
+  }
+  if (key == 'n') {
+    return std::make_shared<NewLineFormatItem>();
+  }
   return std::make_shared<OtherFormatItem>(val);
 }
 bool logger::FormatItemFactory::CanCreate(const char &key) {

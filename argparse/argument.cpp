@@ -1,22 +1,24 @@
 #include "argument.h"
 
+#include <utility>
+
 namespace dry {
 namespace argparse {
 
 // 构造函数（不带 required 和 callback 参数，避免隐式转换问题）
 Argument::Argument(const std::vector<std::string>& names,
-                   const std::string& description)
+                   std::string description)
     : m_names{names},
-      m_description{description},
+      m_description{std::move(description)},
       m_required{false},
       m_parsed{false},
       m_callback{nullptr} {}
 Argument::Argument(const ArgumentType& type,
                    const std::vector<std::string>& names,
-                   const std::string& description)
+                   std::string description)
     : m_type{type},
       m_names{names},
-      m_description{description},
+      m_description{std::move(description)},
       m_required{false},
       m_parsed{false},
       m_callback{nullptr} {}

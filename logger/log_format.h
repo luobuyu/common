@@ -11,7 +11,7 @@ namespace logger {
 
 class FormatItem {
  public:
-  typedef std::shared_ptr<FormatItem> FormatItemPtr;
+  using FormatItemPtr = std::shared_ptr<FormatItem>;
   virtual void Format(std::ostream &os, const logger::LogEvent &log_msg) = 0;
   virtual void SetFmt(const std::string &fmt);
   virtual std::string GetFmt();
@@ -117,7 +117,7 @@ class OtherFormatItem : public FormatItem {
 
 class LoggerFormat {
  public:
-  typedef std::shared_ptr<LoggerFormat> LoggerFormatPtr;
+  using LoggerFormatPtr = std::shared_ptr<LoggerFormat>;
   // %d{%Y-%m-%d %H:%M:%S} 日期格式
   // %T : \space            TabFormatItem
   // %L : 日志级别           LevelFormatItem

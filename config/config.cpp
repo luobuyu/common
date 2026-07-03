@@ -19,7 +19,9 @@ bool Config::InitConfig(const std::string &path) {
     line = std::string(dry::Trim(line));
 
     // 忽略空行或注释行
-    if (line.empty() || line.front() == '#' || line.front() == ';') continue;
+    if (line.empty() || line.front() == '#' || line.front() == ';') {
+      continue;
+    }
 
     // 检查是否是section
     if (line.front() == '[' && line.back() == ']') {
@@ -49,7 +51,9 @@ bool Config::InitConfig(const std::string &path) {
 
 bool Config::Exist(const std::string &section, const std::string &key) {
   auto section_iter = m_sections.find(section);
-  if (section_iter == m_sections.end()) return false;
+  if (section_iter == m_sections.end()) {
+    return false;
+  }
   if (section_iter->second.find(key) == section_iter->second.end()) {
     return false;
   }
@@ -61,19 +65,25 @@ bool Config::Exist(const std::string &section) {
 
 bool Config::GetValue(const std::string &section, const std::string &key,
                       std::string &val) {
-  if (!Exist(section, key)) return false;
+  if (!Exist(section, key)) {
+    return false;
+  }
   val = m_sections[section][key];
   return true;
 }
 bool Config::GetValue(const std::string &section, const std::string &key,
                       int &val) {
-  if (!Exist(section, key)) return false;
+  if (!Exist(section, key)) {
+    return false;
+  }
   val = std::stoi(m_sections[section][key]);
   return true;
 }
 bool Config::GetValue(const std::string &section, const std::string &key,
                       double &val) {
-  if (!Exist(section, key)) return false;
+  if (!Exist(section, key)) {
+    return false;
+  }
   val = std::stod(m_sections[section][key]);
   return true;
 }
@@ -129,7 +139,9 @@ std::unordered_map<std::string, Config::Section> Config::GetSections() {
 }
 std::vector<std::string> Config::GetSectionNames() {
   std::vector<std::string> sections;
-  for (auto &[section, kvs] : m_sections) sections.emplace_back(section);
+  for (auto &[section, kvs] : m_sections) {
+    sections.emplace_back(section);
+  }
   return sections;
 }
 

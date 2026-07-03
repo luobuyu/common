@@ -13,7 +13,7 @@ namespace logger {
 // 基础日志落盘类。
 class LogSink {
  public:
-  typedef std::shared_ptr<LogSink> LogSinkPtr;
+  using LogSinkPtr = std::shared_ptr<LogSink>;
   LogSink() = default;
   virtual ~LogSink() = default;
   virtual void Sink(const logger::LogEvent &log_event,

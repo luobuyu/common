@@ -1,14 +1,15 @@
 #include "argument_parser.h"
 
 #include <algorithm>
+#include <utility>
 
 namespace dry {
 namespace argparse {
 
-ArgumentParser::ArgumentParser(const std::string& program_name,
-                               const std::string& description, bool add_help)
-    : m_program_name(program_name),
-      m_description(description),
+ArgumentParser::ArgumentParser(std::string program_name,
+                               std::string description, bool add_help)
+    : m_program_name(std::move(program_name)),
+      m_description(std::move(description)),
       m_add_help(add_help) {}
 
 Argument& ArgumentParser::AddArgument(std::unique_ptr<Argument> argument) {
@@ -234,7 +235,9 @@ void ArgumentParser::PrintHelp() const {
     std::cout << " {";
     bool first = true;
     for (const auto& [name, _] : m_subcommands) {
-      if (!first) std::cout << "|";
+      if (!first) {
+        std::cout << "|";
+      }
       std::cout << name;
       first = false;
     }
@@ -290,7 +293,9 @@ void ArgumentParser::PrintHelp() const {
     std::cout << "  ";
     const auto& names = arg->GetNames();
     for (size_t i = 0; i < names.size(); ++i) {
-      if (i > 0) std::cout << ", ";
+      if (i > 0) {
+        std::cout << ", ";
+      }
       std::cout << names[i];
     }
 

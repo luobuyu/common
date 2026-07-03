@@ -73,7 +73,10 @@ class Timer {
   long long m_timeout;
 
  public:
-  Timer() : m_start_time(SteadyClock::now()), m_end_time(m_start_time), m_timeout(0) {}
+  Timer()
+      : m_start_time(SteadyClock::now()),
+        m_end_time(m_start_time),
+        m_timeout(0) {}
   Timer(long long sec_timeout) {
     m_timeout = sec_timeout;
     SetTimer(sec_timeout);

@@ -32,7 +32,7 @@ void FileSink::Sink(const logger::LogEvent &log_event,
     m_no++;
     OpenNewFile();
   }
-  log_format->format(m_ofs, log_event);
+  log_format->Format(m_ofs, log_event);
 }
 
 void FileSink::OpenNewFile() {
@@ -52,13 +52,13 @@ void FileSink::OpenNewFile() {
   }
 }
 
-void FileSink::flush() { m_ofs.flush(); }
+void FileSink::Flush() { m_ofs.flush(); }
 
 void StdoutSink::Sink(const logger::LogEvent &log_event,
                       LoggerFormat::LoggerFormatPtr &log_format) {
-  log_format->format(std::cout, log_event);
+  log_format->Format(std::cout, log_event);
 }
 
-void StdoutSink::flush() { std::cout.flush(); }
+void StdoutSink::Flush() { std::cout.flush(); }
 };  // namespace logger
 }  // namespace dry

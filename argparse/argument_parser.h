@@ -19,8 +19,8 @@ namespace argparse {
  */
 class ArgumentParser {
  public:
-  ArgumentParser(const std::string& program_name,
-                 const std::string& description = "", bool add_help = true);
+  ArgumentParser(std::string program_name, std::string description = "",
+                 bool add_help = true);
   // 解析命令行参数
   // 返回值：true 表示正常解析完成，false 表示遇到 --help 请求（已打印帮助信息）
   // 抛出异常：std::runtime_error (解析错误)

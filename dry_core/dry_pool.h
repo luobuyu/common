@@ -48,14 +48,14 @@ class ObjectPool {
   };
 
  public:
-  ObjectPool(Factory factory, Validator Validator = nullptr,
+  ObjectPool(Factory factory, Validator validator = nullptr,
              Destroyer destroyer = nullptr, Config config = {})
       : m_factory(std::move(factory)),
-        m_validator(std::move(Validator)),
+        m_validator(std::move(validator)),
         m_destroyer(std::move(destroyer)),
         m_config(config) {}
 
-  ~ObjectPool() { clear(); }
+  ~ObjectPool() { Clear(); }
 
   /// 从空闲池中借出一个对象（移除），或创建新对象
   /// @param key 对象的索引 key
@@ -191,7 +191,7 @@ class ObjectPool {
   }
 
   /// 清空所有空闲对象
-  void clear() {
+  void Clear() {
     if (m_destroyer) {
       for (auto& [key, deque] : m_idle_map) {
         for (auto& entry : deque) {
@@ -213,7 +213,7 @@ class ObjectPool {
     return it != m_idle_map.end() ? it->second.size() : 0;
   }
   /// 是否为空
-  bool empty() const { return m_total_idle == 0; }
+  bool Empty() const { return m_total_idle == 0; }
 
   // ====== 配置 ======
 
