@@ -5,36 +5,36 @@ namespace argparse {
 
 // 构造函数（不带 required 和 callback 参数，避免隐式转换问题）
 Argument::Argument(const std::vector<std::string>& names,
-                   const std::string& Description)
+                   const std::string& description)
     : m_names{names},
-      m_description{Description},
+      m_description{description},
       m_required{false},
       m_parsed{false},
       m_callback{nullptr} {}
 Argument::Argument(const ArgumentType& type,
                    const std::vector<std::string>& names,
-                   const std::string& Description)
+                   const std::string& description)
     : m_type{type},
       m_names{names},
-      m_description{Description},
+      m_description{description},
       m_required{false},
       m_parsed{false},
       m_callback{nullptr} {}
 
-void Argument::SetDescription(const std::string& Description) {
-  m_description = Description;
+void Argument::SetDescription(const std::string& description) {
+  m_description = description;
 }
 
-void Argument::SetRequired(bool Required) { m_required = Required; }
+void Argument::SetRequired(bool required) { m_required = required; }
 
 void Argument::SetParsed(bool parsed) { m_parsed = parsed; }
 
-void Argument::SetCallback(std::function<void()> Callback) {
-  m_callback = Callback;
+void Argument::SetCallback(std::function<void()> callback) {
+  m_callback = callback;
 }
 
-Argument& Argument::Description(const std::string& Description) {
-  SetDescription(Description);
+Argument& Argument::Description(const std::string& description) {
+  SetDescription(description);
   return *this;
 }
 
@@ -43,8 +43,8 @@ Argument& Argument::Required() {
   return *this;
 }
 
-Argument& Argument::Callback(std::function<void()> Callback) {
-  SetCallback(Callback);
+Argument& Argument::Callback(std::function<void()> callback) {
+  SetCallback(callback);
   return *this;
 }
 

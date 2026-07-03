@@ -85,7 +85,7 @@ struct TestCase {
 
 class TestRegistry {
  public:
-  static TestRegistry& instance() {
+  static TestRegistry& Instance() {
     static TestRegistry reg;
     return reg;
   }
@@ -131,7 +131,7 @@ class Register {
  public:
   Register(const std::string& suite, const std::string& name,
            std::function<void()> func) {
-    TestRegistry::instance().AddTest(suite, name, std::move(func));
+    TestRegistry::Instance().AddTest(suite, name, std::move(func));
   }
 };
 

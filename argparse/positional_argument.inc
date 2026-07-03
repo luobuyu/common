@@ -10,8 +10,8 @@ namespace argparse {
 template <typename T>
 PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
                                           std::vector<T>& target,
-                                          const std::string& Description)
-    : MultiArgument<T>(ArgumentType::Positional, names, Description) {
+                                          const std::string& description)
+    : MultiArgument<T>(ArgumentType::Positional, names, description) {
   this->BindTo(target);
 }
 
@@ -19,16 +19,16 @@ PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
 template <typename T>
 PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
                                           T& target,
-                                          const std::string& Description)
-    : MultiArgument<T>(ArgumentType::Positional, names, Description) {
+                                          const std::string& description)
+    : MultiArgument<T>(ArgumentType::Positional, names, description) {
   this->BindTo(target);
 }
 
 // 构造函数3: 不绑定
 template <typename T>
 PositionalArgument<T>::PositionalArgument(const std::vector<std::string>& names,
-                                          const std::string& Description)
-    : MultiArgument<T>(ArgumentType::Positional, names, Description) {}
+                                          const std::string& description)
+    : MultiArgument<T>(ArgumentType::Positional, names, description) {}
 
 // 重写解析方法
 template <typename T>

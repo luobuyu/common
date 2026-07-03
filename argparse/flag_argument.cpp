@@ -8,12 +8,12 @@ namespace argparse {
 
 // 构造函数（不带 required 和 callback 参数，避免隐式转换问题）
 FlagArgument::FlagArgument(const std::vector<std::string>& names,
-                           const std::string& Description)
-    : Argument(ArgumentType::Flag, names, Description), m_flag(false) {}
+                           const std::string& description)
+    : Argument(ArgumentType::Flag, names, description), m_flag(false) {}
 
 FlagArgument::FlagArgument(const std::vector<std::string>& names, bool& target,
-                           const std::string& Description)
-    : Argument(ArgumentType::Flag, names, Description), m_flag(false) {
+                           const std::string& description)
+    : Argument(ArgumentType::Flag, names, description), m_flag(false) {
   BindTo(target);
 }
 
@@ -52,8 +52,8 @@ bool FlagArgument::HasDefaultValue() const {
   return m_default_flag.has_value();
 }
 
-FlagArgument& FlagArgument::Description(const std::string& Description) {
-  SetDescription(Description);
+FlagArgument& FlagArgument::Description(const std::string& description) {
+  SetDescription(description);
   return *this;
 }
 
@@ -67,8 +67,8 @@ FlagArgument& FlagArgument::DefaultValue(bool value) {
   return *this;
 }
 
-FlagArgument& FlagArgument::Callback(std::function<void()> Callback) {
-  SetCallback(Callback);
+FlagArgument& FlagArgument::Callback(std::function<void()> callback) {
+  SetCallback(callback);
   return *this;
 }
 
@@ -77,8 +77,8 @@ FlagArgument& FlagArgument::BindTo(bool& target) {
   return *this;
 }
 
-FlagArgument& FlagArgument::Validator(std::function<bool(bool)> Validator) {
-  m_validator = Validator;
+FlagArgument& FlagArgument::Validator(std::function<bool(bool)> validator) {
+  m_validator = validator;
   return *this;
 }
 

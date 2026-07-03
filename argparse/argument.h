@@ -19,21 +19,21 @@ class Argument {
   // 构造函数（不带 required 和 callback 参数，避免隐式转换问题）
   // 使用链式调用 .required() 和 .callback() 来设置
   Argument(const std::vector<std::string>& names,
-           const std::string& Description);
+           const std::string& description);
   Argument(const ArgumentType& type, const std::vector<std::string>& names,
-           const std::string& Description);
+           const std::string& description);
   virtual ~Argument() = default;
 
   // setter
-  void SetDescription(const std::string& Description);
-  void SetRequired(bool Required);
+  void SetDescription(const std::string& description);
+  void SetRequired(bool required);
   void SetParsed(bool parsed);
-  void SetCallback(std::function<void()> Callback);
+  void SetCallback(std::function<void()> callback);
 
   // 链式调用
-  Argument& Description(const std::string& Description);
+  Argument& Description(const std::string& description);
   Argument& Required();
-  Argument& Callback(std::function<void()> Callback);
+  Argument& Callback(std::function<void()> callback);
 
   const std::vector<std::string>& GetNames() const;
   const std::string& GetDescription() const;

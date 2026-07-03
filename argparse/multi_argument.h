@@ -21,21 +21,21 @@ class MultiArgument : public Argument {
   // - target: 绑定的外部变量（必需）
   // - description: 描述信息（可选）
   MultiArgument(const std::vector<std::string>& names, std::vector<T>& target,
-                const std::string& Description = "");
+                const std::string& description = "");
   MultiArgument(const ArgumentType& type, const std::vector<std::string>& names,
-                std::vector<T>& target, const std::string& Description = "");
+                std::vector<T>& target, const std::string& description = "");
   MultiArgument(const std::vector<std::string>& names, T& target,
-                const std::string& Description = "");
+                const std::string& description = "");
   MultiArgument(const ArgumentType& type, const std::vector<std::string>& names,
-                T& target, const std::string& Description = "");
+                T& target, const std::string& description = "");
 
   // 构造函数（不绑定）
   // - names: 参数名称（必需）
   // - description: 描述信息（可选）
   MultiArgument(const std::vector<std::string>& names,
-                const std::string& Description = "");
+                const std::string& description = "");
   MultiArgument(const ArgumentType& type, const std::vector<std::string>& names,
-                const std::string& Description = "");
+                const std::string& description = "");
   // 值操作
   const std::vector<T>& GetValues() const;
   void AddValue(const T& value);
@@ -62,15 +62,15 @@ class MultiArgument : public Argument {
 
   // 验证器（只保留整体验证）
   MultiArgument<T>& Validator(
-      std::function<bool(const std::vector<T>&)> Validator);
+      std::function<bool(const std::vector<T>&)> validator);
   bool IsValid() const override;
   // 验证并抛出异常（供 Parse 时调用）
   void Validate() const override;
 
   // 链式调用
-  MultiArgument<T>& Description(const std::string& Description);
+  MultiArgument<T>& Description(const std::string& description);
   MultiArgument<T>& Required();
-  MultiArgument<T>& Callback(std::function<void()> Callback);
+  MultiArgument<T>& Callback(std::function<void()> callback);
 
   // 重写多态方法
   // MultiArgument 接收值列表（二阶段模式），忽略 current_index

@@ -14,7 +14,7 @@ BatchTaskPool& BatchTaskPool::Spawn(Func&& func, Args&&... args) {
   return *this;
 }
 
-inline int BatchTaskPool::wait() {
+inline int BatchTaskPool::Wait() {
   int first_err = 0;
   for (auto& f : m_futures) {
     int ret = f.get();

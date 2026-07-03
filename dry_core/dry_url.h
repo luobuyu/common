@@ -14,7 +14,7 @@ namespace dry {
 inline std::string UrlDecode(std::string_view str) {
   // 单字符 hex 转 0~15，非法返回 -1。比 sscanf("%2x") 快 5~10 倍，
   // 且不依赖 c_str() 的 null 终止——string_view 不保证以 \0 结尾。
-  auto FromHex = [](char c) -> int {
+  auto from_hex = [](char c) -> int {
     if (c >= '0' && c <= '9') {
       return c - '0';
     }
@@ -32,8 +32,8 @@ inline std::string UrlDecode(std::string_view str) {
     if (str[i] == '+') {
       decoded += ' ';
     } else if (str[i] == '%' && i + 2 < str.size()) {
-      int h = FromHex(str[i + 1]);
-      int l = FromHex(str[i + 2]);
+      int h = from_hex(str[i + 1]);
+      int l = from_hex(str[i + 2]);
       if (h >= 0 && l >= 0) {
         char decoded_char = static_cast<char>((h << 4) | l);
         if (decoded_char == '\0') {

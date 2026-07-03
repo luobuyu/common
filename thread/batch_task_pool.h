@@ -44,12 +44,12 @@ class BatchTaskPool final {
    * 等待所有任务完成
    * @return 所有任务均成功返回 0，否则返回第一个非 0 的错误码
    */
-  int wait();
+  int Wait();
 
   /**
    * 返回已提交的任务数量
    */
-  std::size_t size() const { return m_futures.size(); }
+  std::size_t Size() const { return m_futures.size(); }
 
  private:
   ThreadPool& m_pool;

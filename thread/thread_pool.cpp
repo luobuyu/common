@@ -19,9 +19,9 @@ ThreadPool::~ThreadPool() {
 void ThreadPool::Stop() {
   m_stop.store(true);
   m_condition.notify_all();
-  for (auto& Worker : m_workers) {
-    if (Worker.joinable()) {
-      Worker.join();
+  for (auto& worker : m_workers) {
+    if (worker.joinable()) {
+      worker.join();
     }
   }
 }

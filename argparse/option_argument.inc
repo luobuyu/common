@@ -8,36 +8,36 @@ namespace argparse {
 template <typename T>
 OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
                                   std::vector<T>& target,
-                                  const std::string& Description)
-    : MultiArgument<T>(ArgumentType::Option, names, Description) {
+                                  const std::string& description)
+    : MultiArgument<T>(ArgumentType::Option, names, description) {
   this->BindTo(target);
 }
 
 // 构造函数2: 绑定单个 T
 template <typename T>
 OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
-                                  T& target, const std::string& Description)
-    : MultiArgument<T>(ArgumentType::Option, names, Description) {
+                                  T& target, const std::string& description)
+    : MultiArgument<T>(ArgumentType::Option, names, description) {
   this->BindTo(target);
 }
 
 // 构造函数3: 不绑定
 template <typename T>
 OptionArgument<T>::OptionArgument(const std::vector<std::string>& names,
-                                  const std::string& Description)
-    : MultiArgument<T>(ArgumentType::Option, names, Description) {}
+                                  const std::string& description)
+    : MultiArgument<T>(ArgumentType::Option, names, description) {}
 
 // 获取和设置值
 template <typename T>
-OptionArgument<T>& OptionArgument<T>::value(const T& value) {
+OptionArgument<T>& OptionArgument<T>::Value(const T& value) {
   this->ClearValues();
   this->AddValue(value);
   return *this;
 }
 template <typename T>
 OptionArgument<T>& OptionArgument<T>::Description(
-    const std::string& Description) {
-  this->SetDescription(Description);
+    const std::string& description) {
+  this->SetDescription(description);
   return *this;
 }
 template <typename T>
@@ -51,8 +51,8 @@ OptionArgument<T>& OptionArgument<T>::DefaultValue(const T& value) {
   return *this;
 }
 template <typename T>
-OptionArgument<T>& OptionArgument<T>::Callback(std::function<void()> Callback) {
-  this->SetCallback(Callback);
+OptionArgument<T>& OptionArgument<T>::Callback(std::function<void()> callback) {
+  this->SetCallback(callback);
   return *this;
 }
 

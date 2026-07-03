@@ -11,8 +11,8 @@ namespace argparse {
 template <typename T>
 MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
                                 std::vector<T>& target,
-                                const std::string& Description)
-    : Argument(names, Description),
+                                const std::string& description)
+    : Argument(names, description),
       m_expected_min(1),  // 默认至少需要1个值
       m_expected_max(1)   // 默认最多1个值
 {
@@ -23,8 +23,8 @@ template <typename T>
 MultiArgument<T>::MultiArgument(const ArgumentType& type,
                                 const std::vector<std::string>& names,
                                 std::vector<T>& target,
-                                const std::string& Description)
-    : Argument(type, names, Description),
+                                const std::string& description)
+    : Argument(type, names, description),
       m_expected_min(1),  // 默认至少需要1个值
       m_expected_max(1)   // 默认最多1个值
 {
@@ -33,8 +33,8 @@ MultiArgument<T>::MultiArgument(const ArgumentType& type,
 
 template <typename T>
 MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
-                                T& target, const std::string& Description)
-    : Argument(names, Description),
+                                T& target, const std::string& description)
+    : Argument(names, description),
       m_expected_min(1),  // 默认至少需要1个值
       m_expected_max(1)   // 默认最多1个值
 {
@@ -44,8 +44,8 @@ MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
 template <typename T>
 MultiArgument<T>::MultiArgument(const ArgumentType& type,
                                 const std::vector<std::string>& names,
-                                T& target, const std::string& Description)
-    : Argument(type, names, Description),
+                                T& target, const std::string& description)
+    : Argument(type, names, description),
       m_expected_min(1),  // 默认至少需要1个值
       m_expected_max(1)   // 默认最多1个值
 {
@@ -54,8 +54,8 @@ MultiArgument<T>::MultiArgument(const ArgumentType& type,
 
 template <typename T>
 MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
-                                const std::string& Description)
-    : Argument(names, Description),
+                                const std::string& description)
+    : Argument(names, description),
       m_expected_min(1),  // 默认至少需要1个值
       m_expected_max(1)   // 默认最多1个值
 {}
@@ -63,8 +63,8 @@ MultiArgument<T>::MultiArgument(const std::vector<std::string>& names,
 template <typename T>
 MultiArgument<T>::MultiArgument(const ArgumentType& type,
                                 const std::vector<std::string>& names,
-                                const std::string& Description)
-    : Argument(type, names, Description),
+                                const std::string& description)
+    : Argument(type, names, description),
       m_expected_min(1),  // 默认至少需要1个值
       m_expected_max(1)   // 默认最多1个值
 {}
@@ -208,8 +208,8 @@ MultiArgument<T>& MultiArgument<T>::BindTo(T& target) {
 // 验证器实现（只保留整体验证）
 template <typename T>
 MultiArgument<T>& MultiArgument<T>::Validator(
-    std::function<bool(const std::vector<T>&)> Validator) {
-  m_validator = Validator;
+    std::function<bool(const std::vector<T>&)> validator) {
+  m_validator = validator;
   return *this;
 }
 
@@ -232,8 +232,8 @@ void MultiArgument<T>::Validate() const {
 // 链式调用实现
 template <typename T>
 MultiArgument<T>& MultiArgument<T>::Description(
-    const std::string& Description) {
-  SetDescription(Description);
+    const std::string& description) {
+  SetDescription(description);
   return *this;
 }
 
@@ -244,8 +244,8 @@ MultiArgument<T>& MultiArgument<T>::Required() {
 }
 
 template <typename T>
-MultiArgument<T>& MultiArgument<T>::Callback(std::function<void()> Callback) {
-  SetCallback(Callback);
+MultiArgument<T>& MultiArgument<T>::Callback(std::function<void()> callback) {
+  SetCallback(callback);
   return *this;
 }
 

@@ -55,36 +55,36 @@ inline std::string GetTime(const std::chrono::system_clock::time_point& t,
 // 带毫秒的时间格式化，在 GetTime 结果后追加 .毫秒
 inline std::string GetTimeWithMs(const std::chrono::system_clock::time_point& t,
                                  const std::string& format) {
-  std::string Result = GetTime(t, format);
+  std::string result = GetTime(t, format);
   auto epoch = t.time_since_epoch();
   auto millis =
       std::chrono::duration_cast<std::chrono::milliseconds>(epoch).count() %
       1000;
   char ms_buf[8];
   snprintf(ms_buf, sizeof(ms_buf), ".%03d", static_cast<int>(millis));
-  return Result + ms_buf;
+  return result + ms_buf;
 }
 
 class Timer {
  private:
   using SteadyClock = std::chrono::steady_clock;
   using TimePoint = SteadyClock::time_point;
-  TimePoint StartTime, EndTime;
-  long long timeout;
+  TimePoint m_start_time, m_end_time;
+  long long m_timeout;
 
  public:
-  Timer() : StartTime(SteadyClock::now()), EndTime(StartTime), timeout(0) {}
-  Timer(long long secTimeout) {
-    timeout = secTimeout;
-    SetTimer(secTimeout);
+  Timer() : m_start_time(SteadyClock::now()), m_end_time(m_start_time), m_timeout(0) {}
+  Timer(long long sec_timeout) {
+    m_timeout = sec_timeout;
+    SetTimer(sec_timeout);
   }
-  void SetTimer(long long secTimeout) {
-    StartTime = SteadyClock::now();
-    EndTime = StartTime + std::chrono::seconds(secTimeout);
+  void SetTimer(long long sec_timeout) {
+    m_start_time = SteadyClock::now();
+    m_end_time = m_start_time + std::chrono::seconds(sec_timeout);
   }
-  bool IsTimeout() { return EndTime < SteadyClock::now(); }
+  bool IsTimeout() { return m_end_time < SteadyClock::now(); }
   std::chrono::duration<double> GetDuration() {
-    return SteadyClock::now() - StartTime;
+    return SteadyClock::now() - m_start_time;
   }
   double GetDurationS() {
     return std::chrono::duration<double>(GetDuration()).count();
@@ -98,7 +98,7 @@ class Timer {
         .count();
   }
 
-  long long GetTimeout() { return timeout; }
+  long long GetTimeout() { return m_timeout; }
 };
 
 }  // namespace dry

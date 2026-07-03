@@ -12,9 +12,9 @@ uint16_t SafeParsePort(std::string_view port_str) {
 }
 /// 解析 authority 部分：[userinfo@]host[:port][/path][?query]
 /// @note 内部辅助函数，由 ParseUrl 调用
-static void ParseAuthority(std::string_view authority, UrlComponents& Result) {
+static void ParseAuthority(std::string_view authority, UrlComponents& result) {
   if (authority.empty()) {
-    Result.path = "/";
+    result.path = "/";
     return;
   }
 
@@ -41,15 +41,15 @@ static void ParseAuthority(std::string_view authority, UrlComponents& Result) {
   // 分离 path 和 query（漏洞 #10）
   if (!path_query.empty() && path_query[0] == '?') {
     // 无 path，只有 query
-    Result.path = "/";
-    Result.query = path_query;
+    result.path = "/";
+    result.query = path_query;
   } else {
     auto q_pos = path_query.find('?');
     if (q_pos != std::string::npos) {
-      Result.path = path_query.substr(0, q_pos);
-      Result.query = path_query.substr(q_pos);
+      result.path = path_query.substr(0, q_pos);
+      result.query = path_query.substr(q_pos);
     } else {
-      Result.path = path_query.empty() ? "/" : path_query;
+      result.path = path_query.empty() ? "/" : path_query;
     }
   }
 
@@ -65,14 +65,14 @@ static void ParseAuthority(std::string_view authority, UrlComponents& Result) {
   // 某些实现把 '\' 当 '/' 处理，这可能导致解析混乱
   // 安全做法：如果 host_part 中包含 '\'，视为无效 URL
   if (host_part.find('\\') != std::string::npos) {
-    Result.valid = false;
+    result.valid = false;
     return;
   }
 
   // ====== Step 4: 解析 host:port ======
   if (host_part.empty()) {
     // 空 host（漏洞 #13：如 http:///path）
-    Result.path = Result.path.empty() ? "/" : Result.path;
+    result.path = result.path.empty() ? "/" : result.path;
     return;
   }
 
@@ -81,13 +81,13 @@ static void ParseAuthority(std::string_view authority, UrlComponents& Result) {
     auto bracket_end = host_part.find(']');
     if (bracket_end == std::string::npos) {
       // 格式错误，不跟随
-      Result.valid = false;
+      result.valid = false;
       return;
     }
-    Result.host = host_part.substr(1, bracket_end - 1);  // 去掉 []
+    result.host = host_part.substr(1, bracket_end - 1);  // 去掉 []
     if (bracket_end + 1 < host_part.size() &&
         host_part[bracket_end + 1] == ':') {
-      Result.port =
+      result.port =
           SafeParsePort(std::string_view(host_part).substr(bracket_end + 2));
     }
   } else {
@@ -103,20 +103,20 @@ static void ParseAuthority(std::string_view authority, UrlComponents& Result) {
         }
       }
       if (all_digits && colon + 1 < host_part.size()) {
-        Result.host = host_part.substr(0, colon);
-        Result.port =
+        result.host = host_part.substr(0, colon);
+        result.port =
             SafeParsePort(std::string_view(host_part).substr(colon + 1));
       } else {
         // colon 后面不是纯数字，整个当 host（可能是 IPv6 裸地址）
-        Result.host = host_part;
+        result.host = host_part;
       }
     } else {
-      Result.host = host_part;
+      result.host = host_part;
     }
   }
 
   // host 转小写（漏洞 #6：RFC 3986 host is case-insensitive）
-  for (auto& c : Result.host) {
+  for (auto& c : result.host) {
     c = std::tolower(static_cast<unsigned char>(c));
   }
 }
@@ -216,26 +216,26 @@ std::string ResolveRelativePath(std::string_view relative,
 
 /// 解析 URL（支持绝对 URL、相对路径、protocol-relative）
 UrlComponents ParseUrl(std::string_view location, std::string_view base_path) {
-  UrlComponents Result;
+  UrlComponents result;
   if (location.empty()) {
-    Result.valid = false;
-    return Result;
+    result.valid = false;
+    return result;
   }
 
   // ====== Step 0: trim 前后空白（漏洞 #9）======
-  size_t Start = 0, end = location.size();
-  while (Start < end && (location[Start] == ' ' || location[Start] == '\t')) {
-    Start++;
+  size_t start = 0, end = location.size();
+  while (start < end && (location[start] == ' ' || location[start] == '\t')) {
+    start++;
   }
-  while (end > Start &&
+  while (end > start &&
          (location[end - 1] == ' ' || location[end - 1] == '\t')) {
     end--;
   }
-  if (Start >= end) {
-    Result.valid = false;
-    return Result;
+  if (start >= end) {
+    result.valid = false;
+    return result;
   }
-  std::string loc(location.substr(Start, end - Start));
+  std::string loc(location.substr(start, end - start));
 
   // ====== Step 1: 剥离 fragment（漏洞 #8）======
   // fragment 不应发送给服务端
@@ -244,8 +244,8 @@ UrlComponents ParseUrl(std::string_view location, std::string_view base_path) {
     loc = loc.substr(0, frag_pos);
   }
   if (loc.empty()) {
-    Result.valid = false;
-    return Result;
+    result.valid = false;
+    return result;
   }
 
   // ====== Step 2: 判断 URL 类型 ======
@@ -255,18 +255,18 @@ UrlComponents ParseUrl(std::string_view location, std::string_view base_path) {
     // 分离 path 和 query（漏洞 #10）
     auto q_pos2 = loc.find('?');
     if (q_pos2 != std::string::npos) {
-      Result.path = loc.substr(0, q_pos2);
-      Result.query = loc.substr(q_pos2);  // 含 '?'
+      result.path = loc.substr(0, q_pos2);
+      result.query = loc.substr(q_pos2);  // 含 '?'
     } else {
-      Result.path = loc;
+      result.path = loc;
     }
-    return Result;
+    return result;
   }
 
   // 2b. protocol-relative（以 "//" 开头）
   if (loc.size() >= 2 && loc[0] == '/' && loc[1] == '/') {
-    ParseAuthority(std::string_view(loc).substr(2), Result);
-    return Result;
+    ParseAuthority(std::string_view(loc).substr(2), result);
+    return result;
   }
 
   // 2c. 判断是否是绝对 URL
@@ -276,8 +276,8 @@ UrlComponents ParseUrl(std::string_view location, std::string_view base_path) {
   size_t colon_pos = loc.find(':');
   if (colon_pos == std::string::npos || colon_pos == 0) {
     // 无 scheme → 相对路径（漏洞 #7 修复：正确解析相对路径）
-    Result.path = ResolveRelativePath(loc, base_path);
-    return Result;
+    result.path = ResolveRelativePath(loc, base_path);
+    return result;
   }
 
   // 检查 colon 之前是否全是合法 scheme 字符
@@ -299,26 +299,26 @@ UrlComponents ParseUrl(std::string_view location, std::string_view base_path) {
   if (!valid_scheme || loc.size() < colon_pos + 3 ||
       loc[colon_pos + 1] != '/' || loc[colon_pos + 2] != '/') {
     // 不是合法的 scheme://... → 当作相对路径
-    Result.path = ResolveRelativePath(loc, base_path);
-    return Result;
+    result.path = ResolveRelativePath(loc, base_path);
+    return result;
   }
 
   // 2d. 绝对 URL
-  Result.scheme = loc.substr(0, colon_pos);
+  result.scheme = loc.substr(0, colon_pos);
   // scheme 转小写（RFC 3986: scheme is case-insensitive）
-  for (auto& c : Result.scheme) {
+  for (auto& c : result.scheme) {
     c = std::tolower(static_cast<unsigned char>(c));
   }
 
   // 漏洞 #14：只允许 http/https
-  if (Result.scheme != "http" && Result.scheme != "https") {
+  if (result.scheme != "http" && result.scheme != "https") {
     // 非 HTTP scheme，标记为无效（不跟随重定向）
-    Result.valid = false;
-    return Result;
+    result.valid = false;
+    return result;
   }
 
-  ParseAuthority(std::string_view(loc).substr(colon_pos + 3), Result);
-  return Result;
+  ParseAuthority(std::string_view(loc).substr(colon_pos + 3), result);
+  return result;
 }
 
 /// 判断两个 URL 是否同源（scheme + host + EffectivePort 均相同）

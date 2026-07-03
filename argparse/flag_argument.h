@@ -12,9 +12,9 @@ class FlagArgument : public Argument {
   // 构造函数（不带 required 和 callback 参数，避免隐式转换问题）
   // 使用链式调用 .required() 和 .callback() 来设置
   FlagArgument(const std::vector<std::string>& names,
-               const std::string& Description = "");
+               const std::string& description = "");
   FlagArgument(const std::vector<std::string>& names, bool& target,
-               const std::string& Description = "");
+               const std::string& description = "");
 
   bool GetFlag() const;
   void SetFlag(bool value);
@@ -25,14 +25,14 @@ class FlagArgument : public Argument {
   bool HasDefaultValue() const override;
 
   // 链式调用
-  FlagArgument& Description(const std::string& Description);
+  FlagArgument& Description(const std::string& description);
   FlagArgument& Required();
   FlagArgument& DefaultValue(bool value);
-  FlagArgument& Callback(std::function<void()> Callback);
+  FlagArgument& Callback(std::function<void()> callback);
   FlagArgument& BindTo(bool& target);
 
   // 验证器（对布尔值进行验证）
-  FlagArgument& Validator(std::function<bool(bool)> Validator);
+  FlagArgument& Validator(std::function<bool(bool)> validator);
   // 重写基类验证器接口
   bool IsValid() const override;
   void Validate() const override;

@@ -14,13 +14,13 @@ class CircleQueue {
   CircleQueue() = default;
   explicit CircleQueue(int max_size);
   bool Full() const;
-  bool empty() const;
-  std::size_t size() const;
-  void push(T &&item);
-  void push(const T &item);
-  T &front();
+  bool Empty() const;
+  std::size_t Size() const;
+  void Push(T &&item);
+  void Push(const T &item);
+  T &Front();
   void PopFront();
-  void resize(int size);
+  void Resize(int size);
 
  private:
   uint32_t m_max_size = 0;
@@ -35,10 +35,10 @@ class BlockingQueue {
   BlockingQueue();
   explicit BlockingQueue(int size);
   ~BlockingQueue();
-  void push(T &&item);
-  void push(const T &item);
+  void Push(T &&item);
+  void Push(const T &item);
   bool TryPop(T &item);
-  bool pop(T &item);
+  bool Pop(T &item);
   // 带超时的 pop，超时返回 false 且 item 不变，队列 Stop+空 时也返回 false
   bool PopWithTimeout(T &item, std::chrono::milliseconds timeout);
 
@@ -53,9 +53,9 @@ class BlockingQueue {
   std::size_t BatchPopWithTimeout(std::vector<T> &out, std::size_t max_count,
                                   std::chrono::milliseconds timeout);
 
-  int size() const;
-  void resize(int size);
-  bool empty();
+  int Size() const;
+  void Resize(int size);
+  bool Empty();
 
   void Stop();
   bool IsStopping() const;

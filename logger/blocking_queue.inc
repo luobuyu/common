@@ -15,29 +15,29 @@ bool CircleQueue<T>::Full() const {
 }
 
 template <class T>
-bool CircleQueue<T>::empty() const {
+bool CircleQueue<T>::Empty() const {
   return m_head == m_tail;
 }
 
 template <class T>
-std::size_t CircleQueue<T>::size() const {
+std::size_t CircleQueue<T>::Size() const {
   return (m_tail - m_head + m_max_size) % m_max_size;
 }
 
 template <class T>
-void CircleQueue<T>::push(T &&item) {
+void CircleQueue<T>::Push(T &&item) {
   m_vec[m_tail] = std::move(item);
   m_tail = (m_tail + 1) % m_max_size;
 }
 
 template <class T>
-void CircleQueue<T>::push(const T &item) {
+void CircleQueue<T>::Push(const T &item) {
   m_vec[m_tail] = item;
   m_tail = (m_tail + 1) % m_max_size;
 }
 
 template <class T>
-T &CircleQueue<T>::front() {
+T &CircleQueue<T>::Front() {
   return m_vec[m_head];
 }
 
@@ -47,7 +47,7 @@ void CircleQueue<T>::PopFront() {
 }
 
 template <class T>
-void logger::CircleQueue<T>::resize(int size) {
+void logger::CircleQueue<T>::Resize(int size) {
   m_max_size = size + 1;
   m_vec.resize(m_max_size);
   m_head = m_tail = 0;
@@ -66,7 +66,7 @@ BlockingQueue<T>::~BlockingQueue() {
   m_cond_comsumer.notify_all();
 }
 template <class T>
-void BlockingQueue<T>::push(T &&item) {
+void BlockingQueue<T>::Push(T &&item) {
   {
     std::unique_lock<std::mutex> lock(m_mtx);
     m_cond_producer.wait(lock,
@@ -77,7 +77,7 @@ void BlockingQueue<T>::push(T &&item) {
   m_cond_comsumer.notify_one();
 }
 template <class T>
-void BlockingQueue<T>::push(const T &item) {
+void BlockingQueue<T>::Push(const T &item) {
   {
     std::unique_lock<std::mutex> lock(m_mtx);
     m_cond_producer.wait(lock,
@@ -97,7 +97,7 @@ bool BlockingQueue<T>::TryPop(T &item) {
   return true;
 }
 template <class T>
-bool BlockingQueue<T>::pop(T &item) {
+bool BlockingQueue<T>::Pop(T &item) {
   std::unique_lock<std::mutex> lock(m_mtx);
   m_cond_comsumer.wait(lock,
                        [&]() { return !m_queue.empty() || m_is_stopping; });
@@ -123,18 +123,18 @@ bool BlockingQueue<T>::PopWithTimeout(T &item,
 }
 
 template <class T>
-int BlockingQueue<T>::size() const {
+int BlockingQueue<T>::Size() const {
   std::lock_guard<std::mutex> lock(m_mtx);
   return m_queue.size();
 }
 template <class T>
-void BlockingQueue<T>::resize(int size) {
+void BlockingQueue<T>::Resize(int size) {
   std::lock_guard<std::mutex> lock(m_mtx);
   m_queue.resize(size);
   m_is_stopping.store(false);
 }
 template <class T>
-bool BlockingQueue<T>::empty() {
+bool BlockingQueue<T>::Empty() {
   std::lock_guard<std::mutex> lock(m_mtx);
   return m_queue.empty();
 }

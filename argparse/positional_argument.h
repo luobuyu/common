@@ -12,15 +12,15 @@ class PositionalArgument : public MultiArgument<T> {
   // 构造函数1: 绑定 vector<T>
   PositionalArgument(const std::vector<std::string>& names,
                      std::vector<T>& target,
-                     const std::string& Description = "");
+                     const std::string& description = "");
 
   // 构造函数2: 绑定单个 T
   PositionalArgument(const std::vector<std::string>& names, T& target,
-                     const std::string& Description = "");
+                     const std::string& description = "");
 
   // 构造函数3: 不绑定
   PositionalArgument(const std::vector<std::string>& names,
-                     const std::string& Description = "");
+                     const std::string& description = "");
 
   // 重写解析方法
   size_t Parse(const std::vector<std::string>& args,

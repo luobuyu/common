@@ -12,7 +12,7 @@ namespace logger {
 class FormatItem {
  public:
   typedef std::shared_ptr<FormatItem> FormatItemPtr;
-  virtual void format(std::ostream &os, const logger::LogEvent &log_msg) = 0;
+  virtual void Format(std::ostream &os, const logger::LogEvent &log_msg) = 0;
   virtual void SetFmt(const std::string &fmt);
   virtual std::string GetFmt();
 
@@ -22,84 +22,84 @@ class FormatItem {
 class DateFormatItem : public FormatItem {
  public:
   DateFormatItem(std::string time_fmt = "%Y-%m-%d %H:%M:%S");
-  void format(std::ostream &os, const logger::LogEvent &log_msg) override;
+  void Format(std::ostream &os, const logger::LogEvent &log_msg) override;
 
  private:
   std::string m_time_fmt;
 };
 class TabFormatItem : public FormatItem {
  public:
-  void format(std::ostream &os, const logger::LogEvent &log_msg) override;
+  void Format(std::ostream &os, const logger::LogEvent &log_msg) override;
 
  private:
 };
 
 class LevelFormatItem : public FormatItem {
  public:
-  void format(std::ostream &os, const logger::LogEvent &log_msg) override;
+  void Format(std::ostream &os, const logger::LogEvent &log_msg) override;
 
  private:
 };
 
 class ProcessIdFormatItem : public FormatItem {
  public:
-  void format(std::ostream &os, const logger::LogEvent &log_msg) override;
+  void Format(std::ostream &os, const logger::LogEvent &log_msg) override;
 
  private:
 };
 
 class ThreadIdFormatItem : public FormatItem {
  public:
-  void format(std::ostream &os, const logger::LogEvent &log_msg) override;
+  void Format(std::ostream &os, const logger::LogEvent &log_msg) override;
 
  private:
 };
 
 class CoroutineIdFormatItem : public FormatItem {
  public:
-  void format(std::ostream &os, const logger::LogEvent &log_msg) override;
+  void Format(std::ostream &os, const logger::LogEvent &log_msg) override;
 
  private:
 };
 
 class ModuleNameFormatItem : public FormatItem {
  public:
-  void format(std::ostream &os, const logger::LogEvent &log_msg) override;
+  void Format(std::ostream &os, const logger::LogEvent &log_msg) override;
 
  private:
 };
 
 class FileNameFormatItem : public FormatItem {
  public:
-  void format(std::ostream &os, const logger::LogEvent &log_msg) override;
+  void Format(std::ostream &os, const logger::LogEvent &log_msg) override;
 
  private:
 };
 
 class FunctionNameFormatItem : public FormatItem {
  public:
-  void format(std::ostream &os, const logger::LogEvent &log_msg) override;
+  void Format(std::ostream &os, const logger::LogEvent &log_msg) override;
 
  private:
 };
 
 class LineIdFormatItem : public FormatItem {
  public:
-  void format(std::ostream &os, const logger::LogEvent &log_msg) override;
+  void Format(std::ostream &os, const logger::LogEvent &log_msg) override;
 
  private:
 };
 
 class LogMsgFormatItem : public FormatItem {
  public:
-  void format(std::ostream &os, const logger::LogEvent &log_msg) override;
+  void Format(std::ostream &os, const logger::LogEvent &log_msg) override;
 
  private:
 };
 
 class NewLineFormatItem : public FormatItem {
  public:
-  void format(std::ostream &os, const logger::LogEvent &log_msg) override;
+  void Format(std::ostream &os, const logger::LogEvent &log_msg) override;
 
  private:
 };
@@ -107,7 +107,7 @@ class NewLineFormatItem : public FormatItem {
 class OtherFormatItem : public FormatItem {
  public:
   OtherFormatItem(std::string other_fmt);
-  void format(std::ostream &os, const logger::LogEvent &log_msg) override;
+  void Format(std::ostream &os, const logger::LogEvent &log_msg) override;
   void SetFmt(const std::string &fmt) override;
   std::string GetFmt() override;
 
@@ -135,7 +135,7 @@ class LoggerFormat {
           "%d{%Y-%m-%d %H:%M:%S}%T[%L]%T[%p,%t,%c]%T[%M]%T[%F:%f:%l]%T%m%n");
   ~LoggerFormat() = default;
   void ParserPattern();
-  void format(std::ostream &os, const logger::LogEvent &log_msg);
+  void Format(std::ostream &os, const logger::LogEvent &log_msg);
   void SetPattern(const std::string &pattern);
 
  private:

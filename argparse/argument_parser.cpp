@@ -6,9 +6,9 @@ namespace dry {
 namespace argparse {
 
 ArgumentParser::ArgumentParser(const std::string& program_name,
-                               const std::string& Description, bool add_help)
+                               const std::string& description, bool add_help)
     : m_program_name(program_name),
-      m_description(Description),
+      m_description(description),
       m_add_help(add_help) {}
 
 Argument& ArgumentParser::AddArgument(std::unique_ptr<Argument> argument) {
@@ -20,17 +20,17 @@ Argument& ArgumentParser::AddArgument(std::unique_ptr<Argument> argument) {
 
 FlagArgument& ArgumentParser::AddFlagArgument(
     const std::vector<std::string>& names, bool& target,
-    const std::string& Description, bool Required,
-    std::function<void()> Callback) {
+    const std::string& description, bool required,
+    std::function<void()> callback) {
   // 检查名称冲突
   CheckNameConflicts(names);
   // 创建参数对象（使用链式调用设置 required 和 callback）
-  auto arg = std::make_unique<FlagArgument>(names, target, Description);
-  if (Required) {
+  auto arg = std::make_unique<FlagArgument>(names, target, description);
+  if (required) {
     arg->Required();
   }
-  if (Callback) {
-    arg->Callback(Callback);
+  if (callback) {
+    arg->Callback(callback);
   }
   FlagArgument& ref = *arg;
   AddArgument(std::move(arg));
@@ -38,17 +38,17 @@ FlagArgument& ArgumentParser::AddFlagArgument(
 }
 
 FlagArgument& ArgumentParser::AddFlagArgument(
-    const std::vector<std::string>& names, const std::string& Description,
-    bool Required, std::function<void()> Callback) {
+    const std::vector<std::string>& names, const std::string& description,
+    bool required, std::function<void()> callback) {
   // 检查名称冲突
   CheckNameConflicts(names);
   // 创建参数对象（使用链式调用设置 required 和 callback）
-  auto arg = std::make_unique<FlagArgument>(names, Description);
-  if (Required) {
+  auto arg = std::make_unique<FlagArgument>(names, description);
+  if (required) {
     arg->Required();
   }
-  if (Callback) {
-    arg->Callback(Callback);
+  if (callback) {
+    arg->Callback(callback);
   }
   FlagArgument& ref = *arg;
   AddArgument(std::move(arg));
@@ -56,7 +56,7 @@ FlagArgument& ArgumentParser::AddFlagArgument(
 }
 
 ArgumentParser& ArgumentParser::AddSubcommand(const std::string& name,
-                                              const std::string& Description) {
+                                              const std::string& description) {
   // 1. 检查子命令名称不能为空（严重错误）
   if (name.empty()) {
     throw std::invalid_argument("Subcommand name cannot be empty");
@@ -82,7 +82,7 @@ ArgumentParser& ArgumentParser::AddSubcommand(const std::string& name,
     }
   }
 
-  auto subcommand = std::make_unique<ArgumentParser>(name, Description);
+  auto subcommand = std::make_unique<ArgumentParser>(name, description);
   ArgumentParser& ref = *subcommand;
   m_subcommands[name] = std::move(subcommand);
   return ref;
