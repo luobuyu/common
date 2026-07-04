@@ -5,13 +5,13 @@ namespace dry {
 namespace logger {
 
 logger::LoggerFormat::LoggerFormat(std::string pattern) : m_pattern(std::move(pattern)) {
-  ParserPattern();
+  ParsePattern();
 }
 void logger::FormatItem::SetFmt(const std::string &fmt) {}
 std::string logger::FormatItem::GetFmt() {
   return std::string();
 }
-void logger::LoggerFormat::ParserPattern() {
+void logger::LoggerFormat::ParsePattern() {
   bool is_pre_other = false;
   for (int i = 0; i < m_pattern.size();) {
     if (m_pattern[i] == '%') {
@@ -73,7 +73,7 @@ void LoggerFormat::Format(std::ostream &os, const logger::LogEvent &log_msg) {
 void LoggerFormat::SetPattern(const std::string &pattern) {
   m_format_items.clear();
   m_pattern = pattern;
-  ParserPattern();
+  ParsePattern();
 }
 logger::DateFormatItem::DateFormatItem(std::string time_fmt) : m_time_fmt(std::move(time_fmt)) {}
 void DateFormatItem::Format(std::ostream &os, const logger::LogEvent &log_msg) {

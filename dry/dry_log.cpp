@@ -53,7 +53,8 @@ void InitLogger(const std::string& module_name, int level, const std::string& lo
     log_sinks.emplace_back(std::make_shared<logger::StdoutSink>());
   }
 
-  mgr.Init(log_level, module_name, type, log_sinks);
+  auto logger_format = std::make_shared<logger::LoggerFormat>();
+  mgr.Init(log_level, module_name, type, log_sinks, logger_format);
 }
 
 void OpenLog(config::Config& conf) {

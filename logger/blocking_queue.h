@@ -64,7 +64,7 @@ class BlockingQueue {
   logger::CircleQueue<T> m_queue;
   mutable std::mutex m_mtx;
   std::condition_variable m_cond_producer;
-  std::condition_variable m_cond_comsumer;
+  std::condition_variable m_cond_consumer;
   std::atomic_bool m_is_stopping;
 };
 }  // namespace logger

@@ -35,7 +35,7 @@ config   log_format / log_event
 | -------------- | -------- | ---------------------------------------------------------------------------- |
 | `dry_string.h` | `dry`    | 字符串工具：`strTo<T>()` 类型转换、`stringSplit()` 分割、`trim()` 去空白     |
 | `dry_time.h`   | `dry`    | 时间工具：`getTime()` 格式化时间、`getTimeWithMs()` 带毫秒、`Timer` 计时器类 |
-| `dry_random.h` | `dry`    | 随机数工具：`Random::rand()` 支持整数/浮点/权重采样                          |
+| `dry_random.h` | `dry`    | 随机数工具：`Random::Rand()` 支持整数/浮点/权重采样                          |
 
 **使用示例：**
 
@@ -60,7 +60,7 @@ dry::Timer timer;
 double elapsed_ms = timer.getDurationMs();
 
 // 随机数
-int dice = dry::Random::rand(1, 7);         // [1, 7)
+int dice = dry::Random::Rand(1, 7);         // [1, 7)
 double prob = dry::Random::rand();           // [0, 1)
 ```
 

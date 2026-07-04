@@ -11,7 +11,7 @@ namespace dry {
 
 /// 通用对象池（借出-归还模型，按 Key 缓存空闲对象）
 /// @tparam Key     池的索引类型（需支持 hash 和 ==）
-/// @tparam value   池中对象类型（通常是 shared_ptr<XxxClient>）
+/// @tparam Value   池中对象类型（通常是 shared_ptr<XxxClient>）
 /// @tparam Hash    Key 的 hash 函数（默认 std::hash<Key>）
 /// @tparam Equal   Key 的相等比较函数
 ///
@@ -26,14 +26,14 @@ namespace dry {
 /// - 全局淘汰：遍历找第一个非空 key 的尾部（近似 LRU）
 ///
 /// @note 非线程安全，需要在同一线程中使用（或外部加锁）
-template <typename Key, typename value, typename Hash = std::hash<Key>,
+template <typename Key, typename Value, typename Hash = std::hash<Key>,
           typename Equal = std::equal_to<Key>>
 class ObjectPool {
  public:
   using Ptr = std::shared_ptr<ObjectPool>;
-  using Factory = std::function<value(const Key&)>;
-  using Validator = std::function<bool(const value&)>;
-  using Destroyer = std::function<void(value&)>;
+  using Factory = std::function<Value(const Key&)>;
+  using Validator = std::function<bool(const Value&)>;
+  using Destroyer = std::function<void(Value&)>;
 
   struct Config {
     size_t max_idle_per_key{4};      // 每个 key 最大空闲对象数
@@ -43,7 +43,7 @@ class ObjectPool {
 
  private:
   struct IdleEntry {
-    value m_value;
+    Value m_value;
     int64_t idle_since_ms{0};  // 放入空闲池的时间戳
   };
 
@@ -66,7 +66,7 @@ class ObjectPool {
   /// 2. 从 key 对应的 deque 头部取出（LIFO）
   /// 3. 验证可用性，不可用则销毁并继续取下一个
   /// 4. 没有可用的空闲对象 → factory 创建新对象（不阻塞、不等待）
-  value Acquire(const Key& key) {
+  Value Acquire(const Key& key) {
     CleanupIdle();
 
     auto it = m_idle_map.find(key);
@@ -113,7 +113,7 @@ class ObjectPool {
   /// 2. 检查该 key 的空闲数是否已满
   /// 3. 检查全局空闲总数是否已满，满则淘汰最老的
   /// 4. 放入 deque 头部（LIFO）
-  bool Release(const Key& key, value val) {
+  bool Release(const Key& key, Value val) {
     // 验证对象是否仍可用
     if (m_validator && !m_validator(val)) {
       if (m_destroyer) {

@@ -133,7 +133,7 @@ class LoggerFormat {
   LoggerFormat(
       std::string pattern = "%d{%Y-%m-%d %H:%M:%S}%T[%L]%T[%p,%t,%c]%T[%M]%T[%F:%f:%l]%T%m%n");
   ~LoggerFormat() = default;
-  void ParserPattern();
+  void ParsePattern();
   void Format(std::ostream &os, const logger::LogEvent &log_msg);
   void SetPattern(const std::string &pattern);
 
