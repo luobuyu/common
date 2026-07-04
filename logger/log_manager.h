@@ -1,4 +1,3 @@
-
 #ifndef LOGGER_LOG_MANAGER_H
 #define LOGGER_LOG_MANAGER_H
 
@@ -15,7 +14,7 @@ namespace logger {
 /**
  * @brief 日志管理器（唯一单例）
  * @details 负责日志系统的全局状态管理、Logger
- * 实例的创建与持有、信号处理注册。 所有外部代码应通过 LogManager
+ * 实例的创建与持有、信号处理注册。所有外部代码应通过 LogManager
  * 访问日志功能，而非直接操作 Logger 子类。
  */
 class LogManager {
@@ -43,16 +42,10 @@ class LogManager {
    * @param queue_size 异步队列大小（仅异步模式有效）
    * @param flush_interval 异步刷盘间隔（仅异步模式有效）
    */
-  void Init(
-      ::dry::logger::LogLevelogger::LogLevelogger::LogLevelogger::LogLevel log_level,
-      std::stri::dry::logger::LogSinkle_name,
-      ::dry::logger::LogSinkType ::dry::logger::LoggerFormatgger::LogSink ::dry::logger::
-          LoggerFormatgger::LogSink::Log::
-          : dry::logger::LoggerFormat::LoggerFormatsink, ::
-              : dry::logger::LoggerFormat::LoggerFormat::LoggerFormatPtr
-                    l::dry::logger::LoggerFormat std::make_shared<::dry::logger::LoggerFormat>(),
-                int queue_size = 8192,
-                std::chrono::milliseconds flush_interval = std::chrono::milliseconds(3000));
+  void Init(LogLevel log_level, std::string module_name, LoggerType type,
+            LogSink::LogSinkPtr log_sink, LoggerFormat::LoggerFormatPtr log_format,
+            int queue_size = 8192,
+            std::chrono::milliseconds flush_interval = std::chrono::milliseconds(3000));
 
   /**
    * @brief 初始化日志系统（多 Sink 版本）
@@ -60,36 +53,42 @@ class LogManager {
    * @param module_name 模块名称
    * @param type 日志器类型（同步/异步）
    * @param log_sinks 日志输出目标列表
-   * @param log_format::dry::logger::LogLevel��式化器
-   * @param queue_size 异步队列大�::dry::logger::LogLevel���::dry::logger::LogSink�有效）
-   * @param flush_interval::dry::logger::LoggerFormat::log_level;间::dry::logger::LogSink��异步模式有效）::dry::logger::LoggerFormatd ::dry::logger::LoggerFormatlogger::LogLevel lo::dry::logger::LogSink, std::string module_na::dry::logger::LoggerFormatpe::dry::logger::LoggerFormat       std::vector<::dry::logger::LogSink::LogSinkPtr> log_sinks::dry::logger::LoggerFormat  ::dry::logger::LoggerFormat::Logge::dry::logger::LogLeveltr log_format =
-                std::make_shared<::dry::logger::LoggerFormat>(),
-            int queue_size = 81::dry::logger::LogLevel        std::chrono::millis::dry::logger::Logger flush_interval =
-                std::chrono::milliseconds(3000));::dry::logger::LogSink 日�::dry::logger::LogLevel是否已初始化并开启::dry::logger::Loggerl IsOpen() const;
+   * @param log_format 日志格式化器
+   * @param queue_size 异步队列大小（仅异步模式有效）
+   * @param flush_interval 异步刷盘间隔（仅异步模式有效）
+   */
+  void Init(LogLevel log_level, std::string module_name, LoggerType type,
+            std::vector<LogSink::LogSinkPtr> log_sinks, LoggerFormat::LoggerFormatPtr log_format,
+            int queue_size = 8192,
+            std::chrono::milliseconds flush_interval = std::chrono::milliseconds(3000));
+
+  /// 日志是否已初始化并开启
+  bool IsOpen() const;
 
   /// 当前日志级别是否应该输出
-  boo::dry::logger::LogSinkdLog(::dry::logger::LogLevel level) const;
+  bool ShouldLog(LogLevel level) const;
 
-  /// 获�::dry::logger::Logger�名称
+  /// 获取模块名称
   const std::string& GetModuleName() const;
 
-  /// 获取�::dry::loggloggergSinkgger 实例（;可能为 nullptr，未初始�::dry::logger::LogLevel
-  ::dry::logge::dry::logger::LogLevelogger::LogLevelogger::LogLevelogger::LogLevelr* GetLogger() const;
+  /// 获取 Logger 实例（可能为 nullptr，未初始化时）
+  Logger* GetLogger() const;
 
   /// 动态添加 Sink
-  void AddSink(const ::dry::loggloggergSink::LogSinkPtr& log_sink);
+  void AddSink(const LogSink::LogSinkPtr& log_sink);
 
  private:
-  LogMan::dry::logger::LogLevel default;
-  ~Lo::dry::logger::LogLevel();
+  LogManager() = default;
+  ~LogManager();
 
   /// 注册 coredump 信号处理函数
-  void RegisterCoredumpHandler();logger 信号处理回调
-  static void CoredumpHandler::dry::logger::LogLevelnal_no);
+  void RegisterCoredumpHandler();
+  /// 信号处理回调
+  static void CoredumpHandler(int signal_no);
 
-  std::dry::logger::LogLevellag m_init_flag;            ///< 保证 Init 只执行一次
-  std::unique_ptr<logger> m_logger;      ///< 持有的日志器实例
-  ::dry::logger::LogLevel m_log_level = LogLevel::OFF;  ///< 全局日志级别
+  std::once_flag m_init_flag;            ///< 保证 Init 只执行一次
+  std::unique_ptr<Logger> m_logger;      ///< 持有的日志器实例
+  LogLevel m_log_level = LogLevel::OFF;  ///< 全局日志级别
   std::string m_module_name;             ///< 模块名称
   bool m_is_open = false;                ///< 日志是否已开启
 };

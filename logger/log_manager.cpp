@@ -87,8 +87,8 @@ void LogManager::CoredumpHandler(int signal_no) {
   // 尽量 flush 已有日志到磁盘
   auto* logger = LogManager::GetInstance().GetLogger();
   if (logger != nullptr) {
-    for (auto& Sink : logger->GetLogSinks()) {
-      Sink->flush();
+    for (auto& sink : logger->GetLogSinks()) {
+      sink->Flush();
     }
   }
   signal(signal_no, SIG_DFL);

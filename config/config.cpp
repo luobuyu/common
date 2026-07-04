@@ -13,7 +13,7 @@ bool Config::InitConfig(const std::string &path) {
     std::cerr << "can't open config file " << path << std::endl;
     return false;
   }
-  // parser config
+  // parse config
   std::string line, cur_section;
   while (std::getline(ifs, line)) {
     line = std::string(dry::Trim(line));
@@ -33,13 +33,13 @@ bool Config::InitConfig(const std::string &path) {
     else {
       size_t index = line.find_first_of('=');
       if (index == line.npos) {
-        std::cerr << "can't parser config line: " << line << std::endl;
+        std::cerr << "can't parse config line: " << line << std::endl;
         return false;
       }
       std::string key(dry::Trim(line.substr(0, index)));
       std::string val(dry::Trim(line.substr(index + 1)));
       if (key.empty() || val.empty()) {
-        std::cerr << "can't parser config line: " << line << std::endl;
+        std::cerr << "can't parse config line: " << line << std::endl;
         return false;
       }
       m_sections[cur_section][key] = val;
