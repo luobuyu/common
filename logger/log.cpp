@@ -82,7 +82,7 @@ void AsyncLogger::BgLogLoop() {
     if (n > 0) {
       // 批量写入所有 Sink
       for (auto &log_event : batch) {
-        if (!log_event.m_log_msg.empty()) {
+        if (!log_event.log_msg.empty()) {
           for (auto &sink : m_log_sinks) {
             sink->Sink(log_event, m_log_format);
           }

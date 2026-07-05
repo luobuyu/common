@@ -13,10 +13,10 @@ logger::FileSink::FileSink(std::string file_path, uint32_t max_size,
 void FileSink::Sink(const logger::LogEvent &log_event, LoggerFormat::LoggerFormatPtr &log_format) {
   bool create_new_file = !m_ofs.is_open();
   // 如果超过了日期
-  if (log_event.m_timestamp >= m_next_start) {
+  if (log_event.timestamp >= m_next_start) {
     // 直接计算需要跳过的周期数，O(1) 定位到当前所在的周期
     // 避免程序暂停后恢复时频繁创建空文件
-    auto elapsed = log_event.m_timestamp - m_next_start;
+    auto elapsed = log_event.timestamp - m_next_start;
     auto periods = elapsed / m_rotate_interval + 1;
     m_next_start += periods * m_rotate_interval;
     m_no = 0;

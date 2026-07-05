@@ -21,8 +21,8 @@ class LogManager {
  public:
   /// 日志器类型枚举
   enum class LoggerType {
-    SYNC,   ///< 同步日志器
-    ASYNC,  ///< 异步日志器
+    Sync,   ///< 同步日志器
+    Async,  ///< 异步日志器
   };
 
   /// 获取单例引用（Meyers' Singleton）

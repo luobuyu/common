@@ -32,7 +32,7 @@ void LogManager::Init(LogLevel log_level, std::string module_name, LoggerType ty
     m_module_name = std::move(module_name);
 
     // 根据类型创建对应的 Logger
-    if (type == LoggerType::ASYNC) {
+    if (type == LoggerType::Async) {
       m_logger = std::make_unique<AsyncLogger>(std::move(log_sinks), std::move(log_format),
                                                queue_size, flush_interval);
     } else {

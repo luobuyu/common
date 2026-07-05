@@ -77,37 +77,37 @@ void LoggerFormat::SetPattern(const std::string &pattern) {
 }
 logger::DateFormatItem::DateFormatItem(std::string time_fmt) : m_time_fmt(std::move(time_fmt)) {}
 void DateFormatItem::Format(std::ostream &os, const logger::LogEvent &log_msg) {
-  os << dry::GetTimeWithMs(log_msg.m_timestamp, m_time_fmt);
+  os << dry::GetTimeWithMs(log_msg.timestamp, m_time_fmt);
 }
 void TabFormatItem::Format(std::ostream &os, const logger::LogEvent &log_msg) {
   os << " ";
 }
 void logger::LevelFormatItem::Format(std::ostream &os, const logger::LogEvent &log_msg) {
-  os << LevelToString(log_msg.m_log_level);
+  os << LevelToString(log_msg.log_level);
 }
 void ProcessIdFormatItem::Format(std::ostream &os, const logger::LogEvent &log_msg) {
-  os << log_msg.m_process_id;
+  os << log_msg.process_id;
 }
 void ThreadIdFormatItem::Format(std::ostream &os, const logger::LogEvent &log_msg) {
-  os << log_msg.m_thread_id;
+  os << log_msg.thread_id;
 }
 void CoroutineIdFormatItem::Format(std::ostream &os, const logger::LogEvent &log_msg) {
-  os << log_msg.m_coroutine_id;
+  os << log_msg.coroutine_id;
 }
 void ModuleNameFormatItem::Format(std::ostream &os, const logger::LogEvent &log_msg) {
-  os << log_msg.m_module_name;
+  os << log_msg.module_name;
 }
 void FileNameFormatItem::Format(std::ostream &os, const logger::LogEvent &log_msg) {
-  os << log_msg.m_file_name;
+  os << log_msg.file_name;
 }
 void FunctionNameFormatItem::Format(std::ostream &os, const logger::LogEvent &log_msg) {
-  os << log_msg.m_function_name;
+  os << log_msg.function_name;
 }
 void LineIdFormatItem::Format(std::ostream &os, const logger::LogEvent &log_msg) {
-  os << log_msg.m_line_id;
+  os << log_msg.line_id;
 }
 void LogMsgFormatItem::Format(std::ostream &os, const logger::LogEvent &log_msg) {
-  os << log_msg.m_log_msg;
+  os << log_msg.log_msg;
 }
 void NewLineFormatItem::Format(std::ostream &os, const logger::LogEvent &log_msg) {
   os << "\n";
