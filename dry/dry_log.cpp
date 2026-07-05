@@ -36,8 +36,8 @@ void InitLogger(config::Config& conf) {
   }
 
   // 支持通过配置选择同步/异步，默认异步
-  auto logger_type = conf.GetInt("logger", "async", 1) ? logger::LogManager::LoggerType::ASYNC
-                                                       : logger::LogManager::LoggerType::SYNC;
+  auto logger_type = conf.GetInt("logger", "async", 1) ? logger::LogManager::LoggerType::Async
+                                                       : logger::LogManager::LoggerType::Sync;
 
   mgr.Init(log_level, module_name, logger_type, log_sinks, logger_format);
 }

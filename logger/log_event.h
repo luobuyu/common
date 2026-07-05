@@ -26,16 +26,16 @@ struct LogEvent {
   friend std::ostream &operator<<(std::ostream &os, const logger::LogEvent &log_event);
   LogEvent() = default;
 
-  std::chrono::system_clock::time_point m_timestamp;
-  logger::LogLevel m_log_level;
-  std::string_view m_module_name;
-  uint32_t m_process_id;
-  std::thread::id m_thread_id;
-  uint32_t m_coroutine_id;
-  std::string_view m_file_name;
-  std::string_view m_function_name;
-  uint32_t m_line_id;
-  std::string m_log_msg;
+  std::chrono::system_clock::time_point timestamp;
+  logger::LogLevel log_level;
+  std::string_view module_name;
+  uint32_t process_id;
+  std::thread::id thread_id;
+  uint32_t coroutine_id;
+  std::string_view file_name;
+  std::string_view function_name;
+  uint32_t line_id;
+  std::string log_msg;
 };
 };  // namespace logger
 }  // namespace dry

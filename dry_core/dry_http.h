@@ -14,7 +14,7 @@ namespace dry {
 /// tchar = "!" / "#" / "$" / "%" / "&" / "'" / "*" / "+" / "-" / "." /
 ///         "^" / "_" / "`" / "|" / "~" / DIGIT / ALPHA
 /// 自然覆盖 NULL、控制字符、空格等所有非法字符
-inline constexpr bool k_http_header_name_char[256] = {
+inline constexpr bool kHttpHeaderNameChar[256] = {
     // 0x00-0x0F: 控制字符，全部非法
     false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
     // 0x10-0x1F: 控制字符，全部非法
@@ -45,7 +45,7 @@ inline constexpr bool k_http_header_name_char[256] = {
 /// Header value 非法字符表
 /// 拒绝 NULL(0x00)、控制字符(0x01-0x08, 0x0A-0x1F)、DEL(0x7F)
 /// TAB(0x09)、可打印字符(0x20-0x7E)、obs-text(0x80-0xFF) 均合法
-inline constexpr bool k_http_header_value_invalid[256] = {
+inline constexpr bool kHttpHeaderValueInvalid[256] = {
     // 0x00-0x0F: NULL 非法，0x01-0x08 非法，TAB(0x09) 合法，0x0A(LF) 非法，
     //            0x0B-0x0C 非法，0x0D(CR) 非法，0x0E-0x0F 非法
     true,  true,  true,  true,  true,  true,  true,  true,  true,  false, true,  true,  true,  true,  true,  true,
@@ -80,7 +80,7 @@ inline bool IsValidHttpHeaderName(std::string_view sv) {
     return false;
   }
   for (char c : sv) {
-    if (!k_http_header_name_char[static_cast<unsigned char>(c)]) {
+    if (!kHttpHeaderNameChar[static_cast<unsigned char>(c)]) {
       return false;
     }
   }
@@ -90,7 +90,7 @@ inline bool IsValidHttpHeaderName(std::string_view sv) {
 /// 校验 header value 是否包含非法字符（NULL / 裸 CR / 裸 LF / 控制字符）
 inline bool IsValidHttpHeaderValue(std::string_view sv) {
   for (char c : sv) {
-    if (k_http_header_value_invalid[static_cast<unsigned char>(c)]) {
+    if (kHttpHeaderValueInvalid[static_cast<unsigned char>(c)]) {
       return false;
     }
   }

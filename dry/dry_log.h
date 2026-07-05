@@ -41,7 +41,7 @@ void InitLogger(config::Config& conf);
  */
 void InitLogger(const std::string& module_name, int level = 2,
                 const std::string& log_path = "../Log", bool enable_stdout = true,
-                logger::LogManager::LoggerType type = logger::LogManager::LoggerType::ASYNC);
+                logger::LogManager::LoggerType type = logger::LogManager::LoggerType::Async);
 
 /// 向后兼容的函数名
 void OpenLog(config::Config& conf);
