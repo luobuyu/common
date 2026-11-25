@@ -74,8 +74,7 @@ void LogManager::RegisterCoredumpHandler() {
   // SIGKILL 不可捕获，不注册
   signal(SIGINT, CoredumpHandler);
   signal(SIGHUP, CoredumpHandler);
-  // 忽略 SIGPIPE
-  signal(SIGPIPE, SIG_IGN);
+  // SIGPIPE 由库使用者自行处理，此处不注册
 #endif
 #if defined(__linux__)
   signal(SIGSTKFLT, CoredumpHandler);

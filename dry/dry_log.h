@@ -7,8 +7,11 @@
  * @details 使用者只需 #include 此文件即可使用
  * LOG_DEBUG/LOG_INFO/LOG_WARN/LOG_ERROR 宏。 初始化可选：通过 Config
  * 对象或手动指定参数。
+ *
+ * ERROR 级别在 logger 未初始化时降级输出到 stderr，防止关键错误丢失。
  */
 
+#include <cstdio>  // fprintf（ERROR 降级用）
 #include <string>
 
 #include "../logger/log_manager.h"
@@ -58,14 +61,20 @@ void OpenLog(config::Config& conf);
  * @details {} 风格（fmt::format），需 fmt 库（FMT_FOUND）。
  *          保留此骨架便于后续注入上下文/默认参数等扩展。
  */
-#define LOG_FMT(level, fmt, ...)                                                               \
-  do {                                                                                         \
-    auto& _log_mgr = dry::logger::LogManager::GetInstance();                                   \
-    if (_log_mgr.IsOpen() && _log_mgr.ShouldLog(level)) {                                      \
-      _log_mgr.GetLogger()->Log(                                                               \
-          dry::logger::LogEvent(level, _log_mgr.GetModuleName(), __FILE__, __func__, __LINE__, \
-                                dry::logger::FormatString(fmt, ##__VA_ARGS__)));               \
-    }                                                                                          \
+#define LOG_FMT(level, fmt, ...)                                                                 \
+  do {                                                                                           \
+    auto& _log_mgr = dry::logger::LogManager::GetInstance();                                     \
+    if (_log_mgr.IsOpen()) {                                                                     \
+      if (_log_mgr.ShouldLog(level)) {                                                           \
+        _log_mgr.GetLogger()->Log(                                                               \
+            dry::logger::LogEvent(level, _log_mgr.GetModuleName(), __FILE__, __func__, __LINE__, \
+                                  dry::logger::FormatString(fmt, ##__VA_ARGS__)));               \
+      }                                                                                          \
+    } else if (level >= dry::logger::LogLevel::ERROR) {                                          \
+      /* logger 未初始化时，ERROR 降级到 stderr，防止关键错误静默丢失 */     \
+      std::fprintf(stderr, "[ERROR] %s:%d %s: %s\n", __FILE__, __LINE__, __func__,               \
+                   dry::logger::FormatString(fmt, ##__VA_ARGS__).c_str());                       \
+    }                                                                                            \
   } while (0)
 
 /// @name 日志输出宏（{} 风格，fmt::format）
